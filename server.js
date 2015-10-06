@@ -7,16 +7,19 @@ var io = require('socket.io')(http);
 app.use(express.static('web'));
 
 nunjucks.configure('views', {
-    autoescape: true,
     express: app
 });
 
 app.get('/', function (req, res) {
-    res.render('index.html', {username: 'THIS IS NOT WORKING'});
+    res.render('index.html', {
+        url: req.url
+    });
 });
 
 app.get('/cards', function (req, res) {
-    res.render('index.html', {username: 'IT WORKS!'});
+    res.render('index.html', {
+        url: req.url
+    });
 });
 
 io.on('connection', function (socket) {
