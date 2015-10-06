@@ -20,7 +20,8 @@ module.exports = function (grunt) {
                     ],
                     'web/build/<%= pkg.name %>.min.css': [
                         'bower_components/bootstrap/dist/css/bootstrap.min.css',
-                        'bower_components/bootstrap/dist/css/bootstrap-theme.min.css'
+                        'bower_components/bootstrap/dist/css/bootstrap-theme.min.css',
+                        'resources/css/style.css'
                     ]
                 }
             }

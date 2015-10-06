@@ -1,10 +1,13 @@
 var express = require('express');
 var app = express();
+
 var session = require('express-session');
 var KnexSessionStore = require('connect-session-knex')(session);
-var nunjucks = require('nunjucks');
+
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+
+var nunjucks = require('nunjucks');
 
 var common = require('./common');
 var config = common.config();
@@ -46,7 +49,13 @@ app.get('/', function (req, res) {
 });
 
 app.get('/cards', function (req, res) {
-    res.render('index.html', {
+    res.render('cards.html', {
+        url: req.url
+    });
+});
+
+app.get('/login', function (req, res) {
+    res.render('login.html', {
         url: req.url
     });
 });
