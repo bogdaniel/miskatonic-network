@@ -4,8 +4,9 @@ var nunjucks = require('nunjucks');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-app.use(express.static('views'));
-nunjucks.configure('/', {
+app.use(express.static('web'));
+
+nunjucks.configure('views', {
     autoescape: true,
     express: app
 });
@@ -30,6 +31,6 @@ io.on('connection', function (socket) {
     });
 });
 
-http.listen(6666, function () {
+http.listen(3000, function () {
     console.log('listening on *:3000');
 });
