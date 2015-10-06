@@ -44,13 +44,18 @@
         </div>
     </div>
 </nav>
+
+{% if flashMessage %}
+<div class="alert alert-{{ flashMessage.type }}" role="alert">{{ flashMessage.message }}</div>
+{% endif %}
+
 {% block body %}{% endblock %}
 
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="/build/miskatonic-network.min.js"></script>
 <script type="text/javascript">
     var socket = io();
-    $('form').submit(function () {
+    $('form.chat').submit(function () {
         socket.emit('chat message', $('#m').val());
         $('#m').val('');
         return false;
