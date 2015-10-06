@@ -3,7 +3,11 @@
   "version": "0.0.1",
   "description": "Web based platform to play with others.",
   "dependencies": {
+    "connect-session-knex": "^1.0.16",
     "express": "~4.13.3",
+    "express-session": "^1.11.3",
+    "knex": "^0.8.6",
+    "mysql2": "^0.15.8",
     "nunjucks": "^2.1.0",
     "socket.io": "~1.3.7"
   },
