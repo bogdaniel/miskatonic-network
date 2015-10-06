@@ -55,6 +55,8 @@
             background: #fff;
         }
     </style>
+
+    <link rel="stylesheet" href="/build/miskatonic-network.min.css"/>
 </head>
 <body>
 <ul id="messages"></ul>
@@ -64,8 +66,8 @@
 </form>
 
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-<script>
+<script src="/build/miskatonic-network.min.js"></script>
+<script type="text/javascript">
     var socket = io();
     $('form').submit(function () {
         socket.emit('chat message', $('#m').val());

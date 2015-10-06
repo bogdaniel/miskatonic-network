@@ -1,0 +1,13 @@
+{
+  "name": "miskatonic-network",
+  "version": "0.0.1",
+  "homepage": "https://github.com/lordjancso/miskatonic-network",
+  "authors": [
+    "lordjancso <lordjancso@gmail.com>"
+  ],
+  "description": "Web based platform to play with others.",
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "bootstrap": "~3.3.5"
+  }
+}
