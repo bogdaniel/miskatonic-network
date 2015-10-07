@@ -1,18 +1,19 @@
 var express = require('express');
 var router = express.Router();
 var knex = require('./database');
+var hash = require('../security/pass').hash;
 
-function authenticate(name, pass, fn) {
-    var user = users[name];
-    // query the db for the given username
-    if (!user) return fn(new Error('cannot find user'));
-    // apply the same algorithm to the POSTed password, applying
-    // the hash against the pass / salt, if there is a match we
-    // found the user
-    hash(pass, user.salt, function (err, hash) {
-        if (err) return fn(err);
-        if (hash == user.hash) return fn(null, user);
-        fn(new Error('invalid password'));
+function authenticate(email, password, fn) {
+    return knex('users').where('email', email).then(function (rows) {
+        var user = rows[0];
+
+        if (!user) return fn(new Error('cannot find user'));
+
+        hash(password, function (err, hash) {
+            if (err) return fn(err);
+            if (hash == user.password) return fn(null, user);
+            fn(new Error('invalid password'));
+        });
     });
 }
 
@@ -88,6 +89,8 @@ router.post('/registration', function (req, res) {
         created_at: new Date(),
         updated_at: new Date()
     });
+
+    res.redirect('/login');
 });
 
 module.exports = router;
