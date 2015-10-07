@@ -8,7 +8,6 @@ var knexSessionStore = require('connect-session-knex')(session);
 var bodyParser = require('body-parser');
 var nunjucks = require('nunjucks');
 var routing = require('./config/routing');
-var auth = require('./security/auth');
 
 app.use(express.static('web'));
 app.use(bodyParser.urlencoded({extended: false}));
