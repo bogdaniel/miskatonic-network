@@ -46,18 +46,6 @@ nunjucks.configure('views', {
     express: app
 });
 
-var users = {
-    'lordjancso@gmail.com': {name: 'lordjancso'}
-};
-
-var hash = require('./security/pass').hash;
-hash('test', function (err, salt, hash) {
-    if (err) throw err;
-    // store the salt & hash in the "db"
-    users['lordjancso@gmail.com'].salt = salt;
-    users['lordjancso@gmail.com'].hash = hash;
-});
-
 io.on('connection', function (socket) {
     //console.log('a user connected');
 
