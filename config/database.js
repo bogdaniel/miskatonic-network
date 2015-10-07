@@ -1,3 +1,6 @@
+var common = require('../common');
+var config = common.config();
+
 var session = require('express-session');
 var Knex = require('knex');
 var KnexSessionStore = require('connect-session-knex')(session);
