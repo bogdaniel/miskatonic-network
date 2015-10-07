@@ -2,9 +2,9 @@
 <html>
 <head>
     <title>Miskatonic Network</title>
-    {% block css %}{% endblock %}
 
     <link rel="stylesheet" href="/build/miskatonic-network.min.css"/>
+    {% block css %}{% endblock %}
 </head>
 <body>
 <nav class="navbar navbar-inverse">
@@ -61,7 +61,7 @@
         return false;
     });
     socket.on('chat message', function (msg) {
-        $('#messages').append($('<li>').text(msg));
+        $('.chat-messages').prepend($('<div>').text(msg));
     });
 </script>
 {% block js %}{% endblock %}

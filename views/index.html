@@ -24,26 +24,53 @@
         padding: 10px;
     }
 
-    ul#messages {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
+    .panel {
+        background-color: rgba(255, 255, 255, 0.8);
+        border: 0;
     }
 
-    ul#messages li {
-        padding: 5px 10px;
-        background: #ccc;
-        opacity: 0.5;
-    }
-
-    ul#messages li:nth-child(odd) {
-        background: #fff;
+    .chat-messages {
+        max-height: 600px;
+        overflow: auto;
     }
 </style>
 {% endblock %}
 
 {% block body %}
-<ul id="messages"></ul>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-2">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="chat-rooms">
+                        <div>Room1</div>
+                        <div>Room2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="chat-messages">
+                        <div>Welcome to Miskatonic Network!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="chat-users">
+                        <div>User1</div>
+                        <div>User2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <form action="" class="chat">
     <input id="m" autocomplete="off"/>
     <button>Send</button>
