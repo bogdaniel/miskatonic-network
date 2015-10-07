@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
+var knex = require('knex');
+
 function authenticate(name, pass, fn) {
     var user = users[name];
     // query the db for the given username
@@ -76,7 +78,17 @@ router.get('/registration', function (req, res) {
 });
 
 router.post('/registration', function (req, res) {
-    //
+    var username = req.body.username;
+    var email = req.body.email;
+    var password = req.body.password;
+
+    knex('users').insert({
+        username: username,
+        email: email,
+        password: password,
+        created_at: new Date(),
+        updated_at: new Date()
+    });
 });
 
 module.exports = router;
