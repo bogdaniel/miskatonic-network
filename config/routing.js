@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
-var knex = require('knex');
+var knex = require('./database');
 
 function authenticate(name, pass, fn) {
     var user = users[name];

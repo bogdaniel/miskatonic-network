@@ -1,11 +1,7 @@
 var common = require('../common');
 var config = common.config();
 
-var session = require('express-session');
-var Knex = require('knex');
-var KnexSessionStore = require('connect-session-knex')(session);
-
-var knex = Knex({
+var knex = require('knex')({
     client: 'mysql2',
     connection: {
         host: config.database_host,
@@ -15,7 +11,4 @@ var knex = Knex({
     }
 });
 
-module.exports = new KnexSessionStore({
-    knex: knex,
-    tablename: 'sessions'
-});
+module.exports = knex;

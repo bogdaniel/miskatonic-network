@@ -3,7 +3,8 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var session = require('express-session');
-var store = require('./config/database');
+var knex = require('./config/database');
+var knexSessionStore = require('connect-session-knex')(session);
 var bodyParser = require('body-parser');
 var nunjucks = require('nunjucks');
 var routing = require('./config/routing');
@@ -18,7 +19,10 @@ app.use(session({
     },
     resave: false,
     saveUninitialized: false,
-    store: store
+    store: new knexSessionStore({
+        knex: knex,
+        tablename: 'sessions'
+    })
 }));
 app.use(function (req, res, next) {
     var error = req.session.error;
