@@ -8,10 +8,12 @@
     "url": "https://github.com/lordjancso/miskatonic-network.git"
   },
   "dependencies": {
+    "bluebird": "^2.10.2",
     "body-parser": "^1.14.1",
+    "bookshelf": "^0.8.2",
     "connect-session-knex": "^1.0.16",
-    "crypto": "0.0.3",
     "express": "~4.13.3",
+    "express-promise-router": "0.0.9",
     "express-session": "^1.11.3",
     "knex": "^0.8.6",
     "mysql2": "^0.15.8",
