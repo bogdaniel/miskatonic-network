@@ -30,16 +30,20 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="#">X Games</a></li>
-                <li{% if url == '/registration' %} class="active"{% endif %}><a href="/registration">Registration</a></li>
-                <li{% if url == '/login' %} class="active"{% endif %}><a href="/login">Login</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Username <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li{% if url == '/settings' %} class="active"{% endif %}><a href="/settings">Settings</a></li>
-                <li role="separator" class="divider"></li>
-                <li{% if url == '/logout' %} class="active"{% endif %}><a href="/logout">Logout</a></li>
-            </ul>
-            </li>
+                {% if not sessionData.user %}
+                    <li{% if url == '/registration' %} class="active"{% endif %}><a href="/registration">Registration</a></li>
+                    <li{% if url == '/login' %} class="active"{% endif %}><a href="/login">Login</a></li>
+                {% endif %}
+                {% if sessionData.user %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Username <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li{% if url == '/settings' %} class="active"{% endif %}><a href="/settings">Settings</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li{% if url == '/logout' %} class="active"{% endif %}><a href="/logout">Logout</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>
@@ -60,8 +64,8 @@
         $('#m').val('');
         return false;
     });
-    socket.on('chat message', function (msg) {
-        $('.chat-messages').prepend($('<div>').text(msg));
+    socket.on('chat message', function (data) {
+        $('.chat-messages').prepend($('<div>').text(data.username + ', ' + data.created_at + ', ' + data.message));
     });
 </script>
 {% block js %}{% endblock %}

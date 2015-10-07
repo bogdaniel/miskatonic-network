@@ -8,6 +8,7 @@ var knexSessionStore = require('connect-session-knex')(session);
 var bodyParser = require('body-parser');
 var nunjucks = require('nunjucks');
 var routing = require('./config/routing');
+var moment = require('moment');
 
 app.use(express.static('web'));
 app.use(bodyParser.urlencoded({extended: false}));
@@ -37,6 +38,7 @@ app.use(function (req, res, next) {
         type: 'success',
         message: success
     };
+    res.locals.sessionData = req.session;
     next();
 });
 app.use(routing);
@@ -46,11 +48,15 @@ nunjucks.configure('views', {
 });
 
 io.on('connection', function (socket) {
-    socket.on('chat message', function (msg) {
-        msg = msg.trim();
+    socket.on('chat message', function (message) {
+        message = message.trim();
 
-        if (msg) {
-            io.emit('chat message', msg);
+        if (message) {
+            io.emit('chat message', {
+                username: 'user1',
+                message: message,
+                created_at: moment().format('YYYY-MM-DD HH:mm:ss')
+            });
         }
     });
 
