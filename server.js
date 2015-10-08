@@ -33,15 +33,19 @@ app.use(function (req, res, next) {
 
     res.locals.flashMessage = null;
 
-    if (error) res.locals.flashMessage = {
-        type: 'danger',
-        message: error
-    };
+    if (error) {
+        res.locals.flashMessage = {
+            type: 'danger',
+            message: error
+        };
+    }
 
-    if (success) res.locals.flashMessage = {
-        type: 'success',
-        message: success
-    };
+    if (success) {
+        res.locals.flashMessage = {
+            type: 'success',
+            message: success
+        };
+    }
 
     res.locals.app = {
         url: req.url,
@@ -51,6 +55,13 @@ app.use(function (req, res, next) {
     next();
 });
 app.use(routing);
+app.use(function (req, res, next) {
+    res.status(404).send('Sorry cant find that!');
+});
+app.use(function (err, req, res, next) {
+    console.error(err);
+    res.status(500).send('Something broke!');
+});
 
 nunjucks.configure('views', {
     express: app

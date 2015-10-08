@@ -1,65 +1,59 @@
 var expressPromiseRouter = require('express-promise-router');
 var router = expressPromiseRouter();
-var Promise = require('bluebird');
-var knex = require('./database');
 var firewall = require('../security/firewall');
-//var scrypt = require('scrypt-for-humans');
-
-function authenticate(email, password) {
-    return Promise.try(function () {
-        return knex('users').where('email', email);
-    }).then(function (rows) {
-        if (rows.length !== 1) {
-            throw new Error('cannot find user');
-        }
-
-        var user = rows[0];
-
-        return Promise.try(function () {
-            return scrypt.verifyHash(password, user.password);
-        }).then(function (valid) {
-            return user;
-        });
-    });
-}
+var scrypt = require('scrypt-for-humans');
+var Promise = require('bluebird');
+var User = require('./model').User;
+var Card = require('./model').Card;
 
 router.post('/login', function (req, res) {
-    return Promise.try(function () {
-        return authenticate(req.body.email, req.body.password);
-    }).then(function (user) {
-        // Regenerate session when signing in
-        // to prevent fixation
+    return User.login(req.body.email, req.body.password).then(function (user) {
+        user.omit('password');
         req.session.regenerate(function () {
-            // Store the user's primary key
-            // in the session store to be retrieved,
-            // or in this case the entire user object
             req.session.user = user;
             req.session.success = 'Login successful!';
             res.redirect('/cards');
         });
-    }).catch(scrypt.PasswordError, function (error) {
-        req.session.error = 'Authentication failed, please check your username and password.';
+    }).catch(User.NotFoundError, function () {
+        req.session.error = 'User not found.';
+        res.redirect('/login');
+    }).catch(scrypt.PasswordError, function () {
+        req.session.error = 'Invalid password.';
+        res.redirect('/login');
+    }).catch(Error, function (error) {
+        req.session.error = error.message;
         res.redirect('/login');
     });
 });
 
 router.get('/', function (req, res) {
-    res.render('index.html', {
-        url: req.url
+    res.render('index.html');
+});
+
+router.get('/cards', function (req, res) {
+    return Card.where({
+        setname: 'Core Set'
+    }).fetchAll().then(function (cards) {
+        res.render('cards.html', {
+            cards: cards.toJSON()
+        });
     });
 });
 
-router.get('/cards', firewall.restrict, function (req, res) {
-    res.render('cards.html', {
-        url: req.url,
-        user: req.session.user
-    });
+router.get('/deck-builder', firewall.restrict, function (req, res) {
+    res.render('deck-builder.html');
+});
+
+router.get('/play', firewall.restrict, function (req, res) {
+    res.render('play.html');
+});
+
+router.get('/about', firewall.restrict, function (req, res) {
+    res.render('about.html');
 });
 
 router.get('/login', function (req, res) {
-    res.render('login.html', {
-        url: req.url
-    });
+    res.render('login.html');
 });
 
 router.get('/logout', function (req, res) {
@@ -69,9 +63,7 @@ router.get('/logout', function (req, res) {
 });
 
 router.get('/registration', function (req, res) {
-    res.render('registration.html', {
-        url: req.url
-    });
+    res.render('registration.html');
 });
 
 router.post('/registration', function (req, res) {
@@ -79,15 +71,28 @@ router.post('/registration', function (req, res) {
     var email = req.body.email;
     var password = req.body.password;
 
-    knex('users').insert({
-        username: username,
-        email: email,
-        password: password,
-        created_at: new Date(),
-        updated_at: new Date()
-    });
+    return Promise.try(function () {
+        return scrypt.hash(password);
+    }).then(function (passwordHash) {
+        new User({
+            username: username,
+            email: email,
+            password: passwordHash,
+            created_at: new Date(),
+            updated_at: new Date()
+        }).save().then(function (user) {
+            user.omit('password');
+            req.session.regenerate(function () {
+                req.session.user = user;
+                req.session.success = 'Login successful!';
+                res.redirect('/cards');
+            });
+        });
+    })
+});
 
-    res.redirect('/login');
+router.get('/settings', firewall.restrict, function (req, res) {
+    res.render('settings.html');
 });
 
 module.exports = router;
