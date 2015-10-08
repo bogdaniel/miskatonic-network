@@ -27,18 +27,27 @@ app.use(session({
 app.use(function (req, res, next) {
     var error = req.session.error;
     var success = req.session.success;
+
     delete req.session.error;
     delete req.session.success;
+
     res.locals.flashMessage = null;
+
     if (error) res.locals.flashMessage = {
         type: 'danger',
         message: error
     };
+
     if (success) res.locals.flashMessage = {
         type: 'success',
         message: success
     };
-    res.locals.sessionData = req.session;
+
+    res.locals.app = {
+        url: req.url,
+        user: req.session.user
+    };
+
     next();
 });
 app.use(routing);
