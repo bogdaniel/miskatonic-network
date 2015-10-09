@@ -68,11 +68,14 @@ nunjucks.configure('views', {
 });
 
 io.on('connection', function (socket) {
+    var room = socket.handshake['query']['v_room'];
+    socket.join(room);
+
     socket.on('chat message', function (message) {
         message = message.trim();
 
         if (message) {
-            io.emit('chat message', {
+            io.to(room).emit('chat message', {
                 username: 'user1',
                 message: message,
                 created_at: moment().format('YYYY-MM-DD HH:mm:ss')
@@ -81,7 +84,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('disconnect', function () {
-        //
+        socket.leave(room);
     });
 });
 

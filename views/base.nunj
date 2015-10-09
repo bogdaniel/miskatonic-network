@@ -55,19 +55,8 @@
 
 {% block body %}{% endblock %}
 
-<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="/build/miskatonic-network.min.js"></script>
-<script type="text/javascript">
-    var socket = io();
-    $('form.chat').submit(function () {
-        socket.emit('chat message', $('#m').val());
-        $('#m').val('');
-        return false;
-    });
-    socket.on('chat message', function (data) {
-        $('.chat-messages').prepend($('<div>').text(data.username + ', ' + data.created_at + ', ' + data.message));
-    });
-</script>
+
 {% block js %}{% endblock %}
 </body>
 </html>

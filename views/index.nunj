@@ -36,6 +36,37 @@
     </style>
 {% endblock %}
 
+{% block js %}
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var connect = function (room) {
+                return io('localhost:3000', {
+                    query: 'v_room=' + room
+                });
+            };
+            var socket = connect('general');
+
+            $('form.chat').submit(function (e) {
+                e.preventDefault();
+                socket.emit('chat message', $('#m').val());
+                $('#m').val('');
+            });
+
+            socket.on('chat message', function (data) {
+                $('.chat-messages').prepend($('<div>').text(data.username + ', ' + data.created_at + ', ' + data.message));
+            });
+
+            $('a.channel').on('click', function (e) {
+                //e.preventDefault();
+                //history.pushState({}, '', $(this).attr('href'));
+
+                var room = window.location.hash.substring(1);
+            });
+        });
+    </script>
+{% endblock %}
+
 {% block body %}
     <div class="container">
         <div class="row">
@@ -43,8 +74,15 @@
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <div class="chat-rooms">
-                            <div>Room1</div>
-                            <div>Room2</div>
+                            <div>
+                                <a href="#general" class="channel">General</a>
+                            </div>
+                            <div>
+                                <a href="#english" class="channel">English</a>
+                            </div>
+                            <div>
+                                <a href="#hungarian" class="channel">Hungarian</a>
+                            </div>
                         </div>
                     </div>
                 </div>
