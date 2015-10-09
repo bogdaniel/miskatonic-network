@@ -50,7 +50,7 @@
 </nav>
 
 {% if flashMessage %}
-<div class="alert alert-{{ flashMessage.type }}" role="alert">{{ flashMessage.message }}</div>
+    <div class="alert alert-{{ flashMessage.type }}" role="alert">{{ flashMessage.message }}</div>
 {% endif %}
 
 {% block body %}{% endblock %}

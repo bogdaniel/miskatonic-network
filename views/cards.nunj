@@ -1,0 +1,18 @@
+{% extends "base.nunj" %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            {% set counter = 0 %}
+            <table class="table table-striped" style="background-color: #ffffff;">
+                {% for card in cards %}
+                    {% set counter = counter + 1 %}
+                    <tr>
+                        <td>{{ card.title }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <h1 class="danger">{{ counter }}</h1>
+        </div>
+    </div>
+{% endblock %}

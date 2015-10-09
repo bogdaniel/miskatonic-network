@@ -27,33 +27,33 @@ router.post('/login', function (req, res) {
 });
 
 router.get('/', function (req, res) {
-    res.render('index.html');
+    res.render('index.nunj');
 });
 
 router.get('/cards', function (req, res) {
     return Card.where({
         setname: 'Core Set'
     }).fetchAll().then(function (cards) {
-        res.render('cards.html', {
+        res.render('cards.nunj', {
             cards: cards.toJSON()
         });
     });
 });
 
 router.get('/deck-builder', firewall.restrict, function (req, res) {
-    res.render('deck-builder.html');
+    res.render('deck-builder.nunj');
 });
 
 router.get('/play', firewall.restrict, function (req, res) {
-    res.render('play.html');
+    res.render('play.nunj');
 });
 
 router.get('/about', firewall.restrict, function (req, res) {
-    res.render('about.html');
+    res.render('about.nunj');
 });
 
 router.get('/login', function (req, res) {
-    res.render('login.html');
+    res.render('login.nunj');
 });
 
 router.get('/logout', function (req, res) {
@@ -63,7 +63,7 @@ router.get('/logout', function (req, res) {
 });
 
 router.get('/registration', function (req, res) {
-    res.render('registration.html');
+    res.render('registration.nunj');
 });
 
 router.post('/registration', function (req, res) {
@@ -92,7 +92,7 @@ router.post('/registration', function (req, res) {
 });
 
 router.get('/settings', firewall.restrict, function (req, res) {
-    res.render('settings.html');
+    res.render('settings.nunj');
 });
 
 module.exports = router;
