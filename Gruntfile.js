@@ -2,6 +2,13 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        jshint: {
+            options: {
+                node: true,
+                ignores: ['bower_components', 'node_modules']
+            },
+            files: ['*.js', 'config/*.js', 'controllers/*.js', 'resources/**/*.js', 'security/*.js', 'storage/**/*.js']
+        },
         uglify: {
             build: {
                 files: {
@@ -29,9 +36,10 @@ module.exports = function (grunt) {
         }
     });
 
+    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
 
-    grunt.registerTask('default', ['uglify', 'concat']);
+    grunt.registerTask('default', ['jshint', 'uglify', 'concat']);
 
 };
