@@ -8,8 +8,9 @@
     "url": "https://github.com/lordjancso/miskatonic-network.git"
   },
   "scripts": {
+    "bower": "echo '=> bowering' && bower",
     "grunt": "echo '=> grunting' && grunt",
-    "build": "echo '=> building' && npm install && npm run grunt -s && npm run pm2 start server.js && npm run pm2 restart server.js"
+    "build": "echo '=> building' && npm install && npm run bower -s && npm run grunt -s && npm run pm2 start server.js && npm run pm2 restart server.js"
   },
   "dependencies": {
     "bluebird": "^2.10.2",
