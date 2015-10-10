@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
@@ -9,6 +11,7 @@ var bodyParser = require('body-parser');
 var nunjucks = require('nunjucks');
 var routing = require('./config/routing');
 var moment = require('moment');
+var redis = require('redis').createClient();
 
 app.use(express.static('web'));
 app.use(bodyParser.urlencoded({extended: false}));
@@ -83,7 +86,7 @@ io.on('connection', function (socket) {
         socket.join(user.room);
 
         var userList = [];
-        for (socketId in io.nsps['/'].adapter.rooms[socket.room]) {
+        for (var socketId in io.nsps['/'].adapter.rooms[socket.room]) {
             var userObj = io.sockets.connected[socketId];
 
             userList.push({
@@ -93,9 +96,13 @@ io.on('connection', function (socket) {
 
         io.to(socket.room).emit('userList', userList);
 
+        redis.lrange('chat_' + socket.room, 0, -1, function (error, reply) {
+            socket.emit('archiveMessages', reply);
+        });
+
         if (oldRoom) {
             var oldRoomUserList = [];
-            for (socketId in io.nsps['/'].adapter.rooms[oldRoom]) {
+            for (var socketId in io.nsps['/'].adapter.rooms[oldRoom]) {
                 var oldUserObj = io.sockets.connected[socketId];
 
                 oldRoomUserList.push({
@@ -107,14 +114,23 @@ io.on('connection', function (socket) {
         }
     });
 
-    socket.on('chat message', function (message) {
+    socket.on('chatMessage', function (message) {
         message = message.trim();
 
         if (message) {
-            io.to(socket.room).emit('chat message', {
-                username: 'user1',
+            message = {
+                username: socket.username,
                 message: message,
                 created_at: moment().format('YYYY-MM-DD HH:mm:ss')
+            };
+
+            io.to(socket.room).emit('chatMessage', message);
+
+            redis.rpush('chat_' + socket.room, JSON.stringify(message));
+            redis.llen('chat_' + socket.room, function (error, reply) {
+                if (reply > 50) {
+                    redis.lpop('chat_' + socket.room);
+                }
             });
         }
     });

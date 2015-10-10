@@ -63,7 +63,7 @@
             $('form.chat').submit(function (e) {
                 e.preventDefault();
 
-                socket.emit('chat message', $('#m').val());
+                socket.emit('chatMessage', $('#m').val());
                 $('#m').val('');
             });
 
@@ -74,8 +74,20 @@
                 });
             });
 
-            socket.on('chat message', function (data) {
-                $('.chat-messages').prepend($('<div>').text(data.username + ', ' + data.created_at + ', ' + data.message));
+            socket.on('archiveMessages', function (messages) {
+                var container = $('.chat-messages');
+                container.empty();
+                $.each(messages, function (key, message) {
+                    message = $.parseJSON(message);
+                    container.append($('<div>').text(message.username + ', ' + message.created_at + ', ' + message.message));
+                });
+                container.scrollTop(container[0].scrollHeight);
+            });
+
+            socket.on('chatMessage', function (message) {
+                var container = $('.chat-messages');
+                container.append($('<div>').text(message.username + ', ' + message.created_at + ', ' + message.message));
+                container.scrollTop(container[0].scrollHeight);
             });
 
             $('a.channel').on('click', function (e) {
