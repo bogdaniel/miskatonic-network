@@ -9,7 +9,7 @@
   },
   "scripts": {
     "grunt": "echo '=> grunting' && grunt",
-    "build": "echo '=> building' && npm run grunt -s && npm run pm2 start server.js && npm run pm2 restart server.js"
+    "build": "echo '=> building' && npm install && npm run grunt -s && npm run pm2 start server.js && npm run pm2 restart server.js"
   },
   "dependencies": {
     "bluebird": "^2.10.2",
