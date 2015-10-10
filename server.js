@@ -73,7 +73,13 @@ io.on('connection', function (socket) {
 
         socket.leave(socket.room);
         socket.room = user.room;
-        socket.username = user.username;
+
+        if (!user.username) {
+            socket.username = 'Guest';
+        } else {
+            socket.username = user.username;
+        }
+
         socket.join(user.room);
 
         var userList = [];
