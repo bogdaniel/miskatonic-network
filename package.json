@@ -8,8 +8,8 @@
     "url": "https://github.com/lordjancso/miskatonic-network.git"
   },
   "scripts": {
-    "bower": "echo '=> bowering' && bower",
-    "grunt": "echo '=> grunting' && grunt",
+    "bower": "echo '=> bowering' && bower install",
+    "grunt": "echo '=> grunting' && grunt default",
     "build": "echo '=> building' && npm install && npm run bower -s && npm run grunt -s && npm run pm2 start server.js && npm run pm2 restart server.js"
   },
   "dependencies": {
@@ -29,6 +29,7 @@
     "knex": "^0.8.6",
     "moment": "^2.10.6",
     "mysql2": "^0.15.8",
+    "node-gyp": "^3.0.3",
     "nunjucks": "^2.1.0",
     "pm2": "^0.15.7",
     "redis": "^2.1.0",
