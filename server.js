@@ -68,14 +68,36 @@ nunjucks.configure('views', {
 });
 
 io.on('connection', function (socket) {
-    var room = socket.handshake['query']['v_room'];
-    socket.join(room);
+    socket.on('join', function (user) {
+        var oldRoom = socket.room;
+
+        socket.leave(socket.room);
+        socket.room = user.room;
+        socket.username = user.username;
+        socket.join(user.room);
+
+        var userList = [];
+        for (socketId in io.nsps['/'].adapter.rooms[socket.room]) {
+            var userObj = io.sockets.connected[socketId];
+
+            userList.push({
+                username: userObj.username
+            });
+        }
+
+        io.to(socket.room).emit('userList', userList);
+
+        if (oldRoom) {
+            var oldRoomUserList = io.nsps['/'].adapter.rooms[oldRoom];
+            io.to(oldRoom).emit('userList', oldRoomUserList);
+        }
+    });
 
     socket.on('chat message', function (message) {
         message = message.trim();
 
         if (message) {
-            io.to(room).emit('chat message', {
+            io.to(socket.room).emit('chat message', {
                 username: 'user1',
                 message: message,
                 created_at: moment().format('YYYY-MM-DD HH:mm:ss')
@@ -84,7 +106,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('disconnect', function () {
-        socket.leave(room);
+        socket.leave(socket.room);
     });
 });
 
