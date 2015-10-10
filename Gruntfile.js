@@ -16,7 +16,8 @@ module.exports = function (grunt) {
                 files: {
                     'web/build/<%= pkg.name %>.min.js': [
                         'bower_components/jquery/dist/jquery.min.js',
-                        'bower_components/bootstrap/dist/js/bootstrap.min.js'
+                        'bower_components/bootstrap/dist/js/bootstrap.min.js',
+                        'resources/js/parseuri.js'
                     ],
                     'web/build/<%= pkg.name %>.min.css': [
                         'bower_components/bootstrap/dist/css/bootstrap.min.css',
