@@ -94,7 +94,15 @@ io.on('connection', function (socket) {
         io.to(socket.room).emit('userList', userList);
 
         if (oldRoom) {
-            var oldRoomUserList = io.nsps['/'].adapter.rooms[oldRoom];
+            var oldRoomUserList = [];
+            for (socketId in io.nsps['/'].adapter.rooms[oldRoom]) {
+                var oldUserObj = io.sockets.connected[socketId];
+
+                oldRoomUserList.push({
+                    username: oldUserObj.username
+                });
+            }
+
             io.to(oldRoom).emit('userList', oldRoomUserList);
         }
     });
