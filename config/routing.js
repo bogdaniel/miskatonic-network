@@ -88,7 +88,7 @@ router.post('/registration', function (req, res) {
                 res.redirect('/cards');
             });
         });
-    })
+    });
 });
 
 router.get('/settings', firewall.restrict, function (req, res) {

@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var express = require('express');
 var app = express();
@@ -102,8 +102,8 @@ io.on('connection', function (socket) {
 
         if (oldRoom) {
             var oldRoomUserList = [];
-            for (var socketId in io.nsps['/'].adapter.rooms[oldRoom]) {
-                var oldUserObj = io.sockets.connected[socketId];
+            for (var oldSocketId in io.nsps['/'].adapter.rooms[oldRoom]) {
+                var oldUserObj = io.sockets.connected[oldSocketId];
 
                 oldRoomUserList.push({
                     username: oldUserObj.username
