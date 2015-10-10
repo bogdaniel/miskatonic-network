@@ -71,19 +71,30 @@ nunjucks.configure('views', {
 });
 
 io.on('connection', function (socket) {
-    socket.on('join', function (user) {
-        var oldRoom = socket.room;
+    function leaveRoom() {
+        var room = socket.room;
 
         socket.leave(socket.room);
-        socket.room = user.room;
+        socket.room = null;
 
-        if (!user.username) {
-            socket.username = 'Guest';
-        } else {
-            socket.username = user.username;
+        var userList = [];
+        for (var socketId in io.nsps['/'].adapter.rooms[room]) {
+            var userObj = io.sockets.connected[socketId];
+
+            userList.push({
+                username: userObj.username
+            });
         }
 
+        io.to(room).emit('userList', userList);
+    }
+
+    socket.on('join', function (user) {
+        leaveRoom();
+
         socket.join(user.room);
+        socket.room = user.room;
+        socket.username = user.username;
 
         var userList = [];
         for (var socketId in io.nsps['/'].adapter.rooms[socket.room]) {
@@ -99,19 +110,6 @@ io.on('connection', function (socket) {
         redis.lrange('chat_' + socket.room, 0, -1, function (error, reply) {
             socket.emit('archiveMessages', reply);
         });
-
-        if (oldRoom) {
-            var oldRoomUserList = [];
-            for (var oldSocketId in io.nsps['/'].adapter.rooms[oldRoom]) {
-                var oldUserObj = io.sockets.connected[oldSocketId];
-
-                oldRoomUserList.push({
-                    username: oldUserObj.username
-                });
-            }
-
-            io.to(oldRoom).emit('userList', oldRoomUserList);
-        }
     });
 
     socket.on('chatMessage', function (message) {
@@ -136,7 +134,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('disconnect', function () {
-        socket.leave(socket.room);
+        leaveRoom();
     });
 });
 
