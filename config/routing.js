@@ -33,6 +33,8 @@ router.get('/', function (req, res) {
 router.get('/cards', function (req, res) {
     return Card.where({
         setname: 'Core Set'
+    }).query(function (qb) {
+        qb.orderBy('num', 'ASC');
     }).fetchAll().then(function (cards) {
         res.render('cards.nunj', {
             cards: cards.toJSON()
@@ -74,19 +76,19 @@ router.post('/registration', function (req, res) {
     return Promise.try(function () {
         return scrypt.hash(password);
     }).then(function (passwordHash) {
-        new User({
+        return new User({
             username: username,
             email: email,
             password: passwordHash,
             created_at: new Date(),
             updated_at: new Date()
-        }).save().then(function (user) {
-            user.omit('password');
-            req.session.regenerate(function () {
-                req.session.user = user;
-                req.session.success = 'Login successful!';
-                res.redirect('/cards');
-            });
+        }).save();
+    }).then(function (user) {
+        user.omit('password');
+        req.session.regenerate(function () {
+            req.session.user = user;
+            req.session.success = 'Login successful!';
+            res.redirect('/cards');
         });
     });
 });

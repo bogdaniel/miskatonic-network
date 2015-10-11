@@ -1,18 +1,25 @@
 {% extends "base.nunj" %}
 
 {% block body %}
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
-            {% set counter = 0 %}
-            <table class="table table-striped" style="background-color: #ffffff;">
+            <div class="col-xs-2">
+                <div class="filter">
+                    <div>Filter</div>
+                    <div>Filter</div>
+                    <div>Filter</div>
+                    <div>Filter</div>
+                </div>
+            </div>
+            <div class="col-xs-10">
                 {% for card in cards %}
-                    {% set counter = counter + 1 %}
-                    <tr>
-                        <td>{{ card.title }}</td>
-                    </tr>
+                    <div class="col-xs-2">
+                        <div class="card">
+                            <img src="{{ card.image_url }}" class="img-responsive"/>
+                        </div>
+                    </div>
                 {% endfor %}
-            </table>
-            <h1 class="danger">{{ counter }}</h1>
+            </div>
         </div>
     </div>
 {% endblock %}

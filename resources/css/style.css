@@ -8,3 +8,7 @@ body {
     background-size: cover;
     background-position: top center;
 }
+
+.card {
+    margin-bottom: 12px;
+}
