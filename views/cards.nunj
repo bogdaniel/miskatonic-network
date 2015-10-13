@@ -5,17 +5,20 @@
         $(function () {
             $('#set').on('change', function () {
                 var value = $(this).val();
-                window.history.replaceState(null, null, '?set=' + value);
+                var url = replaceGet(window.location.href, 'set', value);
+                window.history.replaceState(null, null, url);
             });
 
             $('#faction').on('change', function () {
                 var value = $(this).val();
-                window.history.replaceState(null, null, '?faction=' + value);
+                var url = replaceGet(window.location.href, 'faction', value);
+                window.history.replaceState(null, null, url);
             });
 
             $('#type').on('change', function () {
                 var value = $(this).val();
-                window.history.replaceState(null, null, '?type=' + value);
+                var url = replaceGet(window.location.href, 'type', value);
+                window.history.replaceState(null, null, url);
             });
 
             $('.load-more').on('click', function (e) {

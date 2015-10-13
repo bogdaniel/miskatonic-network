@@ -47,7 +47,14 @@ function replaceGet(url, getKey, getValue) {
         uri.push(getKey + '=' + getValue);
     }
 
-    if (uri) {
+    if (getValue === '') {
+        var index = uri.indexOf(getKey + '=' + getValue);
+        if (index >= 0) {
+            uri.splice(index, 1);
+        }
+    }
+
+    if (uri.length) {
         uri = uri.join('&');
         uri = '?' + uri;
     }
