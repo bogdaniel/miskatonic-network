@@ -29,10 +29,11 @@ exports.Card = bookshelf.Model.extend({
 }, {
     filter: Promise.method(function (query) {
         var filter = [];
+        var title = '';
         var page = 1;
 
         if (query.title) {
-            filter.title = query.title;
+            title = query.title;
         }
 
         if (query.set) {
@@ -51,7 +52,7 @@ exports.Card = bookshelf.Model.extend({
             page = query.page;
         }
 
-        return new this().where(filter).query(function (qb) {
+        return new this().where(filter).where('title', 'LIKE', '%' + title + '%').query(function (qb) {
             qb.orderBy('num', 'ASC').limit(24).offset(page * 24 - 24);
         }).fetchAll();
     })
