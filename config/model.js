@@ -27,5 +27,32 @@ exports.Set = bookshelf.Model.extend({
 exports.Card = bookshelf.Model.extend({
     tableName: 'cards'
 }, {
-    //
+    filter: Promise.method(function (query) {
+        var filter = [];
+        var page = 1;
+
+        if (query.title) {
+            filter.title = query.title;
+        }
+
+        if (query.set) {
+            filter.set_id = query.set;
+        }
+
+        if (query.faction) {
+            filter.faction = query.faction;
+        }
+
+        if (query.type) {
+            filter.type = query.type;
+        }
+
+        if (query.page) {
+            page = query.page;
+        }
+
+        return new this().where(filter).query(function (qb) {
+            qb.orderBy('num', 'ASC').limit(24).offset(page * 24 - 24);
+        }).fetchAll();
+    })
 });

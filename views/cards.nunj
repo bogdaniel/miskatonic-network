@@ -7,13 +7,40 @@
                 var value = $(this).val();
                 window.history.replaceState(null, null, '?set=' + value);
             });
+
             $('#faction').on('change', function () {
                 var value = $(this).val();
                 window.history.replaceState(null, null, '?faction=' + value);
             });
+
             $('#type').on('change', function () {
                 var value = $(this).val();
                 window.history.replaceState(null, null, '?type=' + value);
+            });
+
+            $('.load-more').on('click', function (e) {
+                e.preventDefault();
+
+                var link = $(this);
+                var page = link.data('page');
+                var filter = '';
+                if (parseUri(window.location.href).query) {
+                    filter = '&' + parseUri(window.location.href).query;
+                }
+
+                $.ajax({
+                    url: '/ajax/cards?page=' + page + filter,
+                    dataType: 'json'
+                }).done(function (cards) {
+                    $.each(cards, function (key, card) {
+                        var image = $('<img>').addClass('img-responsive').attr('src', card.image_url);
+                        var card_container = $('<div>').addClass('col-xs-2 card').append(image);
+                        $('.col-xs-10').append(card_container);
+                    });
+
+                    page = page + 1;
+                    link.data('page', page);
+                });
             });
         });
     </script>
@@ -66,12 +93,13 @@
             </div>
             <div class="col-xs-10">
                 {% for card in cards %}
-                    <div class="col-xs-2">
-                        <div class="card">
-                            <img src="{{ card.image_url }}" class="img-responsive"/>
-                        </div>
+                    <div class="col-xs-2 card">
+                        <img src="{{ card.image_url }}" class="img-responsive"/>
                     </div>
                 {% endfor %}
+            </div>
+            <div class="col-xs-12 text-center">
+                <a href="#" class="load-more" data-page="2">Load more</a>
             </div>
         </div>
     </div>

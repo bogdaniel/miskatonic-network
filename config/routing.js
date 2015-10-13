@@ -32,42 +32,24 @@ router.get('/', function (req, res) {
 });
 
 router.get('/cards', function (req, res) {
-    var results = [];
-    var filter = [];
-    var page = 1;
-
-    if (req.query.title) {
-        filter.title = req.query.title;
-    }
-
-    if (req.query.set) {
-        filter.set_id = req.query.set;
-    }
-
-    if (req.query.faction) {
-        filter.faction = req.query.faction;
-    }
-
-    if (req.query.type) {
-        filter.type = req.query.type;
-    }
-
-    if (req.query.page) {
-        page = req.query.page;
-    }
-
     return Promise.all([
         Set.query(function (qb) {
             qb.orderBy('parent', 'ASC').orderBy('released_at', 'ASC');
         }).fetchAll(),
-        Card.where(filter).query(function (qb) {
-            qb.orderBy('num', 'ASC').limit(24);
-        }).fetchAll()
+        Card.filter(req.query)
     ]).then(function (result) {
         res.render('cards.nunj', {
             sets: result[0].toJSON(),
             cards: result[1].toJSON()
         });
+    });
+});
+
+router.get('/ajax/cards', function (req, res) {
+    return Promise.try(function () {
+        return Card.filter(req.query);
+    }).then(function (cards) {
+        res.end(JSON.stringify(cards.toJSON()));
     });
 });
 
