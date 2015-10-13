@@ -4,6 +4,7 @@ var firewall = require('../security/firewall');
 var scrypt = require('scrypt-for-humans');
 var Promise = require('bluebird');
 var User = require('./model').User;
+var Set = require('./model').Set;
 var Card = require('./model').Card;
 
 router.post('/login', function (req, res) {
@@ -31,14 +32,39 @@ router.get('/', function (req, res) {
 });
 
 router.get('/cards', function (req, res) {
-    return Card.where({
-        setname: 'Core Set'
-    }).query(function (qb) {
-        qb.orderBy('num', 'ASC');
-    }).fetchAll().then(function (cards) {
-        res.render('cards.nunj', {
-            cards: cards.toJSON()
-        });
+    var results = [];
+    var filter = [];
+
+    if (req.query.title) {
+        filter['title'] = req.query.title;
+    }
+
+    if (req.query.set) {
+        filter['set_id'] = req.query.set;
+    }
+
+    if (req.query.faction) {
+        filter['faction'] = req.query.faction;
+    }
+
+    if (req.query.type) {
+        filter['type'] = req.query.type;
+    }
+
+    return Promise.try(function () {
+        return Set.query(function (qb) {
+            qb.orderBy('parent', 'ASC').orderBy('released_at', 'ASC');
+        }).fetchAll();
+    }).then(function (sets) {
+        results['sets'] = sets.toJSON();
+    }).then(function () {
+        return Card.where(filter).query(function (qb) {
+            qb.orderBy('num', 'ASC').limit(24);
+        }).fetchAll();
+    }).then(function (cards) {
+        results['cards'] = cards.toJSON();
+    }).then(function () {
+        res.render('cards.nunj', results);
     });
 });
 

@@ -94,19 +94,13 @@
                 e.preventDefault();
 
                 var room = $(this).attr('href').substring(1);
-                history.pushState(null, null, '?' + room);
+                window.history.replaceState(null, null, '?' + room);
 
                 $('a.channel').removeClass('active');
                 $(this).addClass('active');
 
                 joinRoom(username, room);
-
-                ok();
             });
-
-            var ok = function () {
-                console.log(window.location.href);
-            }
         });
     </script>
 {% endblock %}

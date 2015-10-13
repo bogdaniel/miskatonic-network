@@ -1,5 +1,24 @@
 {% extends "base.nunj" %}
 
+{% block js %}
+    <script type="text/javascript">
+        $(function () {
+            $('#set').on('change', function () {
+                var value = $(this).val();
+                window.history.replaceState(null, null, '?set=' + value);
+            });
+            $('#faction').on('change', function () {
+                var value = $(this).val();
+                window.history.replaceState(null, null, '?faction=' + value);
+            });
+            $('#type').on('change', function () {
+                var value = $(this).val();
+                window.history.replaceState(null, null, '?type=' + value);
+            });
+        });
+    </script>
+{% endblock %}
+
 {% block body %}
     <div class="container-fluid">
         <div class="row">
@@ -10,77 +29,11 @@
                     </div>
                     <div class="form-group">
                         <label for="setname">Set</label>
-                        <select class="form-control" name="setname" id="setname">
+                        <select class="form-control" name="set" id="set">
                             <option value="">All</option>
-                            <option value="core_set">Core Set 2008</option>
-                            <optgroup label="Forgotten Lore">
-                                <option value="">Spawn of Madness 2011</option>
-                                <option value="">Kingsport Dreams 2011</option>
-                                <option value="">Conspiracies of Chaos 2011</option>
-                                <option value="">Dunwich Denizens 2011</option>
-                                <option value="">The Mountains of Madness 2008</option>
-                                <option value="">Ancient Horrors 2008</option>
-                            </optgroup>
-                            <optgroup label="The Summons of the Deep">
-                                <option value="">Spawn of The Sleeper 2009</option>
-                                <option value="">The Horror Beneath the Surface 2009</option>
-                                <option value="">The Antediluvian Dream 2009</option>
-                                <option value="">The Terror of the Tides 2009</option>
-                                <option value="">The Thing from the Shore 2009</option>
-                                <option value="">The Path to Y'ha-nthlei 2009</option>
-                            </optgroup>
-                            <optgroup label="The Dreamlands">
-                                <option value="">Twilight Horror 2009</option>
-                                <option value="">In Memory of Day 2009</option>
-                                <option value="">In the Dread of Night 2009</option>
-                                <option value="">The Search for the Silver Key 2009</option>
-                                <option value="">Sleep of the Dead 2009</option>
-                                <option value="">Journey to Unknown Kadath 2010</option>
-                            </optgroup>
-                            <optgroup label="The Yuggoth Contract">
-                                <option value="">Whispers in the Dark 2010</option>
-                                <option value="">Murmurs of Evil 2010</option>
-                                <option value="">The Spoken Covenant 2010</option>
-                                <option value="">The Wailer Below 2010</option>
-                                <option value="">Screams from Within 2010</option>
-                                <option value="">The Cacophony 2010</option>
-                            </optgroup>
-                            <optgroup label="The Rituals of the Order">
-                                <option value="">The Twilight Beckons 2011</option>
-                                <option value="">Perilous Trials 2011</option>
-                                <option value="">Initiations of the Favored 2011</option>
-                                <option value="">Aspirations of Ascension 2011</option>
-                                <option value="">The Gleaming Spiral 2011</option>
-                                <option value="">That Which Consumes 2011</option>
-                            </optgroup>
-                            <optgroup label="Ancient Relics">
-                                <option value="">The Shifting Sands 2011</option>
-                                <option value="">Curse of the Jade Emperor 2011</option>
-                                <option value="">The Breathing Jungle 2011</option>
-                                <option value="">Never Night 2011</option>
-                                <option value="">Into Tartarus 2011</option>
-                                <option value="">Shadow of the Monolith 2012</option>
-                            </optgroup>
-                            <optgroup label="Revelations">
-                                <option value="">Written and Bound 2012</option>
-                                <option value="">Words of Power 2012</option>
-                                <option value="">Ebla Restored 2012</option>
-                                <option value="">Lost Rites 2012</option>
-                                <option value="">The Unspeakable Pages 2012</option>
-                                <option value="">Touched by the Abyss 2012</option>
-                            </optgroup>
-                            <optgroup label="Deluxe Expansions">
-                                <option value="">Secrets of Arkham 2010</option>
-                                <option value="">The Order of the Silver Twilight 2010</option>
-                                <option value="">Seekers of Knowledge 2012</option>
-                                <option value="">The Key and the Gate 2013</option>
-                                <option value="">Terror in Venice 2013</option>
-                                <option value="">Denizens of the Underworld 2014</option>
-                                <option value="">The Sleeper Below 2014</option>
-                                <option value="">For the Greater Good 2015</option>
-                                <option value="">The Thousand Young 2015</option>
-                                <option value="">The Mark of Madness 2015</option>
-                            </optgroup>
+                            {% for set in sets %}
+                                <option value="{{ set.id }}">{{ set.title }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
