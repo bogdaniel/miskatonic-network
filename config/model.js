@@ -18,9 +18,14 @@ exports.User = bookshelf.Model.extend({
     })
 });
 
+exports.Set = bookshelf.Model.extend({
+    tableName: 'sets'
+}, {
+    //
+});
+
 exports.Card = bookshelf.Model.extend({
-    tableName: 'cards',
-    hasTimestamps: true
+    tableName: 'cards'
 }, {
     //
 });
