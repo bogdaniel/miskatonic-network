@@ -26,3 +26,31 @@ parseUri.options = {
         loose: /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
     }
 };
+
+function replaceGet(url, getKey, getValue) {
+    var parsed = parseUri(url);
+    var uri = [];
+    var found = false;
+
+    for (var key in parsed.queryKey) {
+        if (parsed.queryKey.hasOwnProperty(key)) {
+            if (key == getKey) {
+                parsed.queryKey[key] = getValue;
+                found = true;
+            }
+
+            uri.push(key + '=' + parsed.queryKey[key]);
+        }
+    }
+
+    if (!found) {
+        uri.push(getKey + '=' + getValue);
+    }
+
+    if (uri) {
+        uri = uri.join('&');
+        uri = '?' + uri;
+    }
+
+    return parsed.path + uri;
+}

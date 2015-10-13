@@ -23,13 +23,11 @@
 
                 var link = $(this);
                 var page = link.data('page');
-                var filter = '';
-                if (parseUri(window.location.href).query) {
-                    filter = '&' + parseUri(window.location.href).query;
-                }
+                var url = replaceGet(window.location.href, 'page', page);
+                console.log(url);
 
                 $.ajax({
-                    url: '/ajax/cards?page=' + page + filter,
+                    url: '/ajax' + url,
                     dataType: 'json'
                 }).done(function (cards) {
                     $.each(cards, function (key, card) {
