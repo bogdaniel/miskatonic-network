@@ -1,6 +1,6 @@
-exports.up = function (knex) {
+exports.up = function (knex, Promise) {
     return knex.schema.createTable('cards', function (table) {
-        table.increments('id');
+        table.increments('id').primary();
         table.string('title').notNullable();
         table.string('descriptor');
         table.string('type').notNullable();
@@ -15,6 +15,7 @@ exports.up = function (knex) {
         table.string('text');
         table.string('flavor');
         table.string('setname').notNullable();
+        table.integer('set_id').unsigned().notNullable().references('sets.id');
         table.string('attribute');
         table.integer('steadfastcount');
         table.string('steadfastfaction');
@@ -31,9 +32,13 @@ exports.up = function (knex) {
         table.text('data').notNullable();
         table.datetime('created_at').notNullable();
         table.datetime('updated_at').notNullable();
+    }).then(function () {
+        console.log('cards table created.');
     });
 };
 
 exports.down = function (knex, Promise) {
-    return knex.schema.dropTableIfExists('cards');
+    return knex.schema.dropTable('cards').then(function () {
+        console.log('cards table dropped.');
+    });
 };
