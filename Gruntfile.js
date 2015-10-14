@@ -24,14 +24,20 @@ module.exports = function (grunt) {
                     'web/build/<%= pkg.name %>.min.js': [
                         'bower_components/jquery/dist/jquery.min.js',
                         'bower_components/bootstrap/dist/js/bootstrap.min.js',
-                        'resources/js/parseuri.js'
+                        'resources/js/*.js'
                     ],
                     'web/build/<%= pkg.name %>.min.css': [
                         'bower_components/bootstrap/dist/css/bootstrap.min.css',
                         'bower_components/bootstrap/dist/css/bootstrap-theme.min.css',
-                        'resources/css/style.css'
+                        'resources/css/*.css'
                     ]
                 }
+            }
+        },
+        watch: {
+            scripts: {
+                files: ['resources/js/*.js', 'resources/css/*.css'],
+                tasks: ['concat']
             }
         }
     });
@@ -39,6 +45,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.registerTask('default', ['jshint', 'uglify', 'concat']);
 
