@@ -12,6 +12,7 @@
     "grunt": "echo '=> grunting' && grunt default",
     "deploy": "echo '=> building' && npm install && npm run bower -s && npm run grunt -s"
   },
+  "script": "server.js",
   "dependencies": {
     "bluebird": "^2.10.2",
     "body-parser": "^1.14.1",
