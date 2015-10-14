@@ -13,7 +13,7 @@ var routing = require('./config/routing');
 var moment = require('moment');
 var redis = require('redis').createClient();
 
-app.use(express.static('web'));
+app.use(express.static(__dirname + '/web'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(session({
     secret: 'keyboard cat',
@@ -66,7 +66,7 @@ app.use(function (err, req, res, next) {
     res.status(500).send('Something broke!');
 });
 
-nunjucks.configure('views', {
+nunjucks.configure(__dirname + '/views', {
     express: app
 });
 
