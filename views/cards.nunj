@@ -7,19 +7,42 @@
                 var value = $(this).val();
                 var url = replaceGet(window.location.href, 'set', value);
                 window.history.replaceState(null, null, url);
+                loadCards();
             });
 
             $('#faction').on('change', function () {
                 var value = $(this).val();
                 var url = replaceGet(window.location.href, 'faction', value);
                 window.history.replaceState(null, null, url);
+                loadCards();
             });
 
             $('#type').on('change', function () {
                 var value = $(this).val();
                 var url = replaceGet(window.location.href, 'type', value);
                 window.history.replaceState(null, null, url);
+                loadCards();
             });
+
+            function loadCards() {
+                var parsed = parseUri(window.location.href);
+
+                $.ajax({
+                    url: '/ajax' + parsed.path + '?' + parsed.query,
+                    dataType: 'json'
+                }).done(function (cards) {
+                    var container = $('.card-container');
+                    container.empty();
+
+                    $.each(cards, function (key, card) {
+                        var image = $('<img>').addClass('img-responsive').attr('src', card.image_url);
+                        var card_container = $('<div>').addClass('col-xs-2 card').append(image);
+                        container.append(card_container);
+                    });
+
+                    $('.load-more').data('page', 2);
+                });
+            }
 
             $('.load-more').on('click', function (e) {
                 e.preventDefault();
@@ -36,7 +59,7 @@
                     $.each(cards, function (key, card) {
                         var image = $('<img>').addClass('img-responsive').attr('src', card.image_url);
                         var card_container = $('<div>').addClass('col-xs-2 card').append(image);
-                        $('.col-xs-10').append(card_container);
+                        $('.card-container').append(card_container);
                     });
 
                     page = page + 1;
@@ -92,7 +115,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-10">
+            <div class="col-xs-10 card-container">
                 {% for card in cards %}
                     <div class="col-xs-2 card">
                         <img src="{{ card.image_url }}" class="img-responsive"/>
