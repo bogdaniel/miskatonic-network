@@ -1,0 +1,32 @@
+{
+  "apps": [
+    {
+      "name": "miskatonic-network",
+      "script": "server.js"
+    }
+  ],
+  "deploy": {
+    "prod": {
+      "user": "user",
+      "host": "host",
+      "ref": "origin/master",
+      "repo": "git@github.com:repo.git",
+      "path": "/var/www/prod",
+      "post-deploy": "npm run deploy && pm2 startOrRestart ecosystem.json --env prod",
+      "env": {
+        "NODE_ENV": "prod"
+      }
+    },
+    "dev": {
+      "user": "user",
+      "host": "host",
+      "ref": "origin/master",
+      "repo": "git@github.com:repo.git",
+      "path": "/var/www/dev",
+      "post-deploy": "pm2 startOrRestart ecosystem.json --env dev",
+      "env": {
+        "NODE_ENV": "dev"
+      }
+    }
+  }
+}
