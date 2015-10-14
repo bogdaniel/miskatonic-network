@@ -3,4 +3,5 @@
 /node_modules/*
 /web/build/*
 !.gitkeep
+/ecosystem.json
 /env.json
