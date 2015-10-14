@@ -58,8 +58,14 @@
                 }).done(function (cards) {
                     $.each(cards, function (key, card) {
                         var image = $('<img>').addClass('img-responsive').attr('src', card.image_url);
-                        var card_container = $('<div>').addClass('col-xs-2 card').append(image);
-                        $('.card-container').append(card_container);
+                        var card = $('<div>').addClass('col-xs-2 card').append(image);
+                        var card_container = $('.card-container');
+                        card_container.append(card);
+
+                        if ((key + 1) % 6 == 0) {
+                            var clearfix = $('<div>').addClass('clearfix');
+                            card_container.append(clearfix);
+                        }
                     });
 
                     page = page + 1;
@@ -120,6 +126,9 @@
                     <div class="col-xs-2 card">
                         <img src="{{ card.image_url }}" class="img-responsive"/>
                     </div>
+                    {% if loop.index % 6 == 0 %}
+                        <div class="clearfix"></div>
+                    {% endif %}
                 {% endfor %}
             </div>
             <div class="col-xs-12 text-center">
