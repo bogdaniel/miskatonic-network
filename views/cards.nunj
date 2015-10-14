@@ -56,8 +56,8 @@
                     url: '/ajax' + url,
                     dataType: 'json'
                 }).done(function (cards) {
-                    $.each(cards, function (key, card) {
-                        var image = $('<img>').addClass('img-responsive').attr('src', card.image_url);
+                    $.each(cards, function (key, _card) {
+                        var image = $('<img>').addClass('img-responsive').attr('src', _card.image_url);
                         var card = $('<div>').addClass('col-xs-2 card').append(image);
                         var card_container = $('.card-container');
                         card_container.append(card);
