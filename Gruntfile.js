@@ -1,5 +1,4 @@
 module.exports = function (grunt) {
-
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         jshint: {
@@ -13,7 +12,7 @@ module.exports = function (grunt) {
             build: {
                 files: {
                     'web/build/script.js': [
-                        'resources/js/script.js'
+                        'resources/js/*.js'
                     ]
                 }
             }
@@ -24,7 +23,7 @@ module.exports = function (grunt) {
                     'web/build/<%= pkg.name %>.min.js': [
                         'bower_components/jquery/dist/jquery.min.js',
                         'bower_components/bootstrap/dist/js/bootstrap.min.js',
-                        'resources/js/*.js'
+                        'web/build/script.js'
                     ],
                     'web/build/<%= pkg.name %>.min.css': [
                         'bower_components/bootstrap/dist/css/bootstrap.min.css',
@@ -36,8 +35,8 @@ module.exports = function (grunt) {
         },
         watch: {
             scripts: {
-                files: ['resources/js/*.js', 'resources/css/*.css'],
-                tasks: ['concat']
+                files: ['resources/**/*'],
+                tasks: ['asset']
             }
         }
     });
@@ -47,6 +46,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
+    grunt.registerTask('asset', ['uglify', 'concat']);
     grunt.registerTask('default', ['jshint', 'uglify', 'concat']);
-
 };
