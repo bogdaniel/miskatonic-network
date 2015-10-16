@@ -89,7 +89,7 @@
                         <select class="form-control" name="set" id="set">
                             <option value="">All</option>
                             {% for set in sets %}
-                                <option value="{{ set.id }}">{{ set.title }}</option>
+                                <option value="{{ set.id }}"{% if 'set='~set.id in app.url %} selected="selected"{% endif %}>{{ set.title }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -97,26 +97,26 @@
                         <label for="faction">Faction</label>
                         <select class="form-control" name="faction" id="faction">
                             <option value="">All</option>
-                            <option value="cthulhu">Cthulhu</option>
-                            <option value="miskatonic_university">Miskatonic University</option>
-                            <option value="silver_twilight">Silver Twilight</option>
-                            <option value="the_agency">The Agency</option>
-                            <option value="hastur">Hastur</option>
-                            <option value="shub-niggurath">Shub-Niggurath</option>
-                            <option value="syndicate">Syndicate</option>
-                            <option value="yog-sothoth">Yog-Sothoth</option>
-                            <option value="neutral">Neutral</option>
+                            <option value="Cthulhu"{% if 'faction=Cthulhu' in app.url %} selected="selected"{% endif %}>Cthulhu</option>
+                            <option value="Miskatonic+University"{% if 'faction=Miskatonic+University' in app.url %} selected="selected"{% endif %}>Miskatonic University</option>
+                            <option value="Silver+Twilight"{% if 'faction=Silver+Twilight' in app.url %} selected="selected"{% endif %}>Silver Twilight</option>
+                            <option value="The+Agency"{% if 'faction=The+Agency' in app.url %} selected="selected"{% endif %}>The Agency</option>
+                            <option value="Hastur"{% if 'faction=Hastur' in app.url %} selected="selected"{% endif %}>Hastur</option>
+                            <option value="Shub-Niggurath"{% if 'faction=Shub-Niggurath' in app.url %} selected="selected"{% endif %}>Shub-Niggurath</option>
+                            <option value="Syndicate"{% if 'faction=Syndicate' in app.url %} selected="selected"{% endif %}>Syndicate</option>
+                            <option value="Yog-Sothoth"{% if 'faction=Yog-Sothoth' in app.url %} selected="selected"{% endif %}>Yog-Sothoth</option>
+                            <option value="Neutral"{% if 'faction=Neutral' in app.url %} selected="selected"{% endif %}>Neutral</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="type">Type</label>
                         <select class="form-control" name="type" id="type">
                             <option value="">All</option>
-                            <option value="character">Character</option>
-                            <option value="conspiracy">Conspiracy</option>
-                            <option value="event">Event</option>
-                            <option value="story">Story</option>
-                            <option value="support">Support</option>
+                            <option value="Character"{% if 'type=Character' in app.url %} selected="selected"{% endif %}>Character</option>
+                            <option value="Conspiracy"{% if 'type=Conspiracy' in app.url %} selected="selected"{% endif %}>Conspiracy</option>
+                            <option value="Event"{% if 'type=Event' in app.url %} selected="selected"{% endif %}>Event</option>
+                            <option value="Story"{% if 'type=Story' in app.url %} selected="selected"{% endif %}>Story</option>
+                            <option value="Support"{% if 'type=Support' in app.url %} selected="selected"{% endif %}>Support</option>
                         </select>
                     </div>
                 </div>

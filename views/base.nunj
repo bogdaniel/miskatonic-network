@@ -23,16 +23,16 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li{% if app.url == '/' %} class="active"{% endif %}><a href="/">Miskatonic Network</a></li>
-                <li{% if app.url == '/cards' %} class="active"{% endif %}><a href="/cards">Cards</a></li>
-                <li{% if app.url == '/deck-builder' %} class="active"{% endif %}><a href="/deck-builder">Deck Builder</a></li>
-                <li{% if app.url == '/play' %} class="active"{% endif %}><a href="/play">Play</a></li>
-                <li{% if app.url == '/about' %} class="active"{% endif %}><a href="/about">About</a></li>
+                <li{% if '/cards' in app.url %} class="active"{% endif %}><a href="/cards">Cards</a></li>
+                <li{% if '/deck-builder' in app.url %} class="active"{% endif %}><a href="/deck-builder">Deck Builder</a></li>
+                <li{% if '/play' in app.url %} class="active"{% endif %}><a href="/play">Play</a></li>
+                <li{% if '/about' in app.url %} class="active"{% endif %}><a href="/about">About</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="#">X Games</a></li>
                 {% if not app.user %}
-                    <li{% if app.url == '/registration' %} class="active"{% endif %}><a href="/registration">Registration</a></li>
-                    <li{% if app.url == '/login' %} class="active"{% endif %}><a href="/login">Login</a></li>
+                    <li{% if '/registration' in app.url %} class="active"{% endif %}><a href="/registration">Registration</a></li>
+                    <li{% if '/login' in app.url %} class="active"{% endif %}><a href="/login">Login</a></li>
                 {% endif %}
                 {% if app.user %}
                     <li class="dropdown">
@@ -41,9 +41,9 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li{% if app.url == '/settings' %} class="active"{% endif %}><a href="/settings">Settings</a></li>
+                            <li{% if '/settings' in app.url %} class="active"{% endif %}><a href="/settings">Settings</a></li>
                             <li role="separator" class="divider"></li>
-                            <li{% if app.url == '/logout' %} class="active"{% endif %}><a href="/logout">Logout</a></li>
+                            <li><a href="/logout">Logout</a></li>
                         </ul>
                     </li>
                 {% endif %}
