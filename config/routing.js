@@ -61,7 +61,7 @@ router.get('/play', firewall.restrict, function (req, res) {
     res.render('play.nunj');
 });
 
-router.get('/about', firewall.restrict, function (req, res) {
+router.get('/about', function (req, res) {
     res.render('about.nunj');
 });
 
