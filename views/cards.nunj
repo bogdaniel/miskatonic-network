@@ -38,6 +38,11 @@
                         var image = $('<img>').addClass('img-responsive').attr('src', card.image_url);
                         var card_container = $('<div>').addClass('col-xs-2 card').append(image);
                         container.append(card_container);
+
+                        if ((key + 1) % 6 == 0) {
+                            var clearfix = $('<div>').addClass('clearfix');
+                            container.append(clearfix);
+                        }
                     });
 
                     $('.load-more').data('page', 2);
@@ -58,13 +63,13 @@
                 }).done(function (cards) {
                     $.each(cards, function (key, _card) {
                         var image = $('<img>').addClass('img-responsive').attr('src', _card.image_url);
-                        var card = $('<div>').addClass('col-xs-2 card').append(image);
-                        var card_container = $('.card-container');
-                        card_container.append(card);
+                        var card_container = $('<div>').addClass('col-xs-2 card').append(image);
+                        var container = $('.card-container');
+                        container.append(card_container);
 
                         if ((key + 1) % 6 == 0) {
                             var clearfix = $('<div>').addClass('clearfix');
-                            card_container.append(clearfix);
+                            container.append(clearfix);
                         }
                     });
 
