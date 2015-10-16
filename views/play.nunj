@@ -1,9 +1,25 @@
 {% extends "base.nunj" %}
 
 {% block body %}
-    <div class="container">
-        <div class="row">
-            <h1>Play</h1>
+    <div class="container-fluid">
+        <div class="row row-40">
+            <div class="col-20x40 pull-right">
+                <img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=350%C3%97150&w=350&h=350" class="img-responsive">
+            </div>
+            <div class="col-20x40 pull-left">Bal</div>
+            <div class="col-60x25 pull-left">Felső</div>
+            <div class="col-60x15 pull-left">Alsó</div>
+        </div>
+        <div class="row row-20">
+            <div class="col-100x20 text-center">
+                <img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=350%C3%97150&w=350&h=350" class="img-responsive">
+            </div>
+        </div>
+        <div class="row row-40">
+            <div class="col-20x40 pull-right">Jobb</div>
+            <div class="col-20x40 pull-left">Bal</div>
+            <div class="col-60x15 pull-left">Alsó</div>
+            <div class="col-60x25 pull-left">Felső</div>
         </div>
     </div>
 {% endblock %}
