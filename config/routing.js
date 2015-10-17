@@ -57,7 +57,7 @@ router.get('/deck-builder', firewall.restrict, function (req, res) {
     res.render('deck-builder.nunj');
 });
 
-router.get('/play', firewall.restrict, function (req, res) {
+router.get('/play', function (req, res) {
     res.render('play.nunj');
 });
 
