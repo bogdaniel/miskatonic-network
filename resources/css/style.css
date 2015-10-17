@@ -28,18 +28,25 @@ body {
     height: 70px;
 }
 
+.card-domain {
+    width: 100px;
+    height: 70px;
+    z-index: 1;
+    margin-right: -5px;
+}
+
 .card-resource {
     transform: rotate(-90deg);
     margin-top: -15px;
     margin-bottom: -20px;
+    margin-left: -70px;
 }
 
 .domain {
     display: flex;
-}
-
-.domain .card:not(:last-child) {
-    margin-right: -70px;
+    flex-flow: row-reverse nowrap;
+    float: left;
+    clear: left;
 }
 
 .gameboard {
