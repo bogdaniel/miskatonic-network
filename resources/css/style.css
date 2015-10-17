@@ -24,8 +24,9 @@ body {
 }
 
 .card-exhausted {
-    width: 100px;
-    height: 70px;
+    width: 70px;
+    height: 100px;
+    transform: rotate(-90deg);
 }
 
 .card-domain {
@@ -55,6 +56,7 @@ body {
 .gameboard {
     display: flex;
     flex: 1 1 0;
+    padding: 0 10px;
 }
 
 .panel-main {
@@ -64,11 +66,12 @@ body {
 
 .panel-first {
     justify-content: space-between;
+    margin-right: 30px;
 }
 
 .panel-second {
-    display: flex;
     flex: 1 1 0;
+    justify-content: space-between;
 }
 
 .section-deck {
@@ -81,4 +84,16 @@ body {
 
 .panel-side {
     width: 250px;
+}
+
+.highlight {
+    cursor: pointer;
+}
+
+.hand {
+    display: flex;
+}
+
+.board {
+    display: flex;
 }

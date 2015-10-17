@@ -4,7 +4,7 @@
     <div class="gameboard">
         <div class="panel-main">
             <div class="vbox panel-first">
-                <div class="panel-enemy">
+                <div>
                     <div class="section-deck">
                         <div class="card">
                             <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
@@ -31,7 +31,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="panel-player">
+                <div>
                     <div class="vbox section-domain">
                         <div class="domain">
                             <div class="card card-resource">
@@ -65,14 +65,104 @@
                     </div>
                 </div>
             </div>
-            <div class="panel-second">
-                asdf
+            <div class="vbox panel-second">
+                <div class="panel-enemy">
+                    <div class="hand hand-enemy">
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                    </div>
+                    <div class="board board-enemy">
+                        <div class="card card-exhausted">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                    </div>
+                    <div class="commit-enemy">
+                        enemy commit
+                    </div>
+                </div>
+                <div class="panel-story">
+                    story cards
+                </div>
+                <div class="panel-player">
+                    <div class="commit-player">
+                        player commit
+                    </div>
+                    <div class="board board-player">
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                    </div>
+                    <div class="hand hand-player">
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                        <div class="card">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="panel-side">
-            <div class="highlight">
-                <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
-            </div>
+            <div class="highlight"></div>
             <div class="chat">
                 chat
             </div>
