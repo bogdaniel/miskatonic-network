@@ -15,17 +15,17 @@
                     </div>
                     <div class="vbox section-domain">
                         <div class="domain">
-                            <div class="card card-domain">
+                            <div class="card-domain">
                                 <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
                             </div>
                         </div>
                         <div class="domain">
-                            <div class="card card-domain">
+                            <div class="card-domain">
                                 <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
                             </div>
                         </div>
                         <div class="domain">
-                            <div class="card card-domain">
+                            <div class="card-domain">
                                 <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
                             </div>
                         </div>
@@ -34,23 +34,23 @@
                 <div>
                     <div class="vbox section-domain">
                         <div class="domain">
-                            <div class="card card-resource">
+                            <div class="card-resource">
                                 <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
                             </div>
-                            <div class="card card-resource">
+                            <div class="card-resource">
                                 <img src="http://www.cardgamedb.com/forums/uploads/coc/uroborus-wab.jpg" class="img-responsive"/>
                             </div>
-                            <div class="card card-domain">
+                            <div class="card-domain">
                                 <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
                             </div>
                         </div>
                         <div class="domain">
-                            <div class="card card-domain">
+                            <div class="card-domain">
                                 <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
                             </div>
                         </div>
                         <div class="domain">
-                            <div class="card card-domain">
+                            <div class="card-domain">
                                 <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
                             </div>
                         </div>
@@ -88,7 +88,7 @@
                         </div>
                     </div>
                     <div class="board board-enemy">
-                        <div class="card card-exhausted">
+                        <div class="card-exhausted">
                             <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
                         </div>
                         <div class="card">
@@ -97,7 +97,7 @@
                         <div class="card">
                             <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
                         </div>
-                        <div class="card">
+                        <div class="card-exhausted">
                             <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
                         </div>
                         <div class="card">
@@ -106,21 +106,137 @@
                         <div class="card">
                             <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
                         </div>
-                    </div>
-                    <div class="commit-enemy">
-                        enemy commit
                     </div>
                 </div>
-                <div class="panel-story">
-                    story cards
+                <div class="panel-center">
+                    <div class="panel-commit">
+                        <div class="vbox commit commit-enemy">
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                        </div>
+                        <div class="vbox commit commit-enemy">
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                        </div>
+                        <div class="vbox commit commit-enemy">
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                        </div>
+                        <div class="vbox commit commit-enemy">
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                        </div>
+                        <div class="vbox commit commit-enemy">
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                        </div>
+
+                        <div class="panel-story">
+                            <div class="card-story">
+                                <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
+                            </div>
+                        </div>
+                        <div class="panel-story">
+                            <div class="card-story">
+                                <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
+                            </div>
+                        </div>
+                        <div class="panel-story">
+                            <div class="card-story">
+                                <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
+                            </div>
+                        </div>
+                        <div class="panel-story">
+                            <div class="card-story">
+                                <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
+                            </div>
+                        </div>
+                        <div class="panel-story">
+                            <div class="card-story">
+                                <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
+                            </div>
+                        </div>
+
+                        <div class="vbox commit commit-player">
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                        </div>
+                        <div class="vbox commit commit-player">
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                        </div>
+                        <div class="vbox commit commit-player">
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                        </div>
+                        <div class="vbox commit commit-player">
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                        </div>
+                        <div class="vbox commit commit-player">
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                            <div class="card-exhausted">
+                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="card-storydeck">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                        </div>
+                    </div>
                 </div>
                 <div class="panel-player">
-                    <div class="commit-player">
-                        player commit
-                    </div>
                     <div class="board board-player">
-                        <div class="card">
-                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        <div class="card-exhausted">
+                            <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
                         </div>
                         <div class="card">
                             <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
@@ -128,7 +244,7 @@
                         <div class="card">
                             <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
                         </div>
-                        <div class="card">
+                        <div class="card-exhausted">
                             <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
                         </div>
                         <div class="card">

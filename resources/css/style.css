@@ -17,7 +17,6 @@ body {
 }
 
 .card {
-    display: block;
     width: 70px;
     height: 100px;
     margin: 0 10px 10px 0;
@@ -27,6 +26,7 @@ body {
     width: 70px;
     height: 100px;
     transform: rotate(-90deg);
+    margin: -15px 25px -5px 15px;
 }
 
 .card-domain {
@@ -34,17 +34,31 @@ body {
     width: 100px;
     height: 70px;
     z-index: 1;
-    margin-right: 0;
+    margin-bottom: 10px;
 }
 
 .card-resource {
     position: relative;
+    width: 70px;
+    height: 100px;
     left: -15px;
     transform: rotate(-90deg);
     margin-top: -15px;
     margin-left: -60px;
     margin-bottom: -20px;
     margin-right: 0;
+}
+
+.card-story {
+    width: 100px;
+    height: 70px;
+    margin: 0 10px 10px 0;
+}
+
+.card-storydeck {
+    width: 70px;
+    height: 100px;
+    margin: 0 10px 10px 0;
 }
 
 .domain {
@@ -90,10 +104,31 @@ body {
     cursor: pointer;
 }
 
+.panel-center {
+    display: flex;
+}
+
+.panel-commit {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.panel-commit > div {
+    flex: 1 1 20%;
+}
+
+.panel-story {
+    display: flex;
+}
+
 .hand {
     display: flex;
 }
 
 .board {
     display: flex;
+}
+
+.commit-enemy {
+    justify-content: flex-end;
 }
