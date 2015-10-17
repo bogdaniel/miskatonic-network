@@ -37,11 +37,11 @@
                             <div class="card card-exhausted">
                                 <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
                             </div>
-                            {#<div class="card card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
-                            </div>#}
                             <div class="card card-resource">
                                 <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                            </div>
+                            <div class="card card-resource">
+                                <img src="http://www.cardgamedb.com/forums/uploads/coc/uroborus-wab.jpg" class="img-responsive"/>
                             </div>
                         </div>
                         <div class="domain">
