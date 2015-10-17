@@ -16,6 +16,78 @@ body {
     flex-direction: column;
 }
 
+.gameboard {
+    display: flex;
+    flex: 1 1 0;
+    justify-content: space-between;
+    padding: 0 10px;
+}
+
+.col-first {
+    justify-content: space-between;
+    margin-right: 30px;
+}
+
+.col-second {
+    flex: 1 1 0;
+    justify-content: space-between;
+}
+
+.row-played {
+    display: flex;
+}
+
+.row-committed {
+    display: flex;
+}
+
+.col-committed {
+    width: 110px;
+}
+
+.row-story {
+    display: flex;
+}
+
+.col-third {
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.row-enemy {
+    display: flex;
+    justify-content: space-between;
+}
+
+.row-player {
+    display: flex;
+    justify-content: space-between;
+}
+
+.row-hand {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.row-hand > div {
+    float: left;
+}
+
+.col-fourth {
+    justify-content: space-between;
+    width: 250px;
+}
+
+
+
+
+
+
+
+
+
+
+
 .card {
     width: 70px;
     height: 100px;
@@ -67,89 +139,12 @@ body {
     margin: 0 10px 10px 0;
 }
 
-.story-deck {
-    width: 70px;
-    height: 100px;
-    margin: 0 10px 10px 0;
-    align-self: center;
-}
-
 .domain {
     display: flex;
     flex-flow: row-reverse nowrap;
     justify-content: flex-end;
 }
 
-.gameboard {
-    display: flex;
-    flex: 1 1 0;
-    padding: 0 10px;
-}
-
-.panel-main {
-    display: flex;
-    flex: 1 1 0;
-}
-
-.panel-first {
-    justify-content: space-between;
-    margin-right: 30px;
-}
-
-.panel-second {
-    flex: 1 1 0;
-    justify-content: space-between;
-}
-
-.section-deck {
-    display: flex;
-}
-
-.section-domain {
-    display: flex;
-}
-
-.panel-side {
-    width: 250px;
-}
-
 .highlight {
-    cursor: pointer;
-}
-
-.panel-center {
-    display: flex;
-}
-
-.panel-commit {
-    display: flex;
-    flex-flow: row wrap;
-}
-
-.panel-commit > div {
-    flex: 1 1 20%;
-}
-
-.panel-story {
-    display: flex;
-}
-
-.panel-story-deck {
-    display: flex;
-}
-
-.hand {
-    display: flex;
-}
-
-.board {
-    display: flex;
-}
-
-.commit-enemy {
-    justify-content: flex-end;
-}
-
-.discard-pile-enemy, .discard-pile-player {
     cursor: pointer;
 }

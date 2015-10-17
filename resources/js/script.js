@@ -5,9 +5,9 @@ $(function () {
         var src = $(this).find('img').attr('src');
         var img = $('<img>').addClass('img-responsive').attr('src', src);
         $('.highlight').html(img);
-    }).on('mouseout', '.card', function () {
+    }).on('mouseout', '.card, .card-exhausted, .card-story, .card-resource', function () {
         fadeHighlight = setTimeout(function () {
-            $('.highlight img').fadeOut(400, function() {
+            $('.highlight img').fadeOut(400, function () {
                 $('.highlight').empty();
             });
         }, 10000);
