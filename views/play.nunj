@@ -114,24 +114,8 @@
                             <div class="card-exhausted">
                                 <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
                             </div>
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
                         </div>
-                        <div class="vbox commit commit-enemy">
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
-                        </div>
+                        <div class="vbox commit commit-enemy"></div>
                         <div class="vbox commit commit-enemy">
                             <div class="card-exhausted">
                                 <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
@@ -140,22 +124,8 @@
                                 <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
                             </div>
                         </div>
-                        <div class="vbox commit commit-enemy">
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
-                        </div>
-                        <div class="vbox commit commit-enemy">
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
-                        </div>
+                        <div class="vbox commit commit-enemy"></div>
+                        <div class="vbox commit commit-enemy"></div>
 
                         <div class="panel-story">
                             <div class="card-story">
@@ -187,9 +157,6 @@
                             <div class="card-exhausted">
                                 <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
                             </div>
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
                         </div>
                         <div class="vbox commit commit-player">
                             <div class="card-exhausted">
@@ -198,36 +165,12 @@
                             <div class="card-exhausted">
                                 <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
                             </div>
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
                         </div>
-                        <div class="vbox commit commit-player">
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
-                        </div>
-                        <div class="vbox commit commit-player">
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
-                        </div>
-                        <div class="vbox commit commit-player">
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
-                            <div class="card-exhausted">
-                                <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                            </div>
-                        </div>
+                        <div class="vbox commit commit-player"></div>
+                        <div class="vbox commit commit-player"></div>
+                        <div class="vbox commit commit-player"></div>
                     </div>
-                    <div>
+                    <div class="panel-storydeck">
                         <div class="card-storydeck">
                             <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
                         </div>
