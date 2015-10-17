@@ -29,24 +29,27 @@ body {
 }
 
 .card-domain {
+    position: relative;
     width: 100px;
     height: 70px;
     z-index: 1;
-    margin-right: -5px;
+    margin-right: 0;
 }
 
 .card-resource {
+    position: relative;
+    left: -15px;
     transform: rotate(-90deg);
     margin-top: -15px;
+    margin-left: -60px;
     margin-bottom: -20px;
-    margin-left: -70px;
+    margin-right: 0;
 }
 
 .domain {
     display: flex;
     flex-flow: row-reverse nowrap;
-    float: left;
-    clear: left;
+    justify-content: flex-end;
 }
 
 .gameboard {
