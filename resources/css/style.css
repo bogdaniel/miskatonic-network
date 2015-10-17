@@ -1,8 +1,6 @@
 html, body {
-    display: block;
     width: 100%;
     height: 100%;
-    padding: 0;
     margin: 0;
 }
 
@@ -13,74 +11,64 @@ body {
     background-position: top center;
 }
 
+.vbox {
+    display: flex;
+    flex-direction: column;
+}
+
 .card {
-    margin-bottom: 12px;
-}
-
-.col-20x40 {
-    width: 20%;
-    background-color: blue;
     display: block;
+    width: 70px;
+    height: 100px;
+    margin: 0 10px 10px 0;
 }
 
-.col-60x15 {
-    width: 60%;
-    background-color: green;
-    display: block;
+.card-exhausted {
+    width: 100px;
+    height: 70px;
 }
 
-.col-60x25 {
-    width: 60%;
-    background-color: black;
-    display: block;
+.card-resource {
+    transform: rotate(-90deg);
+    margin-top: -15px;
+    margin-bottom: -20px;
 }
 
-.row-40 {
-    height: 40%;
-    min-height: 40%;
-    max-height: 40%;
+.domain {
+    display: flex;
 }
 
-.row-20 {
-    height: 20%;
-    min-height: 20%;
-    max-height: 20%;
+.domain .card:not(:last-child) {
+    margin-right: -70px;
 }
 
-.row-40 .col-20x40 {
-    height: 100%;
-    min-height: 100%;
+.gameboard {
+    display: flex;
+    flex: 1 1 0;
 }
 
-.row-40 .col-60x15 {
-    height: 37.5%;
-    min-height: 37.5%;
-
+.panel-main {
+    display: flex;
+    flex: 1 1 0;
 }
 
-.row-40 .col-60x25 {
-    height: 62.5%;
-    min-height: 62.5%;
+.panel-first {
+    justify-content: space-between;
 }
 
-.row-20 .col-100x20 {
-    margin: 0 auto;
-    width: 60%;
-    height: 100%;
-    min-height: 100%;
+.panel-second {
+    display: flex;
+    flex: 1 1 0;
 }
 
-.container-fluid {
-    height: calc(100% - 60px);
+.section-deck {
+    display: flex;
 }
 
-.img-responsive {
-    display: inline-block;
-    max-height: 100%;
+.section-domain {
+    display: flex;
 }
 
-.navbar {
-    margin-bottom: 10px;
-    border: 0;
-    border-radius: 0;
+.panel-side {
+    width: 250px;
 }

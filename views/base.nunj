@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/build/miskatonic-network.min.css"/>
     {% block css %}{% endblock %}
 </head>
-<body>
+<body class="vbox">
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
         <div class="navbar-header">
