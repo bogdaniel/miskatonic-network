@@ -22,6 +22,18 @@ body {
     margin: 0 10px 10px 0;
 }
 
+.card-deck {
+    width: 70px;
+    height: 100px;
+    margin: 0 10px 10px 0;
+}
+
+.card-back {
+    width: 70px;
+    height: 100px;
+    margin: 0 10px 10px 0;
+}
+
 .card-exhausted {
     width: 70px;
     height: 100px;
@@ -55,7 +67,7 @@ body {
     margin: 0 10px 10px 0;
 }
 
-.card-storydeck {
+.story-deck {
     width: 70px;
     height: 100px;
     margin: 0 10px 10px 0;
@@ -122,7 +134,7 @@ body {
     display: flex;
 }
 
-.panel-storydeck {
+.panel-story-deck {
     display: flex;
 }
 
@@ -136,4 +148,8 @@ body {
 
 .commit-enemy {
     justify-content: flex-end;
+}
+
+.discard-pile-enemy, .discard-pile-player {
+    cursor: pointer;
 }

@@ -1,6 +1,6 @@
 $(function () {
     var fadeHighlight;
-    $(document).on('mouseenter', '.card', function () {
+    $(document).on('mouseenter', '.card, .card-exhausted, .card-story, .card-resource', function () {
         clearTimeout(fadeHighlight);
         var src = $(this).find('img').attr('src');
         var img = $('<img>').addClass('img-responsive').attr('src', src);

@@ -6,10 +6,10 @@
             <div class="vbox panel-first">
                 <div>
                     <div class="section-deck">
-                        <div class="card">
-                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        <div class="draw-deck-enemy card-back">
+                            <img src="/images/cards/card-back.jpg" class="img-responsive"/>
                         </div>
-                        <div class="card">
+                        <div class="discard-pile-enemy card-deck">
                             <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
                         </div>
                     </div>
@@ -56,10 +56,10 @@
                         </div>
                     </div>
                     <div class="section-deck">
-                        <div class="card">
-                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        <div class="draw-deck-player card-back">
+                            <img src="/images/cards/card-back.jpg" class="img-responsive"/>
                         </div>
-                        <div class="card">
+                        <div class="discard-pile-player card-deck">
                             <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
                         </div>
                     </div>
@@ -68,23 +68,23 @@
             <div class="vbox panel-second">
                 <div class="panel-enemy">
                     <div class="hand hand-enemy">
-                        <div class="card">
-                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        <div class="card-back">
+                            <img src="/images/cards/card-back.jpg" class="img-responsive"/>
                         </div>
-                        <div class="card">
-                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        <div class="card-back">
+                            <img src="/images/cards/card-back.jpg" class="img-responsive"/>
                         </div>
-                        <div class="card">
-                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        <div class="card-back">
+                            <img src="/images/cards/card-back.jpg" class="img-responsive"/>
                         </div>
-                        <div class="card">
-                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        <div class="card-back">
+                            <img src="/images/cards/card-back.jpg" class="img-responsive"/>
                         </div>
-                        <div class="card">
-                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        <div class="card-back">
+                            <img src="/images/cards/card-back.jpg" class="img-responsive"/>
                         </div>
-                        <div class="card">
-                            <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
+                        <div class="card-back">
+                            <img src="/images/cards/card-back.jpg" class="img-responsive"/>
                         </div>
                     </div>
                     <div class="board board-enemy">
@@ -134,22 +134,22 @@
                         </div>
                         <div class="panel-story">
                             <div class="card-story">
-                                <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
+                                <img src="http://www.cardgamedb.com/forums/uploads/coc/the-9th-plague-tss.jpg" class="img-responsive"/>
                             </div>
                         </div>
                         <div class="panel-story">
                             <div class="card-story">
-                                <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
+                                <img src="http://www.cardgamedb.com/forums/uploads/coc/the-second-dragon-tss.jpg" class="img-responsive"/>
                             </div>
                         </div>
                         <div class="panel-story">
                             <div class="card-story">
-                                <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
+                                <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_40_164607.jpg" class="img-responsive"/>
                             </div>
                         </div>
                         <div class="panel-story">
                             <div class="card-story">
-                                <img src="http://www.cardgamedb.com/forums/uploads/coc/the-opened-door-tss.jpg" class="img-responsive"/>
+                                <img src="http://www.cardgamedb.com/forums/uploads/coc/before-the-fast-tiv.jpg" class="img-responsive"/>
                             </div>
                         </div>
 
@@ -170,9 +170,9 @@
                         <div class="vbox commit commit-player"></div>
                         <div class="vbox commit commit-player"></div>
                     </div>
-                    <div class="panel-storydeck">
-                        <div class="card-storydeck">
-                            <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                    <div class="panel-story-deck">
+                        <div class="story-deck">
+                            <img src="/images/cards/card-back.jpg" class="img-responsive"/>
                         </div>
                     </div>
                 </div>
