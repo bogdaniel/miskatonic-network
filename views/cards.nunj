@@ -36,7 +36,7 @@
 
                     $.each(cards, function (key, card) {
                         var image = $('<img>').addClass('img-responsive').attr('src', card.image_url);
-                        var card_container = $('<div>').addClass('col-xs-2 card').append(image);
+                        var card_container = $('<div>').addClass('col-xs-2').append(image);
                         container.append(card_container);
 
                         if ((key + 1) % 6 == 0) {
@@ -63,7 +63,7 @@
                 }).done(function (cards) {
                     $.each(cards, function (key, _card) {
                         var image = $('<img>').addClass('img-responsive').attr('src', _card.image_url);
-                        var card_container = $('<div>').addClass('col-xs-2 card').append(image);
+                        var card_container = $('<div>').addClass('col-xs-2').append(image);
                         var container = $('.card-container');
                         container.append(card_container);
 
@@ -128,7 +128,7 @@
             </div>
             <div class="col-xs-10 card-container">
                 {% for card in cards %}
-                    <div class="col-xs-2 card">
+                    <div class="col-xs-2">
                         <img src="{{ card.image_url }}" class="img-responsive"/>
                     </div>
                     {% if loop.index % 6 == 0 %}
