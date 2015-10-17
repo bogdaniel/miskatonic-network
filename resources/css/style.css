@@ -64,6 +64,8 @@ body {
 }
 
 .row-20 .col-100x20 {
+    margin: 0 auto;
+    width: 60%;
     height: 100%;
     min-height: 100%;
 }
