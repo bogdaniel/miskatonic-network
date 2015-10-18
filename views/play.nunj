@@ -133,9 +133,9 @@
                 </div>
             </div>
             <div class="row-hand">
-                {% for playerCard in playerCards %}
+                {% for card in playerHand %}
                     <div class="card">
-                        <img src="/images/cards/{{ playerCard.image }}" class="img-responsive"/>
+                        <img src="/images/cards/{{ card.image }}" class="img-responsive"/>
                     </div>
                 {% endfor %}
             </div>

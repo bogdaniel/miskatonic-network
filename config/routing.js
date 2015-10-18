@@ -3,6 +3,7 @@ var router = expressPromiseRouter();
 var firewall = require('../security/firewall');
 var scrypt = require('scrypt-for-humans');
 var redis = require('redis').createClient();
+var _ = require('underscore');
 var math = require('../libs/math');
 var Promise = require('bluebird');
 var User = require('./model').User;
@@ -72,29 +73,75 @@ router.get('/play', function (req, res) {
         }).fetchAll()
     ]).then(function (result) {
         var i;
+        var gameId = 1;
+        var playerId = 1;
+        var enemyId = 2;
+        var rStoryDeck = 'storyDeck:' + gameId;
+        var rStoryCards = 'storyCards:' + gameId;
+        var rPlayerDeck = 'deck:' + gameId + ':' + playerId;
+        var rPlayerHand = 'hand:' + gameId + ':' + playerId;
+        var rEnemyDeck = 'deck:' + gameId + ':' + enemyId;
+        var rEnemyHand = 'hand:' + gameId + ':' + enemyId;
 
         var storyCards = [];
         var storyDeck = result[0].toJSON();
+
         for (i in math.randomCards(3, storyDeck.length)) {
             storyCards.push(storyDeck[i]);
-        }
-        for (i in math.randomCards(3, storyDeck.length)) {
             storyDeck.splice(i, 1);
         }
 
-        var playerCards = [];
+        storyDeck.forEach(function (storyCard) {
+            redis.sadd(rStoryDeck, storyCard.id);
+        });
+
+        storyCards.forEach(function (storyCard) {
+            redis.sadd(rStoryCards, storyCard.id);
+        });
+
+        var playerHand = [];
         var playerDeck = result[1].toJSON();
+
         for (i in math.randomCards(8, playerDeck.length)) {
-            playerCards.push(playerDeck[i]);
-        }
-        for (i in math.randomCards(3, playerDeck.length)) {
+            playerHand.push(playerDeck[i]);
             playerDeck.splice(i, 1);
         }
 
+        playerDeck.forEach(function (card) {
+            redis.sadd(rPlayerDeck, card.id);
+        });
+
+        playerHand.forEach(function (card) {
+            redis.sadd(rPlayerHand, card.id);
+        });
+
+        var enemyHand = [];
+        var enemyDeck = result[2].toJSON();
+
+        for (i in math.randomCards(8, enemyDeck.length)) {
+            enemyHand.push(enemyDeck[i]);
+            enemyDeck.splice(i, 1);
+        }
+
+        enemyDeck.forEach(function (card) {
+            redis.sadd(rEnemyDeck, card.id);
+        });
+
+        enemyHand.forEach(function (card) {
+            redis.sadd(rEnemyHand, card.id);
+        });
+
         res.render('play.nunj', {
             storyCards: storyCards,
-            playerCards: playerCards
+            playerHand: playerHand
         });
+
+        redis.del(rStoryDeck);
+        redis.del(rStoryCards);
+        redis.del(rPlayerDeck);
+        redis.del(rPlayerHand);
+        redis.del(rEnemyDeck);
+        redis.del(rEnemyHand);
     });
 });
 
