@@ -67,6 +67,8 @@ body {
 .row-hand {
     display: flex;
     flex-wrap: wrap;
+    max-width: 350px;
+    justify-content: flex-end;
 }
 
 .row-hand > div {
