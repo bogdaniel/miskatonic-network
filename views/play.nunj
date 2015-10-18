@@ -6,17 +6,17 @@
             <div class="vbox row-domain">
                 <div class="domain">
                     <div class="card-domain">
-                        <img src="/images/cards/domain1.jpg" class="img-responsive"/>
+                        <img src="/images/cards/back/domain1.jpg" class="img-responsive"/>
                     </div>
                 </div>
                 <div class="domain">
                     <div class="card-domain">
-                        <img src="/images/cards/domain2.jpg" class="img-responsive"/>
+                        <img src="/images/cards/back/domain2.jpg" class="img-responsive"/>
                     </div>
                 </div>
                 <div class="domain">
                     <div class="card-domain">
-                        <img src="/images/cards/domain3.jpg" class="img-responsive"/>
+                        <img src="/images/cards/back/domain3.jpg" class="img-responsive"/>
                     </div>
                 </div>
             </div>
@@ -29,17 +29,17 @@
                         <img src="http://www.cardgamedb.com/forums/uploads/coc/uroborus-wab.jpg" class="img-responsive"/>
                     </div>
                     <div class="card-domain">
-                        <img src="/images/cards/domain3.jpg" class="img-responsive"/>
+                        <img src="/images/cards/back/domain3.jpg" class="img-responsive"/>
                     </div>
                 </div>
                 <div class="domain">
                     <div class="card-domain">
-                        <img src="/images/cards/domain2.jpg" class="img-responsive"/>
+                        <img src="/images/cards/back/domain2.jpg" class="img-responsive"/>
                     </div>
                 </div>
                 <div class="domain">
                     <div class="card-domain">
-                        <img src="/images/cards/domain1.jpg" class="img-responsive"/>
+                        <img src="/images/cards/back/domain1.jpg" class="img-responsive"/>
                     </div>
                 </div>
             </div>
@@ -73,17 +73,14 @@
                             <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
                         </div>
                     </div>
+                    <div class="col-committed"></div>
                 </div>
                 <div class="row-story">
-                    <div class="card-story">
-                        <img src="http://www.cardgamedb.com/forums/uploads/coc/the-second-dragon-tss.jpg" class="img-responsive"/>
-                    </div>
-                    <div class="card-story">
-                        <img src="http://www.cardgamedb.com/forums/uploads/coc/the-second-dragon-tss.jpg" class="img-responsive"/>
-                    </div>
-                    <div class="card-story">
-                        <img src="http://www.cardgamedb.com/forums/uploads/coc/the-second-dragon-tss.jpg" class="img-responsive"/>
-                    </div>
+                    {% for storyCard in storyCards %}
+                        <div class="card-story">
+                            <img src="/images/cards/{{ storyCard.image }}" class="img-responsive"/>
+                        </div>
+                    {% endfor %}
                 </div>
                 <div class="row-committed">
                     <div class="col-committed">
@@ -99,6 +96,7 @@
                             <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
                         </div>
                     </div>
+                    <div class="col-committed"></div>
                 </div>
             </div>
             <div class="row-played">
@@ -125,44 +123,25 @@
         <div class="vbox col-third">
             <div class="row-enemy">
                 <div class="draw-deck card-back">
-                    <img src="/images/cards/card-back.jpg" class="img-responsive"/>
+                    <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
                 </div>
                 <div class="discard-pile card-deck">
                     <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
                 </div>
                 <div class="hand-deck card-back">
-                    <img src="/images/cards/card-back.jpg" class="img-responsive"/>
+                    <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
                 </div>
             </div>
             <div class="row-hand">
-                <div class="card">
-                    <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
-                </div>
-                <div class="card">
-                    <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
-                </div>
-                <div class="card">
-                    <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
-                </div>
-                <div class="card">
-                    <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
-                </div>
-                <div class="card">
-                    <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
-                </div>
-                <div class="card">
-                    <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
-                </div>
-                <div class="card">
-                    <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
-                </div>
-                <div class="card">
-                    <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
-                </div>
+                {% for playerCard in playerCards %}
+                    <div class="card">
+                        <img src="/images/cards/{{ playerCard.image }}" class="img-responsive"/>
+                    </div>
+                {% endfor %}
             </div>
             <div class="row-player">
                 <div class="draw-deck card-back">
-                    <img src="/images/cards/card-back.jpg" class="img-responsive"/>
+                    <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
                 </div>
                 <div class="discard-pile card-deck">
                     <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>

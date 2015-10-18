@@ -2,6 +2,8 @@ var expressPromiseRouter = require('express-promise-router');
 var router = expressPromiseRouter();
 var firewall = require('../security/firewall');
 var scrypt = require('scrypt-for-humans');
+var redis = require('redis').createClient();
+var math = require('../libs/math');
 var Promise = require('bluebird');
 var User = require('./model').User;
 var Set = require('./model').Set;
@@ -58,7 +60,42 @@ router.get('/deck-builder', firewall.restrict, function (req, res) {
 });
 
 router.get('/play', function (req, res) {
-    res.render('play.nunj');
+    return Promise.all([
+        Card.where('type', '=', 'Story').where('set_id', '=', 1).query(function (qb) {
+            qb.orderByRaw('RAND()');
+        }).fetchAll(),
+        Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
+            qb.orderByRaw('RAND()').limit(50);
+        }).fetchAll(),
+        Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
+            qb.orderByRaw('RAND()').limit(50);
+        }).fetchAll()
+    ]).then(function (result) {
+        var i;
+
+        var storyCards = [];
+        var storyDeck = result[0].toJSON();
+        for (i in math.randomCards(3, storyDeck.length)) {
+            storyCards.push(storyDeck[i]);
+        }
+        for (i in math.randomCards(3, storyDeck.length)) {
+            storyDeck.splice(i, 1);
+        }
+
+        var playerCards = [];
+        var playerDeck = result[1].toJSON();
+        for (i in math.randomCards(8, playerDeck.length)) {
+            playerCards.push(playerDeck[i]);
+        }
+        for (i in math.randomCards(3, playerDeck.length)) {
+            playerDeck.splice(i, 1);
+        }
+
+        res.render('play.nunj', {
+            storyCards: storyCards,
+            playerCards: playerCards
+        });
+    });
 });
 
 router.get('/about', function (req, res) {
