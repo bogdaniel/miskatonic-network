@@ -14,7 +14,6 @@ exports.up = function (knex, Promise) {
         table.string('faction').notNullable();
         table.string('text');
         table.string('flavor');
-        table.string('setname').notNullable();
         table.integer('set_id').unsigned().notNullable().references('sets.id');
         table.string('attribute');
         table.integer('steadfastcount');
