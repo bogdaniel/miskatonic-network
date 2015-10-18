@@ -10,6 +10,8 @@ var User = require('./model').User;
 var Set = require('./model').Set;
 var Card = require('./model').Card;
 
+Promise.promisifyAll(redis);
+
 router.post('/login', function (req, res) {
     return User.login(req.body.email, req.body.password).then(function (user) {
         user.omit('password');
@@ -61,6 +63,21 @@ router.get('/deck-builder', firewall.restrict, function (req, res) {
 });
 
 router.get('/play', function (req, res) {
+    var gameId = 1;
+    var playerId = 1;
+    var enemyId = 2;
+    var rStoryDeck = 'storyDeck:' + gameId;
+    var rStoryCards = 'storyCards:' + gameId;
+    var rPlayerDeck = 'deck:' + gameId + ':' + playerId;
+    var rPlayerHand = 'hand:' + gameId + ':' + playerId;
+    var rPlayerDiscard = 'discard:' + gameId + ':' + playerId;
+    var rEnemyDeck = 'deck:' + gameId + ':' + enemyId;
+    var rEnemyHand = 'hand:' + gameId + ':' + enemyId;
+    var rEnemyDiscard = 'discard:' + gameId + ':' + enemyId;
+
+    /*redis.zadd(rPlayerDiscard, 1, 3, 2, 1, 3, 2);
+     redis.zadd(rEnemyDiscard, 1, 5, 2, 4);*/
+
     return Promise.all([
         Card.where('type', '=', 'Story').where('set_id', '=', 1).query(function (qb) {
             qb.orderByRaw('RAND()');
@@ -70,18 +87,15 @@ router.get('/play', function (req, res) {
         }).fetchAll(),
         Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
             qb.orderByRaw('RAND()').limit(50);
-        }).fetchAll()
+        }).fetchAll(),
+        redis.zrangeAsync(rPlayerDiscard, 0, -1).then(function (ids) {
+            return Card.where('id', _.last(ids)).fetch();
+        }),
+        redis.zrangeAsync(rEnemyDiscard, 0, -1).then(function (ids) {
+            return Card.where('id', _.last(ids)).fetch();
+        })
     ]).then(function (result) {
         var i;
-        var gameId = 1;
-        var playerId = 1;
-        var enemyId = 2;
-        var rStoryDeck = 'storyDeck:' + gameId;
-        var rStoryCards = 'storyCards:' + gameId;
-        var rPlayerDeck = 'deck:' + gameId + ':' + playerId;
-        var rPlayerHand = 'hand:' + gameId + ':' + playerId;
-        var rEnemyDeck = 'deck:' + gameId + ':' + enemyId;
-        var rEnemyHand = 'hand:' + gameId + ':' + enemyId;
 
         var storyCards = [];
         var storyDeck = result[0].toJSON();
@@ -115,6 +129,11 @@ router.get('/play', function (req, res) {
             redis.sadd(rPlayerHand, card.id);
         });
 
+        var playerDiscardTop = result[3];
+        if (playerDiscardTop) {
+            playerDiscardTop.toJSON();
+        }
+
         var enemyHand = [];
         var enemyDeck = result[2].toJSON();
 
@@ -131,17 +150,28 @@ router.get('/play', function (req, res) {
             redis.sadd(rEnemyHand, card.id);
         });
 
+        var enemyDiscardTop = result[4];
+        if (enemyDiscardTop) {
+            enemyDiscardTop.toJSON();
+        }
+
         res.render('play.nunj', {
             storyCards: storyCards,
-            playerHand: playerHand
+            playerDeckCounter: playerDeck.length,
+            playerHand: playerHand,
+            playerDiscardTop: playerDiscardTop,
+            enemyDeckCounter: enemyDeck.length,
+            enemyDiscardTop: enemyDiscardTop
         });
 
         redis.del(rStoryDeck);
         redis.del(rStoryCards);
         redis.del(rPlayerDeck);
         redis.del(rPlayerHand);
+        redis.del(rPlayerDiscard);
         redis.del(rEnemyDeck);
         redis.del(rEnemyHand);
+        redis.del(rEnemyDiscard);
     });
 });
 

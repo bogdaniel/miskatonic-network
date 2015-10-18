@@ -125,9 +125,11 @@
                 <div class="draw-deck card-back">
                     <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
                 </div>
-                <div class="discard-pile card-deck">
-                    <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
-                </div>
+                {% if enemyDiscardTop %}
+                    <div class="discard-pile card-deck">
+                        <img src="/images/cards/{{ enemyDiscardTop.image }}" class="img-responsive"/>
+                    </div>
+                {% endif %}
                 <div class="hand-deck card-back">
                     <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
                 </div>
@@ -143,9 +145,11 @@
                 <div class="draw-deck card-back">
                     <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
                 </div>
-                <div class="discard-pile card-deck">
-                    <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
-                </div>
+                {% if playerDiscardTop %}
+                    <div class="discard-pile card-deck">
+                        <img src="/images/cards/{{ playerDiscardTop.image }}" class="img-responsive"/>
+                    </div>
+                {% endif %}
             </div>
         </div>
         <div class="vbox col-fourth">
