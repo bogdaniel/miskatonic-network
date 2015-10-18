@@ -5,3 +5,4 @@
 !.gitkeep
 /ecosystem.json
 /env.json
+/npm-debug.log
