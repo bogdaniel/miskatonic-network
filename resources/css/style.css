@@ -52,6 +52,7 @@ body {
 .col-third {
     justify-content: space-between;
     align-items: flex-end;
+    max-width: 350px;
 }
 
 .row-enemy {
@@ -67,28 +68,13 @@ body {
 .row-hand {
     display: flex;
     flex-wrap: wrap;
-    max-width: 350px;
     justify-content: flex-end;
-}
-
-.row-hand > div {
-    float: left;
 }
 
 .col-fourth {
     justify-content: space-between;
     width: 250px;
 }
-
-
-
-
-
-
-
-
-
-
 
 .card {
     width: 70px;
