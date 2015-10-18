@@ -55,5 +55,10 @@ exports.Card = bookshelf.Model.extend({
         return new this().where(filter).where('title', 'LIKE', '%' + title + '%').query(function (qb) {
             qb.orderBy('num', 'ASC').limit(24).offset(page * 24 - 24);
         }).fetchAll();
+    }),
+    findInOrder: Promise.method(function (array) {
+        return new this().query('whereIn', 'id', array).query(function (qb) {
+            qb.orderByRaw('find_in_set(id, "' + array.join() + '")');
+        }).fetchAll();
     })
 });
