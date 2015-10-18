@@ -66,52 +66,93 @@ router.get('/play', function (req, res) {
     var gameId = 1;
     var playerId = 1;
     var enemyId = 2;
+
     var rStoryDeck = 'storyDeck:' + gameId;
     var rStoryCards = 'storyCards:' + gameId;
+
     var rPlayerDeck = 'deck:' + gameId + ':' + playerId;
     var rPlayerHand = 'hand:' + gameId + ':' + playerId;
     var rPlayerDiscard = 'discard:' + gameId + ':' + playerId;
+    var rPlayerPlayed = 'played:' + gameId + ':' + playerId;
+
     var rEnemyDeck = 'deck:' + gameId + ':' + enemyId;
     var rEnemyHand = 'hand:' + gameId + ':' + enemyId;
     var rEnemyDiscard = 'discard:' + gameId + ':' + enemyId;
+    var rEnemyPlayed = 'played:' + gameId + ':' + enemyId;
 
     return Promise.all([
         Card.where('type', '=', 'Story').where('set_id', '=', 1).query(function (qb) {
             qb.orderByRaw('RAND()');
-        }).fetchAll(),
-        Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
-            qb.orderByRaw('RAND()').limit(50);
-        }).fetchAll(),
-        Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
-            qb.orderByRaw('RAND()').limit(50);
-        }).fetchAll(),
-        redis.zrangeAsync(rPlayerDiscard, 0, -1).then(function (ids) {
-            return Card.where('id', _.last(ids)).fetch();
+        }).fetchAll().then(function (cards) {
+            return cards.toJSON();
         }),
-        redis.zrangeAsync(rEnemyDiscard, 0, -1).then(function (ids) {
-            return Card.where('id', _.last(ids)).fetch();
+        Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
+            qb.orderByRaw('RAND()').limit(50);
+        }).fetchAll().then(function (cards) {
+            return cards.toJSON();
+        }),
+        Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
+            qb.orderByRaw('RAND()').limit(50);
+        }).fetchAll().then(function (cards) {
+            return cards.toJSON();
+        }),
+        redis.zrangeAsync(rPlayerDiscard, 0, -1).then(function (data) {
+            var cards = [];
+
+            data.forEach(function (card) {
+                cards.push(JSON.parse(card));
+            });
+
+            return cards;
+        }),
+        redis.zrangeAsync(rEnemyDiscard, 0, -1).then(function (data) {
+            var cards = [];
+
+            data.forEach(function (card) {
+                cards.push(JSON.parse(card));
+            });
+
+            return cards;
+        }),
+        redis.zrangeAsync(rPlayerPlayed, 0, -1).then(function (data) {
+            var cards = [];
+
+            data.forEach(function (card) {
+                cards.push(JSON.parse(card));
+            });
+
+            return cards;
+        }),
+        redis.zrangeAsync(rEnemyPlayed, 0, -1).then(function (data) {
+            var cards = [];
+
+            data.forEach(function (card) {
+                cards.push(JSON.parse(card));
+            });
+
+            return cards;
         })
     ]).then(function (result) {
         var i;
 
         var storyCards = [];
-        var storyDeck = result[0].toJSON();
+        var storyDeck = result[0];
 
         for (i in math.randomCards(3, storyDeck.length)) {
             storyCards.push(storyDeck[i]);
             storyDeck.splice(i, 1);
         }
 
-        storyDeck.forEach(function (storyCard) {
-            redis.sadd(rStoryDeck, storyCard.id);
+        storyDeck.forEach(function (card) {
+            redis.sadd(rStoryDeck, JSON.stringify(card));
         });
 
-        storyCards.forEach(function (storyCard) {
-            redis.sadd(rStoryCards, storyCard.id);
+        storyCards.forEach(function (card) {
+            redis.sadd(rStoryCards, JSON.stringify(card));
         });
 
         var playerHand = [];
-        var playerDeck = result[1].toJSON();
+        var playerDeck = result[1];
 
         for (i in math.randomCards(8, playerDeck.length)) {
             playerHand.push(playerDeck[i]);
@@ -119,20 +160,18 @@ router.get('/play', function (req, res) {
         }
 
         playerDeck.forEach(function (card) {
-            redis.sadd(rPlayerDeck, card.id);
+            redis.sadd(rPlayerDeck, JSON.stringify(card));
         });
 
         playerHand.forEach(function (card) {
-            redis.sadd(rPlayerHand, card.id);
+            redis.sadd(rPlayerHand, JSON.stringify(card));
         });
 
         var playerDiscardTop = result[3];
-        if (playerDiscardTop) {
-            playerDiscardTop = playerDiscardTop.toJSON();
-        }
+        var playerPlayed = result[5];
 
         var enemyHand = [];
-        var enemyDeck = result[2].toJSON();
+        var enemyDeck = result[2];
 
         for (i in math.randomCards(8, enemyDeck.length)) {
             enemyHand.push(enemyDeck[i]);
@@ -140,35 +179,39 @@ router.get('/play', function (req, res) {
         }
 
         enemyDeck.forEach(function (card) {
-            redis.sadd(rEnemyDeck, card.id);
+            redis.sadd(rEnemyDeck, JSON.stringify(card));
         });
 
         enemyHand.forEach(function (card) {
-            redis.sadd(rEnemyHand, card.id);
+            redis.sadd(rEnemyHand, JSON.stringify(card));
         });
 
         var enemyDiscardTop = result[4];
-        if (enemyDiscardTop) {
-            enemyDiscardTop = enemyDiscardTop.toJSON();
-        }
+        var enemyPlayed = result[6];
 
         res.render('play.nunj', {
             storyCards: storyCards,
             playerDeckCounter: playerDeck.length,
             playerHand: playerHand,
             playerDiscardTop: playerDiscardTop,
+            playerPlayed: playerPlayed,
             enemyDeckCounter: enemyDeck.length,
-            enemyDiscardTop: enemyDiscardTop
+            enemyDiscardTop: enemyDiscardTop,
+            enemyPlayed: enemyPlayed
         });
 
         redis.del(rStoryDeck);
         redis.del(rStoryCards);
+
         redis.del(rPlayerDeck);
         redis.del(rPlayerHand);
         redis.del(rPlayerDiscard);
+        redis.del(rPlayerPlayed);
+
         redis.del(rEnemyDeck);
         redis.del(rEnemyHand);
         redis.del(rEnemyDiscard);
+        redis.del(rEnemyPlayed);
     });
 });
 
