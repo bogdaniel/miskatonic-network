@@ -76,7 +76,7 @@ INSERT INTO `sets` (`id`, `title`, `parent`, `card_number`, `released_at`) VALUE
 (47, 'The Key and the Gate', NULL, 55, '2013-01-01'),
 (48, 'Terror in Venice', NULL, 55, '2013-01-01'),
 (49, 'Denizens of the Underworld', NULL, 55, '2014-01-01'),
-(50, 'The Sleeper Below', NULL, 56, '2014-01-01'),
+(50, 'The Sleeper Below', NULL, 55, '2014-01-01'),
 (51, 'For the Greater Good', NULL, 55, '2015-01-01'),
 (52, 'The Thousand Young', NULL, 55, '2015-01-01'),
 (53, 'The Mark of Madness', NULL, 55, '2015-01-01');

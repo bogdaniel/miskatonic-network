@@ -21,6 +21,7 @@ exports.up = function (knex, Promise) {
         table.string('steadfastfaction');
         table.bool('is_unique').notNullable();
         table.bool('is_banned').notNullable();
+        table.string('image').notNullable();
         table.string('image_url').notNullable();
         table.string('image_size').notNullable();
         table.string('card_url').notNullable();
@@ -30,8 +31,6 @@ exports.up = function (knex, Promise) {
         table.string('illustrator');
         table.integer('rating').notNullable();
         table.text('data').notNullable();
-        table.datetime('created_at').notNullable();
-        table.datetime('updated_at').notNullable();
     }).then(function () {
         console.log('cards table created.');
     });

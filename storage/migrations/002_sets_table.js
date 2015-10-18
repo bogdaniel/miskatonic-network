@@ -5,8 +5,6 @@ exports.up = function (knex, Promise) {
         table.string('parent');
         table.integer('card_number').notNullable();
         table.date('released_at').notNullable();
-        table.datetime('created_at').notNullable();
-        table.datetime('updated_at').notNullable();
     }).then(function () {
         console.log('sets table created.');
     });
