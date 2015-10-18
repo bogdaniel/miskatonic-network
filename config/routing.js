@@ -75,9 +75,6 @@ router.get('/play', function (req, res) {
     var rEnemyHand = 'hand:' + gameId + ':' + enemyId;
     var rEnemyDiscard = 'discard:' + gameId + ':' + enemyId;
 
-    /*redis.zadd(rPlayerDiscard, 1, 3, 2, 1, 3, 2);
-     redis.zadd(rEnemyDiscard, 1, 5, 2, 4);*/
-
     return Promise.all([
         Card.where('type', '=', 'Story').where('set_id', '=', 1).query(function (qb) {
             qb.orderByRaw('RAND()');
@@ -131,7 +128,7 @@ router.get('/play', function (req, res) {
 
         var playerDiscardTop = result[3];
         if (playerDiscardTop) {
-            playerDiscardTop.toJSON();
+            playerDiscardTop = playerDiscardTop.toJSON();
         }
 
         var enemyHand = [];
@@ -152,7 +149,7 @@ router.get('/play', function (req, res) {
 
         var enemyDiscardTop = result[4];
         if (enemyDiscardTop) {
-            enemyDiscardTop.toJSON();
+            enemyDiscardTop = enemyDiscardTop.toJSON();
         }
 
         res.render('play.nunj', {
