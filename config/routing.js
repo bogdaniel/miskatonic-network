@@ -69,20 +69,20 @@ router.get('/play', function (req, res) {
     var playerId = 1;
     var enemyId = 2;
 
-    var rStoryDeck = 'storyDeck:' + gameId;
-    var rStoryCards = 'storyCards:' + gameId;
+    var rStoryDeck = 'StoryDeck:' + gameId;
+    var rStoryCards = 'StoryCards:' + gameId;
 
-    var rPlayerDeck = 'deck:' + gameId + ':' + playerId;
-    var rPlayerHand = 'hand:' + gameId + ':' + playerId;
-    var rPlayerDiscard = 'discard:' + gameId + ':' + playerId;
-    var rPlayerPlayed = 'played:' + gameId + ':' + playerId;
-    var rPlayerCommitted = 'committed:' + gameId + ':' + playerId;
+    var rPlayerDeck = 'Deck:' + gameId + ':' + playerId;
+    var rPlayerHand = 'Hand:' + gameId + ':' + playerId;
+    var rPlayerDiscard = 'Discard:' + gameId + ':' + playerId;
+    var rPlayerPlayed = 'Played:' + gameId + ':' + playerId;
+    var rPlayerCommitted = 'Committed:' + gameId + ':' + playerId;
 
-    var rEnemyDeck = 'deck:' + gameId + ':' + enemyId;
-    var rEnemyHand = 'hand:' + gameId + ':' + enemyId;
-    var rEnemyDiscard = 'discard:' + gameId + ':' + enemyId;
-    var rEnemyPlayed = 'played:' + gameId + ':' + enemyId;
-    var rEnemyCommitted = 'committed:' + gameId + ':' + enemyId;
+    var rEnemyDeck = 'Deck:' + gameId + ':' + enemyId;
+    var rEnemyHand = 'Hand:' + gameId + ':' + enemyId;
+    var rEnemyDiscard = 'Discard:' + gameId + ':' + enemyId;
+    var rEnemyPlayed = 'Played:' + gameId + ':' + enemyId;
+    var rEnemyCommitted = 'Committed:' + gameId + ':' + enemyId;
 
     return Promise.all([
         Card.where('type', '=', 'Story').where('set_id', '=', 1).query(function (qb) {
