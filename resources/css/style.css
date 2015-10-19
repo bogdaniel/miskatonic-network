@@ -9,6 +9,7 @@ body {
     background-image: url('/images/bg_cthulhu_01.jpg');
     background-size: cover;
     background-position: top center;
+    background-attachment: fixed;
 }
 
 .vbox {
