@@ -13,32 +13,59 @@ body {
 }
 
 .vbox {
+    display: -ms-flexbox;
+    display: -webkit-flex;
     display: flex;
-    flex-flow: column nowrap;
+
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+
+    -webkit-flex-wrap: nowrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
 }
 
 .gameboard {
-    height: calc(100% - 72px);
+    display: -ms-flexbox;
+    display: -webkit-flex;
     display: flex;
+
+    -webkit-flex: 1 1 0;
+    -ms-flex: 1 1 0;
     flex: 1 1 0;
+
+    -webkit-justify-content: space-between;
+    -ms-flex-pack: justify;
     justify-content: space-between;
+
+    height: calc(100% - 72px);
     padding: 0 10px;
 }
 
 .col-first {
+    -webkit-justify-content: space-between;
+    -ms-flex-pack: justify;
     justify-content: space-between;
+
     margin-right: 30px;
 }
 
 .col-second {
+    -webkit-justify-content: space-between;
+    -ms-flex-pack: justify;
     justify-content: space-between;
 }
 
 .row-played {
+    display: -ms-flexbox;
+    display: -webkit-flex;
     display: flex;
 }
 
 .row-committed {
+    display: -ms-flexbox;
+    display: -webkit-flex;
     display: flex;
 }
 
@@ -47,36 +74,71 @@ body {
 }
 
 .row-story {
+    display: -ms-flexbox;
+    display: -webkit-flex;
     display: flex;
 }
 
 .col-third {
-    justify-content: space-between;
-    align-items: flex-end;
-    max-width: 350px;
+    -webkit-flex: 0 1 350px;
+    -ms-flex: 0 1 350px;
     flex: 0 1 350px;
+
+    -webkit-justify-content: space-between;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+
+    -webkit-align-items: flex-end;
+    -ms-flex-align: end;
+    align-items: flex-end;
+
+    max-width: 350px;
 }
 
 .row-enemy {
+    display: -ms-flexbox;
+    display: -webkit-flex;
     display: flex;
+
+    -webkit-justify-content: space-between;
+    -ms-flex-pack: justify;
     justify-content: space-between;
 }
 
 .row-player {
+    display: -ms-flexbox;
+    display: -webkit-flex;
     display: flex;
+
+    -webkit-justify-content: space-between;
+    -ms-flex-pack: justify;
     justify-content: space-between;
 }
 
 .row-hand {
+    display: -ms-flexbox;
+    display: -webkit-flex;
     display: flex;
-    flex-wrap: wrap;
+
+    -webkit-justify-content: flex-end;
+    -ms-flex-pack: end;
     justify-content: flex-end;
+
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
 }
 
 .col-fourth {
-    justify-content: space-between;
-    width: 250px;
+    -webkit-flex: 0 0 250px;
+    -ms-flex: 0 0 250px;
     flex: 0 0 250px;
+
+    -webkit-justify-content: space-between;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+
+    width: 250px;
 }
 
 .card-frame {
@@ -123,8 +185,13 @@ body {
 .card-exhausted {
     width: 70px;
     height: 100px;
-    transform: rotate(-90deg);
     margin: -15px 25px -5px 15px;
+
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    transform: rotate(-90deg);
 }
 
 .card-domain {
@@ -140,11 +207,13 @@ body {
     width: 70px;
     height: 100px;
     left: -15px;
+    margin: -15px 0 -20px -60px;
+
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
     transform: rotate(-90deg);
-    margin-top: -15px;
-    margin-left: -60px;
-    margin-bottom: -20px;
-    margin-right: 0;
 }
 
 .card-story {
@@ -154,8 +223,20 @@ body {
 }
 
 .domain {
+    display: -ms-flexbox;
+    display: -webkit-flex;
     display: flex;
-    flex-flow: row-reverse nowrap;
+
+    -webkit-flex-direction: row-reverse;
+    -ms-flex-direction: row-reverse;
+    flex-direction: row-reverse;
+
+    -webkit-flex-wrap: nowrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+
+    -webkit-justify-content: flex-end;
+    -ms-flex-pack: end;
     justify-content: flex-end;
 }
 
