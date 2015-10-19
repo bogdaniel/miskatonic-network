@@ -102,6 +102,7 @@
                 </div>
                 {% if enemyDiscardTop.length %}
                     <div class="card-frame discard-pile card-deck">
+                        <span class="header">Discard ({{ enemyDiscardCounter }})</span>
                         <img src="/images/cards/{{ enemyDiscardTop.image }}" class="img-responsive"/>
                     </div>
                 {% endif %}
@@ -124,6 +125,7 @@
                 </div>
                 {% if playerDiscardTop.length %}
                     <div class="card-frame discard-pile card-deck">
+                        <span class="header">Discard ({{ playerDiscardCounter }})</span>
                         <img src="/images/cards/{{ playerDiscardTop.image }}" class="img-responsive"/>
                     </div>
                 {% endif %}

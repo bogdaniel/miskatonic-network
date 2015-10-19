@@ -167,7 +167,7 @@ router.get('/play', function (req, res) {
             redis.sadd(rPlayerHand, JSON.stringify(card));
         });
 
-        var playerDiscardTop = result[3];
+        var playerDiscard = result[3];
         var playerPlayed = result[5];
 
         var enemyHand = [];
@@ -186,18 +186,20 @@ router.get('/play', function (req, res) {
             redis.sadd(rEnemyHand, JSON.stringify(card));
         });
 
-        var enemyDiscardTop = result[4];
+        var enemyDiscard = result[4];
         var enemyPlayed = result[6];
 
         res.render('play.nunj', {
             storyCards: storyCards,
             playerDeckCounter: playerDeck.length,
             playerHand: playerHand,
-            playerDiscardTop: playerDiscardTop,
+            playerDiscardCounter: playerDiscard.length,
+            playerDiscardTop: _.last(playerDiscard),
             playerPlayed: playerPlayed,
             enemyDeckCounter: enemyDeck.length,
             enemyHandCounter: enemyHand.length,
-            enemyDiscardTop: enemyDiscardTop,
+            enemyDiscardCounter: enemyDiscard.length,
+            enemyDiscardTop: _.last(enemyDiscard),
             enemyPlayed: enemyPlayed
         });
 
