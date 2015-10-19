@@ -9,10 +9,14 @@ module.exports = function (grunt) {
                 strict: true,
                 browser: false,
                 esnext: true,
-                predef: ['-Promise', '-Set'],
-                ignores: ['bower_components', 'node_modules']
+                predef: ['-Promise', '-Set']
             },
-            files: ['*.js', 'config/**/*.js', 'controllers/**/*.js', 'libs/**/*.js', 'resources/**/*.js', 'security/**/*.js', 'storage/**/*.js']
+            all: [
+                '**/*.js',
+                '!web/**/*',
+                '!bower_components/**/*',
+                '!node_modules/**/*'
+            ]
         },
         uglify: {
             build: {
