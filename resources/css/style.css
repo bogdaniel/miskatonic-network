@@ -164,7 +164,7 @@ body {
     z-index: 1;
 }
 
-.card {
+.card-active {
     width: 70px;
     height: 100px;
     margin: 0 10px 10px 0;

@@ -47,7 +47,7 @@
         <div class="vbox col-second">
             <div class="row-played">
                 {% for card in enemyPlayed %}
-                    <div class="card-frame {% if true %}card{% else %}card-exhausted{% endif %}">
+                    <div class="card-frame card-{{ card.status }}">
                         <img src="/images/cards/{{ card.image }}" class="img-responsive"/>
                     </div>
                 {% endfor %}
@@ -88,11 +88,11 @@
             </div>
             <div class="row-played">
                 {% for card in playerPlayed %}
-                    <div class="card-frame {% if true %}card{% else %}card-exhausted{% endif %}">
+                    <div class="card-frame card-{{ card.status }}">
                         <img src="/images/cards/{{ card.image }}" class="img-responsive"/>
                     </div>
                 {% endfor %}
-            </div>enemyHand
+            </div>
         </div>
         <div class="vbox col-third">
             <div class="row-enemy">
@@ -113,7 +113,7 @@
             </div>
             <div class="row-hand">
                 {% for card in playerHand %}
-                    <div class="card-frame card">
+                    <div class="card-frame card-active">
                         <img src="/images/cards/{{ card.image }}" class="img-responsive"/>
                     </div>
                 {% endfor %}
