@@ -86,13 +86,13 @@ router.get('/play', function (req, res) {
     return Promise.all([
         Card.where('type', '=', 'Story').where('set_id', '=', 1).query(function (qb) {
             qb.orderByRaw('RAND()');
-        }).fetchAll(),//.then(cards => cards.toJSON()),
+        }).fetchAll().then(cards => cards.toJSON()),
         Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
             qb.orderByRaw('RAND()').limit(50);
-        }).fetchAll(),//.then(cards => cards.toJSON()),
+        }).fetchAll().then(cards => cards.toJSON()),
         Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
             qb.orderByRaw('RAND()').limit(50);
-        }).fetchAll(),//.then(cards => cards.toJSON()),
+        }).fetchAll().then(cards => cards.toJSON()),
         redis.zrangeAsync(rPlayerDiscard, 0, -1).then(redisHelper.dataToJSON),
         redis.zrangeAsync(rEnemyDiscard, 0, -1).then(redisHelper.dataToJSON),
         redis.zrangeAsync(rPlayerPlayed, 0, -1).then(redisHelper.dataToJSON),
