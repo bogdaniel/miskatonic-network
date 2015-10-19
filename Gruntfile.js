@@ -1,9 +1,12 @@
+"use strict";
+
 module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         jshint: {
             options: {
                 node: true,
+                strict: true,
                 browser: false,
                 esnext: true,
                 predef: ['-Promise', '-Set'],

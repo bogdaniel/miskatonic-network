@@ -1,3 +1,5 @@
+"use strict";
+
 exports.restrict = function (req, res, next) {
     if (req.session.user) {
         next();

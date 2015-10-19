@@ -1,3 +1,5 @@
+"use strict";
+
 var knex = require('./database');
 var bookshelf = require('bookshelf')(knex);
 var Promise = require('bluebird');

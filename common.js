@@ -1,3 +1,5 @@
+"use strict";
+
 var env = require('./env.json');
 
 exports.config = function () {

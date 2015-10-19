@@ -1,4 +1,6 @@
 $(function () {
+    "use strict";
+
     var fadeHighlight;
     $(document).on('mouseenter', '.card, .card-exhausted, .card-story, .card-resource', function () {
         clearTimeout(fadeHighlight);
