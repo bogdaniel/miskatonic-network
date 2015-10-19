@@ -12,7 +12,7 @@ module.exports = function (grunt) {
                 predef: ['-Promise', '-Set'],
                 ignores: ['bower_components', 'node_modules']
             },
-            files: ['*.js', 'config/*.js', 'controllers/*.js', 'resources/**/*.js', 'security/*.js', 'storage/**/*.js']
+            files: ['*.js', 'config/**/*.js', 'controllers/**/*.js', 'libs/**/*.js', 'resources/**/*.js', 'security/**/*.js', 'storage/**/*.js']
         },
         uglify: {
             build: {
