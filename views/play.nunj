@@ -54,13 +54,17 @@
             </div>
             <div class="section-story">
                 <div class="row-committed">
-                    <div class="col-committed"></div>
-                    <div class="col-committed">
-                        <div class="card-frame card-exhausted">
-                            <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                    {% for i in [1, 2, 3] %}
+                        <div class="col-committed">
+                            {% for card in enemyCommitted %}
+                                {% if card.committed == i %}
+                                    <div class="card-frame card-{{ card.status }}">
+                                        <img src="/images/cards/{{ card.image }}" class="img-responsive"/>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                    </div>
-                    <div class="col-committed"></div>
+                    {% endfor %}
                 </div>
                 <div class="row-story">
                     {% for storyCard in storyCards %}
@@ -70,20 +74,17 @@
                     {% endfor %}
                 </div>
                 <div class="row-committed">
-                    <div class="col-committed">
-                        <div class="card-frame card-exhausted">
-                            <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
+                    {% for i in [1, 2, 3] %}
+                        <div class="col-committed">
+                            {% for card in playerCommitted %}
+                                {% if card.committed == i %}
+                                    <div class="card-frame card-{{ card.status }}">
+                                        <img src="/images/cards/{{ card.image }}" class="img-responsive"/>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                    </div>
-                    <div class="col-committed">
-                        <div class="card-frame card-exhausted">
-                            <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                        </div>
-                        <div class="card-frame card-exhausted">
-                            <img src="http://www.cardgamedb.com/forums/uploads/1295669265/gallery_72_52100.jpg" class="img-responsive"/>
-                        </div>
-                    </div>
-                    <div class="col-committed"></div>
+                    {% endfor %}
                 </div>
             </div>
             <div class="row-played">

@@ -7,7 +7,6 @@ var scrypt = require('scrypt-for-humans');
 var redis = require('redis').createClient();
 var redisHelper = require('../libs/helpers/redis');
 var _ = require('underscore');
-var math = require('../libs/math');
 var Promise = require('bluebird');
 var User = require('./model').User;
 var Set = require('./model').Set;
@@ -77,11 +76,13 @@ router.get('/play', function (req, res) {
     var rPlayerHand = 'hand:' + gameId + ':' + playerId;
     var rPlayerDiscard = 'discard:' + gameId + ':' + playerId;
     var rPlayerPlayed = 'played:' + gameId + ':' + playerId;
+    var rPlayerCommitted = 'committed:' + gameId + ':' + playerId;
 
     var rEnemyDeck = 'deck:' + gameId + ':' + enemyId;
     var rEnemyHand = 'hand:' + gameId + ':' + enemyId;
     var rEnemyDiscard = 'discard:' + gameId + ':' + enemyId;
     var rEnemyPlayed = 'played:' + gameId + ':' + enemyId;
+    var rEnemyCommitted = 'committed:' + gameId + ':' + enemyId;
 
     return Promise.all([
         Card.where('type', '=', 'Story').where('set_id', '=', 1).query(function (qb) {
@@ -96,14 +97,16 @@ router.get('/play', function (req, res) {
         redis.zrangeAsync(rPlayerDiscard, 0, -1).then(redisHelper.dataToJSON),
         redis.zrangeAsync(rEnemyDiscard, 0, -1).then(redisHelper.dataToJSON),
         redis.zrangeAsync(rPlayerPlayed, 0, -1).then(redisHelper.dataToJSON),
-        redis.zrangeAsync(rEnemyPlayed, 0, -1).then(redisHelper.dataToJSON)
+        redis.zrangeAsync(rEnemyPlayed, 0, -1).then(redisHelper.dataToJSON),
+        redis.zrangeAsync(rPlayerCommitted, 0, -1).then(redisHelper.dataToJSON),
+        redis.zrangeAsync(rEnemyCommitted, 0, -1).then(redisHelper.dataToJSON)
     ]).then(function (result) {
         var i;
 
         var storyCards = [];
         var storyDeck = result[0];
 
-        for (i in math.randomCards(3, storyDeck.length)) {
+        for (i = 0; i < 3; i++) {
             storyCards.push(storyDeck[i]);
             storyDeck.splice(i, 1);
         }
@@ -119,8 +122,15 @@ router.get('/play', function (req, res) {
         var playerHand = [];
         var playerDeck = result[1];
 
-        for (i in math.randomCards(8, playerDeck.length)) {
+        for (i = 0; i < playerDeck.length; i++) {
+            playerDeck[i].cid = i + 1;
+        }
+
+        for (i = 0; i < 8; i++) {
             playerHand.push(playerDeck[i]);
+        }
+
+        for (i = 0; i < 8; i++) {
             playerDeck.splice(i, 1);
         }
 
@@ -134,12 +144,20 @@ router.get('/play', function (req, res) {
 
         var playerDiscard = result[3];
         var playerPlayed = result[5];
+        var playerCommitted = result[7];
 
         var enemyHand = [];
         var enemyDeck = result[2];
 
-        for (i in math.randomCards(8, enemyDeck.length)) {
+        for (i = 0; i < enemyDeck.length; i++) {
+            enemyDeck[i].cid = i + 1;
+        }
+
+        for (i = 0; i < 8; i++) {
             enemyHand.push(enemyDeck[i]);
+        }
+
+        for (i = 0; i < 8; i++) {
             enemyDeck.splice(i, 1);
         }
 
@@ -153,6 +171,7 @@ router.get('/play', function (req, res) {
 
         var enemyDiscard = result[4];
         var enemyPlayed = result[6];
+        var enemyCommitted = result[8];
 
         res.render('play.nunj', {
             storyCards: storyCards,
@@ -161,11 +180,13 @@ router.get('/play', function (req, res) {
             playerDiscardCounter: playerDiscard.length,
             playerDiscardTop: _.last(playerDiscard),
             playerPlayed: playerPlayed,
+            playerCommitted: playerCommitted,
             enemyDeckCounter: enemyDeck.length,
             enemyHandCounter: enemyHand.length,
             enemyDiscardCounter: enemyDiscard.length,
             enemyDiscardTop: _.last(enemyDiscard),
-            enemyPlayed: enemyPlayed
+            enemyPlayed: enemyPlayed,
+            enemyCommitted: enemyCommitted
         });
 
         redis.del(rStoryDeck);
@@ -175,11 +196,13 @@ router.get('/play', function (req, res) {
         redis.del(rPlayerHand);
         redis.del(rPlayerDiscard);
         redis.del(rPlayerPlayed);
+        redis.del(rPlayerCommitted);
 
         redis.del(rEnemyDeck);
         redis.del(rEnemyHand);
         redis.del(rEnemyDiscard);
         redis.del(rEnemyPlayed);
+        redis.del(rEnemyCommitted);
     });
 });
 
