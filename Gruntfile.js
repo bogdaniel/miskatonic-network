@@ -4,6 +4,9 @@ module.exports = function (grunt) {
         jshint: {
             options: {
                 node: true,
+                browser: false,
+                esnext: true,
+                predef: ['-Promise', '-Set'],
                 ignores: ['bower_components', 'node_modules']
             },
             files: ['*.js', 'config/*.js', 'controllers/*.js', 'resources/**/*.js', 'security/*.js', 'storage/**/*.js']

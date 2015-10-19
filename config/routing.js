@@ -1,8 +1,11 @@
+"use strict";
+
 var expressPromiseRouter = require('express-promise-router');
 var router = expressPromiseRouter();
 var firewall = require('../security/firewall');
 var scrypt = require('scrypt-for-humans');
 var redis = require('redis').createClient();
+var redisHelper = require('../libs/helpers/redis');
 var _ = require('underscore');
 var math = require('../libs/math');
 var Promise = require('bluebird');
@@ -83,55 +86,17 @@ router.get('/play', function (req, res) {
     return Promise.all([
         Card.where('type', '=', 'Story').where('set_id', '=', 1).query(function (qb) {
             qb.orderByRaw('RAND()');
-        }).fetchAll().then(function (cards) {
-            return cards.toJSON();
-        }),
+        }).fetchAll(),//.then(cards => cards.toJSON()),
         Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
             qb.orderByRaw('RAND()').limit(50);
-        }).fetchAll().then(function (cards) {
-            return cards.toJSON();
-        }),
+        }).fetchAll(),//.then(cards => cards.toJSON()),
         Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
             qb.orderByRaw('RAND()').limit(50);
-        }).fetchAll().then(function (cards) {
-            return cards.toJSON();
-        }),
-        redis.zrangeAsync(rPlayerDiscard, 0, -1).then(function (data) {
-            var cards = [];
-
-            data.forEach(function (card) {
-                cards.push(JSON.parse(card));
-            });
-
-            return cards;
-        }),
-        redis.zrangeAsync(rEnemyDiscard, 0, -1).then(function (data) {
-            var cards = [];
-
-            data.forEach(function (card) {
-                cards.push(JSON.parse(card));
-            });
-
-            return cards;
-        }),
-        redis.zrangeAsync(rPlayerPlayed, 0, -1).then(function (data) {
-            var cards = [];
-
-            data.forEach(function (card) {
-                cards.push(JSON.parse(card));
-            });
-
-            return cards;
-        }),
-        redis.zrangeAsync(rEnemyPlayed, 0, -1).then(function (data) {
-            var cards = [];
-
-            data.forEach(function (card) {
-                cards.push(JSON.parse(card));
-            });
-
-            return cards;
-        })
+        }).fetchAll(),//.then(cards => cards.toJSON()),
+        redis.zrangeAsync(rPlayerDiscard, 0, -1).then(redisHelper.dataToJSON),
+        redis.zrangeAsync(rEnemyDiscard, 0, -1).then(redisHelper.dataToJSON),
+        redis.zrangeAsync(rPlayerPlayed, 0, -1).then(redisHelper.dataToJSON),
+        redis.zrangeAsync(rEnemyPlayed, 0, -1).then(redisHelper.dataToJSON)
     ]).then(function (result) {
         var i;
 
