@@ -196,6 +196,7 @@ router.get('/play', function (req, res) {
             playerDiscardTop: playerDiscardTop,
             playerPlayed: playerPlayed,
             enemyDeckCounter: enemyDeck.length,
+            enemyHandCounter: enemyHand.length,
             enemyDiscardTop: enemyDiscardTop,
             enemyPlayed: enemyPlayed
         });
