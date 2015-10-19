@@ -1,3 +1,5 @@
+"use strict";
+
 exports.dataToJSON = function (data) {
     var cards = [];
 
