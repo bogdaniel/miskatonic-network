@@ -61,7 +61,10 @@
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script type="text/javascript">
     var username = '{{ app.user.username }}';
-    var socket = io();
+    var userid = '{{ app.user.id }}';
+    var socket = io({
+        query: 'username=' + username + '&userid=' + userid
+    });
 </script>
 <script src="/build/miskatonic-network.min.js"></script>
 

@@ -1,4 +1,6 @@
 $(function () {
+    "use strict";
+
     function joinRoom(username, room) {
         socket.emit('join', {
             username: username,

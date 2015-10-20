@@ -247,3 +247,7 @@ body {
 .img-responsive {
     width: 100%;
 }
+
+.row-player .draw-deck {
+    cursor: pointer;
+}

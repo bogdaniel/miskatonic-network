@@ -12,6 +12,9 @@ var nunjucks = require('nunjucks');
 var routing = require('./config/routing');
 var moment = require('moment');
 var redis = require('redis').createClient();
+var Promise = require('bluebird');
+
+Promise.promisifyAll(redis);
 
 app.use(express.static(__dirname + '/web'));
 app.use(bodyParser.urlencoded({extended: false}));
@@ -71,6 +74,9 @@ nunjucks.configure(__dirname + '/views', {
 });
 
 io.on('connection', function (socket) {
+    socket.username = socket.handshake.query.username;
+    socket.userid = socket.handshake.query.userid;
+
     function leaveRoom() {
         var room = socket.room;
 
@@ -94,7 +100,6 @@ io.on('connection', function (socket) {
 
         socket.join(user.room);
         socket.room = user.room;
-        socket.username = user.username;
 
         var userList = [];
         for (var socketId in io.nsps['/'].adapter.rooms[socket.room]) {
@@ -135,6 +140,21 @@ io.on('connection', function (socket) {
 
     socket.on('disconnect', function () {
         leaveRoom();
+    });
+
+    socket.on('onCardDraw', function (data) {
+        var gameId = 1;
+        var rDeck = 'Deck:' + gameId + ':' + socket.userid;
+        var rHand = 'Hand:' + gameId + ':' + socket.userid;
+
+        redis.spopAsync(rDeck).then(function (card) {
+            redis.sadd(rHand, card);
+
+            socket.emit('afterCardDraw', {
+                userid: socket.userid,
+                card: JSON.parse(card)
+            });
+        });
     });
 });
 
