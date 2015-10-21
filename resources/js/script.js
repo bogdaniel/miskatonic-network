@@ -20,12 +20,6 @@ $(function () {
         console.log(src);
     });
 
-    $(document).on('click', '.row-player .draw-deck', function () {
-        socket.emit('onCardDraw', {
-            amount: 1
-        });
-    });
-
     $(document).on('click', '#create-game', function () {
         socket.emit('onCreateGame', {
             title: $('#game-title').val()
@@ -46,7 +40,7 @@ $(function () {
             gameListContent += '<button id="join-game">Join</button>';
         }
 
-        var gameList = $('<div>').attr('id', 'game-' + game.id).html(gameListContent).append($('<hr>'));
+        var gameList = $('<div>').addClass('game').attr('data-id', game.id).html(gameListContent).append($('<hr>'));
 
         $('#game-list').prepend(gameList);
     });
@@ -61,7 +55,30 @@ $(function () {
     socket.on('afterLeaveGame', function (data) {
         var game = data.game;
 
-        $('#game-' + game.id).remove();
+        if (game.players.length == 0) {
+            $('div.game[data-id="' + game.id + '"]').remove();
+        } else {
+            //TODO
+            //update
+        }
+    });
+
+    $(document).on('click', '#join-game', function () {
+        socket.emit('onJoinGame', {
+            id: $(this).closest('div').data('id')
+        })
+    });
+
+    socket.on('afterJoinGame', function (data) {
+        var game = data.game;
+
+
+    });
+
+    $(document).on('click', '.row-player .draw-deck', function () {
+        socket.emit('onCardDraw', {
+            amount: 1
+        });
     });
 
     socket.on('afterCardDraw', function (data) {

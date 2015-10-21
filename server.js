@@ -175,7 +175,6 @@ io.on('connection', function (socket) {
         };
 
         socket.gameId = game.id;
-
         redis.set('Current:' + socket.userid, JSON.stringify(game));
         redis.zadd('Games', game.id, JSON.stringify(game));
 
@@ -186,16 +185,51 @@ io.on('connection', function (socket) {
 
     socket.on('onLeaveGame', function () {
         redis.zrangebyscoreAsync('Games', socket.gameId, socket.gameId).then(function (game) {
+            if (game) {
+                game = JSON.parse(game);
+
+                game.players.forEach(function (player) {
+                    redis.del('Current:' + player.id);
+                });
+
+                game.players = _.without(game.players, _.findWhere(game.players, {id: socket.userid}));
+
+                if (game.players.length == 0) {
+                    redis.zremrangebyscore('Games', socket.gameId, socket.gameId);
+                } else {
+                    redis.zremrangebyscore('Games', socket.gameId, socket.gameId);
+                    redis.zadd('Games', game.id, JSON.stringify(game));
+                }
+
+                io.emit('afterLeaveGame', {
+                    game: game
+                });
+
+                delete socket.gameId;
+            }
+        });
+    });
+
+    socket.on('onJoinGame', function (game) {
+        redis.zrangebyscoreAsync('Games', game.id, game.id).then(function (game) {
             game = JSON.parse(game);
 
-            redis.del('Current:' + socket.userid);
-            redis.zremrangebyscore('Games', socket.gameId, socket.gameId);
-
-            io.emit('afterLeaveGame', {
-                game: game
+            game.players.push({
+                id: socket.userid,
+                username: socket.username
             });
 
-            delete socket.gameId;
+            socket.gameId = game.id;
+
+            game.players.forEach(function (player) {
+                redis.set('Current:' + player.id, JSON.stringify(game));
+            });
+            redis.zremrangebyscore('Games', game.id, game.id);
+            redis.zadd('Games', game.id, JSON.stringify(game));
+
+            io.emit('afterJoinGame', {
+                game: game
+            });
         });
     });
 

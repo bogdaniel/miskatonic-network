@@ -25,7 +25,7 @@
                 <li{% if app.url == '/' %} class="active"{% endif %}><a href="/">Miskatonic Network</a></li>
                 <li{% if '/cards' in app.url %} class="active"{% endif %}><a href="/cards">Cards</a></li>
                 <li{% if '/deck-builder' in app.url %} class="active"{% endif %}><a href="/deck-builder">Deck Builder</a></li>
-                {% if app.game.status == 'lobby' %}
+                {% if not app.game or app.game.status == 'lobby' %}
                     <li{% if '/lobby' in app.url %} class="active"{% endif %}><a href="/lobby">Lobby</a></li>
                 {% else %}
                     <li{% if '/play' in app.url %} class="active"{% endif %}><a href="/play">Play</a></li>
@@ -33,7 +33,7 @@
                 <li{% if '/about' in app.url %} class="active"{% endif %}><a href="/about">About</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                {% if app.game.status != 'lobby' %}
+                {% if app.game and app.game.status != 'lobby' %}
                     <li><a href="/leave">Leave game</a></li>
                 {% endif %}
                 <li><a href="#">X Games</a></li>
