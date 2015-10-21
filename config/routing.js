@@ -112,7 +112,7 @@ router.get('/play', firewall.restrict, function (req, res) {
     var enemyId;
 
     req.session.game.players.forEach(function (player) {
-        if (player.id === req.session.user.id) {
+        if (player.id == req.session.user.id) {
             playerId = player.id;
         } else {
             enemyId = player.id;
