@@ -13,6 +13,7 @@ var routing = require('./config/routing');
 var moment = require('moment');
 var redis = require('redis').createClient();
 var Promise = require('bluebird');
+var _ = require('underscore');
 
 Promise.promisifyAll(redis);
 
@@ -164,8 +165,12 @@ io.on('connection', function (socket) {
     });
 
     socket.on('onCreateGame', function (data) {
+        if (socket.gameId) {
+            return;
+        }
+
         var game = {
-            id: (new Date).getTime(),
+            id: (new Date()).getTime(),
             title: data.title,
             status: 'lobby',
             is_started: false,
@@ -188,29 +193,33 @@ io.on('connection', function (socket) {
             if (game) {
                 game = JSON.parse(game);
 
+                game.players = _.without(game.players, _.findWhere(game.players, {id: socket.userid}));
                 game.players.forEach(function (player) {
-                    redis.del('Current:' + player.id);
+                    redis.set('Current:' + player.id, JSON.stringify(game));
                 });
 
-                game.players = _.without(game.players, _.findWhere(game.players, {id: socket.userid}));
-
-                if (game.players.length == 0) {
+                if (game.players.length === 0) {
                     redis.zremrangebyscore('Games', socket.gameId, socket.gameId);
                 } else {
                     redis.zremrangebyscore('Games', socket.gameId, socket.gameId);
                     redis.zadd('Games', game.id, JSON.stringify(game));
                 }
 
+                redis.del('Current:' + socket.userid);
+                delete socket.gameId;
+
                 io.emit('afterLeaveGame', {
                     game: game
                 });
-
-                delete socket.gameId;
             }
         });
     });
 
     socket.on('onJoinGame', function (game) {
+        if (socket.gameId) {
+            return;
+        }
+
         redis.zrangebyscoreAsync('Games', game.id, game.id).then(function (game) {
             game = JSON.parse(game);
 
