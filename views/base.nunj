@@ -25,10 +25,17 @@
                 <li{% if app.url == '/' %} class="active"{% endif %}><a href="/">Miskatonic Network</a></li>
                 <li{% if '/cards' in app.url %} class="active"{% endif %}><a href="/cards">Cards</a></li>
                 <li{% if '/deck-builder' in app.url %} class="active"{% endif %}><a href="/deck-builder">Deck Builder</a></li>
-                <li{% if '/play' in app.url %} class="active"{% endif %}><a href="/play">Play</a></li>
+                {% if app.gameId %}
+                    <li{% if '/play' in app.url %} class="active"{% endif %}><a href="/play">Play</a></li>
+                {% else %}
+                    <li{% if '/lobby' in app.url %} class="active"{% endif %}><a href="/lobby">Lobby</a></li>
+                {% endif %}
                 <li{% if '/about' in app.url %} class="active"{% endif %}><a href="/about">About</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
+                {% if app.gameId %}
+                    <li><a href="/leave">Leave game</a></li>
+                {% endif %}
                 <li><a href="#">X Games</a></li>
                 {% if not app.user %}
                     <li{% if '/registration' in app.url %} class="active"{% endif %}><a href="/registration">Registration</a></li>

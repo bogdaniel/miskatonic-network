@@ -26,6 +26,44 @@ $(function () {
         });
     });
 
+    $(document).on('click', '#create-game', function () {
+        socket.emit('onCreateGame', {
+            title: $('#game-title').val()
+        });
+
+        $('#panel-create-game').hide();
+        $('#panel-start-game').show();
+
+        $('#player-1').text(username);
+    });
+
+    socket.on('afterCreateGame', function (data) {
+        var game = data.game;
+
+        var gameListContent = game.title + '<br/>';
+        gameListContent += game.players[0].username;
+        if (game.players[0].id != userid) {
+            gameListContent += '<button id="join-game">Join</button>';
+        }
+
+        var gameList = $('<div>').attr('id', 'game-' + game.id).html(gameListContent).append($('<hr>'));
+
+        $('#game-list').prepend(gameList);
+    });
+
+    $(document).on('click', '#leave-game', function () {
+        socket.emit('onLeaveGame');
+
+        $('#panel-create-game').show();
+        $('#panel-start-game').hide();
+    });
+
+    socket.on('afterLeaveGame', function (data) {
+        var game = data.game;
+
+        $('#game-' + game.id).remove();
+    });
+
     socket.on('afterCardDraw', function (data) {
         var drawDeckCounter;
         var drawDeck;

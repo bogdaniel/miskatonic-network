@@ -64,7 +64,48 @@ router.get('/deck-builder', firewall.restrict, function (req, res) {
     res.render('deck-builder.nunj');
 });
 
-router.get('/play', function (req, res) {
+router.get('/lobby', firewall.restrict, function (req, res) {
+    return Promise.all([
+        redis.zrevrangeAsync('Games', 0, -1).then(redisHelper.dataToJSON)
+    ]).then(function (result) {
+        var games = result[0];
+
+        res.render('lobby.nunj', {
+            games: games
+        });
+    });
+});
+
+router.get('/leave', firewall.restrict, function (req, res) {
+    delete req.session.gameId;
+    redis.del('Current:' + req.session.user.id);
+
+    //TODO
+    //check if last player, then delete all game data
+
+    /*
+     redis.del(rStoryDeck);
+     redis.del(rStoryCards);
+
+     redis.del(rPlayerDeck);
+     redis.del(rPlayerHand);
+     redis.del(rPlayerDiscard);
+     redis.del(rPlayerPlayed);
+     redis.del(rPlayerCommitted);
+
+     redis.del(rEnemyDeck);
+     redis.del(rEnemyHand);
+     redis.del(rEnemyDiscard);
+     redis.del(rEnemyPlayed);
+     redis.del(rEnemyCommitted);
+     */
+
+    res.redirect('/lobby');
+});
+
+router.get('/play', firewall.restrict, function (req, res) {
+    console.log(req.session.gameId);
+
     var gameId = 1;
     var playerId = 1;
     var enemyId = 2;
@@ -188,21 +229,6 @@ router.get('/play', function (req, res) {
             enemyPlayed: enemyPlayed,
             enemyCommitted: enemyCommitted
         });
-
-        redis.del(rStoryDeck);
-        redis.del(rStoryCards);
-
-        redis.del(rPlayerDeck);
-        redis.del(rPlayerHand);
-        redis.del(rPlayerDiscard);
-        redis.del(rPlayerPlayed);
-        redis.del(rPlayerCommitted);
-
-        redis.del(rEnemyDeck);
-        redis.del(rEnemyHand);
-        redis.del(rEnemyDiscard);
-        redis.del(rEnemyPlayed);
-        redis.del(rEnemyCommitted);
     });
 });
 

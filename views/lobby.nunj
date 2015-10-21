@@ -1,0 +1,49 @@
+{% extends "base.nunj" %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <h1>Lobby</h1>
+
+            <div class="col-xs-6" id="game-list">
+                {% for game in games %}
+                    <div id="game-{{ game.id }}">
+                        {{ game.title }}<br/>
+                        {{ game.players[0].username }}
+                        {% if game.players[1] %}
+                            VS {{ game.players[1].username }}
+                        {% else %}
+                            {% if game.players[0].id != app.user.id %}
+                                <button id="join-game">Join</button>
+                            {% endif %}
+                        {% endif %}
+                        <hr/>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="col-xs-6">
+                <div id="panel-create-game"{% if app.game %} style="display: none;"{% endif %}>
+                    <div>
+                        <label for="game-title">Game title</label>
+                        <input id="game-title" type="text" value="{{ app.user.username }}' game"/>
+                    </div>
+                    <div>
+                        <label for="allow_spectators">Allow spectators</label>
+                        <input id="allow_spectators" type="checkbox" value="1"/>
+                    </div>
+                    <div>
+                        <button id="create-game">Create</button>
+                    </div>
+                </div>
+                <div id="panel-start-game"{% if app.game %} style="display: block;"{% endif %}>
+                    <div id="player-1">{% if app.game %}{{ app.game.players[0].username }}{% endif %}</div>
+                    <div id="player-2">{% if app.game %}{{ app.game.players[1].username }}{% endif %}</div>
+                    <div>
+                        <button id="start-game">Start</button>
+                        <button id="leave-game">Leave</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

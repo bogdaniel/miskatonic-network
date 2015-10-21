@@ -53,12 +53,25 @@ app.use(function (req, res, next) {
         };
     }
 
-    res.locals.app = {
-        url: req.url,
-        user: req.session.user
-    };
+    var userId = null;
 
-    next();
+    if (req.session.user) {
+        userId = req.session.user.id;
+    }
+
+    redis.getAsync('Current:' + userId).then(function (game) {
+        game = JSON.parse(game);
+
+        req.session.game = game;
+
+        res.locals.app = {
+            url: req.url,
+            user: req.session.user,
+            game: game
+        };
+
+        next();
+    });
 });
 app.use(routing);
 app.use(function (req, res, next) {
@@ -76,6 +89,14 @@ nunjucks.configure(__dirname + '/views', {
 io.on('connection', function (socket) {
     socket.username = socket.handshake.query.username;
     socket.userid = socket.handshake.query.userid;
+
+    redis.getAsync('Current:' + socket.userid).then(function (game) {
+        if (game) {
+            game = JSON.parse(game);
+
+            socket.gameId = game.id;
+        }
+    });
 
     function leaveRoom() {
         var room = socket.room;
@@ -142,6 +163,42 @@ io.on('connection', function (socket) {
         leaveRoom();
     });
 
+    socket.on('onCreateGame', function (data) {
+        var game = {
+            id: (new Date).getTime(),
+            title: data.title,
+            status: 'lobby',
+            is_started: false,
+            players: [{id: socket.userid, username: socket.username}],
+            allow_spectators: false,
+            created_at: moment().format('YYYY-MM-DD HH:mm:ss')
+        };
+
+        socket.gameId = game.id;
+
+        redis.set('Current:' + socket.userid, JSON.stringify(game));
+        redis.zadd('Games', game.id, JSON.stringify(game));
+
+        io.emit('afterCreateGame', {
+            game: game
+        });
+    });
+
+    socket.on('onLeaveGame', function () {
+        redis.zrangebyscoreAsync('Games', socket.gameId, socket.gameId).then(function (game) {
+            game = JSON.parse(game);
+
+            redis.del('Current:' + socket.userid);
+            redis.zremrangebyscore('Games', socket.gameId, socket.gameId);
+
+            io.emit('afterLeaveGame', {
+                game: game
+            });
+
+            delete socket.gameId;
+        });
+    });
+
     socket.on('onCardDraw', function (data) {
         var gameId = 1;
         var rDeck = 'Deck:' + gameId + ':' + socket.userid;
@@ -150,7 +207,7 @@ io.on('connection', function (socket) {
         redis.spopAsync(rDeck).then(function (card) {
             redis.sadd(rHand, card);
 
-            socket.emit('afterCardDraw', {
+            io.emit('afterCardDraw', {
                 userid: socket.userid,
                 card: JSON.parse(card)
             });
