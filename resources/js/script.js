@@ -50,7 +50,7 @@ $(function () {
             $('#player-2').text('');
         }
 
-        if (game.players[0].id == userid || game.players.length == 2) {
+        if (game.players[0].id == userId || game.players.length == 2) {
             join.hide();
         }
 
@@ -112,6 +112,21 @@ $(function () {
         renderGameItem(game);
     });
 
+    $(document).on('click', '#start-game', function () {
+        socket.emit('onStartGame');
+    });
+
+    socket.on('afterStartGame', function (data) {
+        var game = data.game;
+        var container = $('div.game[data-id="' + game.id + '"]');
+
+        container.remove();
+
+        if (game.players[0].id == userId || game.players[1].id == userId) {
+            window.location = '/play';
+        }
+    });
+
     $(document).on('click', '.row-player .draw-deck', function () {
         socket.emit('onCardDraw', {
             amount: 1
@@ -124,7 +139,7 @@ $(function () {
         var handDeckCounter;
         var handDeck;
 
-        if (data.userid == userid) {
+        if (data.userId == userId) {
             drawDeckCounter = $('.row-player .draw-deck .counter');
             drawDeck = parseInt(drawDeckCounter.text()) - 1;
             drawDeckCounter.text(drawDeck);

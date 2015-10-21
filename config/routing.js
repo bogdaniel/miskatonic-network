@@ -77,38 +77,47 @@ router.get('/lobby', firewall.restrict, function (req, res) {
 });
 
 router.get('/leave', firewall.restrict, function (req, res) {
-    delete req.session.gameId;
-    redis.del('Current:' + req.session.user.id);
+    redis.zrangebyscoreAsync('Games', req.session.game.id, req.session.game.id).then(function (game) {
+        game = JSON.parse(game);
+        game.players = _.without(game.players, _.findWhere(game.players, {id: req.session.user.id + ''}));
 
-    //TODO
-    //check if last player, then delete all game data
+        game.players.forEach(function (player) {
+            redis.set('Current:' + player.id, JSON.stringify(game));
+        });
+        redis.del('Current:' + req.session.user.id);
+        redis.zremrangebyscore('Games', game.id, game.id);
+        redis.zadd('Games', game.id, JSON.stringify(game));
 
-    /*
-     redis.del(rStoryDeck);
-     redis.del(rStoryCards);
+        var gameId = game.id;
 
-     redis.del(rPlayerDeck);
-     redis.del(rPlayerHand);
-     redis.del(rPlayerDiscard);
-     redis.del(rPlayerPlayed);
-     redis.del(rPlayerCommitted);
+        redis.del('Deck:' + gameId + ':' + req.session.user.id);
+        redis.del('Hand:' + gameId + ':' + req.session.user.id);
+        redis.del('Discard:' + gameId + ':' + req.session.user.id);
+        redis.del('Played:' + gameId + ':' + req.session.user.id);
+        redis.del('Committed:' + gameId + ':' + req.session.user.id);
 
-     redis.del(rEnemyDeck);
-     redis.del(rEnemyHand);
-     redis.del(rEnemyDiscard);
-     redis.del(rEnemyPlayed);
-     redis.del(rEnemyCommitted);
-     */
+        if (game.players.length === 0) {
+            redis.del('StoryDeck:' + gameId);
+            redis.del('StoryCards:' + gameId);
+            redis.zremrangebyscore('Games', gameId, gameId);
+        }
 
-    res.redirect('/lobby');
+        res.redirect('/lobby');
+    });
 });
 
 router.get('/play', firewall.restrict, function (req, res) {
-    console.log(req.session.gameId);
+    var gameId = req.session.game.id;
+    var playerId;
+    var enemyId;
 
-    var gameId = 1;
-    var playerId = 1;
-    var enemyId = 2;
+    req.session.game.players.forEach(function (player) {
+        if (player.id === req.session.user.id) {
+            playerId = player.id;
+        } else {
+            enemyId = player.id;
+        }
+    });
 
     var rStoryDeck = 'StoryDeck:' + gameId;
     var rStoryCards = 'StoryCards:' + gameId;

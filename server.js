@@ -89,13 +89,13 @@ nunjucks.configure(__dirname + '/views', {
 
 io.on('connection', function (socket) {
     socket.username = socket.handshake.query.username;
-    socket.userid = socket.handshake.query.userid;
+    socket.userId = socket.handshake.query.userId;
 
-    redis.getAsync('Current:' + socket.userid).then(function (game) {
+    redis.getAsync('Current:' + socket.userId).then(function (game) {
         if (game) {
             game = JSON.parse(game);
 
-            socket.gameId = game.id;
+            socket.game = game;
         }
     });
 
@@ -165,7 +165,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('onCreateGame', function (data) {
-        if (socket.gameId) {
+        if (socket.game) {
             return;
         }
 
@@ -174,13 +174,13 @@ io.on('connection', function (socket) {
             title: data.title,
             status: 'lobby',
             is_started: false,
-            players: [{id: socket.userid, username: socket.username}],
+            players: [{id: socket.userId, username: socket.username}],
             allow_spectators: false,
             created_at: moment().format('YYYY-MM-DD HH:mm:ss')
         };
 
-        socket.gameId = game.id;
-        redis.set('Current:' + socket.userid, JSON.stringify(game));
+        socket.game = game;
+        redis.set('Current:' + socket.userId, JSON.stringify(game));
         redis.zadd('Games', game.id, JSON.stringify(game));
 
         io.emit('afterCreateGame', {
@@ -189,24 +189,28 @@ io.on('connection', function (socket) {
     });
 
     socket.on('onLeaveGame', function () {
-        redis.zrangebyscoreAsync('Games', socket.gameId, socket.gameId).then(function (game) {
+        if (!socket.game) {
+            return;
+        }
+
+        redis.zrangebyscoreAsync('Games', socket.game.id, socket.game.id).then(function (game) {
             if (game) {
                 game = JSON.parse(game);
 
-                game.players = _.without(game.players, _.findWhere(game.players, {id: socket.userid}));
+                game.players = _.without(game.players, _.findWhere(game.players, {id: socket.userId}));
                 game.players.forEach(function (player) {
                     redis.set('Current:' + player.id, JSON.stringify(game));
                 });
+                redis.del('Current:' + socket.userId);
 
                 if (game.players.length === 0) {
-                    redis.zremrangebyscore('Games', socket.gameId, socket.gameId);
+                    redis.zremrangebyscore('Games', game.id, game.id);
                 } else {
-                    redis.zremrangebyscore('Games', socket.gameId, socket.gameId);
+                    redis.zremrangebyscore('Games', game.id, game.id);
                     redis.zadd('Games', game.id, JSON.stringify(game));
                 }
 
-                redis.del('Current:' + socket.userid);
-                delete socket.gameId;
+                delete socket.game;
 
                 io.emit('afterLeaveGame', {
                     game: game
@@ -216,7 +220,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('onJoinGame', function (game) {
-        if (socket.gameId) {
+        if (socket.game) {
             return;
         }
 
@@ -224,11 +228,11 @@ io.on('connection', function (socket) {
             game = JSON.parse(game);
 
             game.players.push({
-                id: socket.userid,
+                id: socket.userId,
                 username: socket.username
             });
 
-            socket.gameId = game.id;
+            socket.game = game;
 
             game.players.forEach(function (player) {
                 redis.set('Current:' + player.id, JSON.stringify(game));
@@ -242,16 +246,41 @@ io.on('connection', function (socket) {
         });
     });
 
+    socket.on('onStartGame', function () {
+        if (socket.game.players.length !== 2) {
+            return;
+        }
+
+        redis.zrangebyscoreAsync('Games', socket.game.id, socket.game.id).then(function (game) {
+            game = JSON.parse(game);
+
+            game.status = 'in-game';
+
+            game.players.forEach(function (player) {
+                redis.set('Current:' + player.id, JSON.stringify(game));
+            });
+            redis.zremrangebyscore('Games', game.id, game.id);
+            redis.zadd('Games', game.id, JSON.stringify(game));
+
+            io.emit('afterStartGame', {
+                game: game
+            });
+        });
+    });
+
     socket.on('onCardDraw', function (data) {
-        var gameId = 1;
-        var rDeck = 'Deck:' + gameId + ':' + socket.userid;
-        var rHand = 'Hand:' + gameId + ':' + socket.userid;
+        if (!(socket.game && socket.game.status == 'in-game')) {
+            return;
+        }
+
+        var rDeck = 'Deck:' + socket.game.id + ':' + socket.userId;
+        var rHand = 'Hand:' + socket.game.id + ':' + socket.userId;
 
         redis.spopAsync(rDeck).then(function (card) {
             redis.sadd(rHand, card);
 
             io.emit('afterCardDraw', {
-                userid: socket.userid,
+                userId: socket.userId,
                 card: JSON.parse(card)
             });
         });
