@@ -1,6 +1,6 @@
 "use strict";
 
-var mysql = require('../database/mysql');
+var mysql = require('../../mysql');
 var Promise = require('bluebird');
 
 module.exports = mysql.Model.extend({

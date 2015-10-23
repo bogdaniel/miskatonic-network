@@ -8,9 +8,9 @@ var redis = require('redis').createClient();
 var redisHelper = require('../../libs/helpers/redis');
 var _ = require('underscore');
 var Promise = require('bluebird');
-var User = require('../models/user');
-var Set = require('../models/set');
-var Card = require('../models/card');
+var User = require('../database/mysql/models/user');
+var Set = require('../database/mysql/models/set');
+var Card = require('../database/mysql/models/card');
 
 Promise.promisifyAll(redis);
 
