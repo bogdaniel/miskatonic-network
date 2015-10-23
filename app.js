@@ -87,11 +87,11 @@ nunjucks.configure(__dirname + '/src/views', {
     express: app
 });
 
-var chatSocket = require('./src/socket.io/chat');
-
-io.on('connection', function (socket) {
+io.of('/lobby').on('connection', function (socket) {
     socket.username = socket.handshake.query.username;
     socket.userId = socket.handshake.query.userId;
+
+    //
 
     redis.getAsync('current:' + socket.userId).then(function (game) {
         if (game) {
@@ -99,18 +99,6 @@ io.on('connection', function (socket) {
 
             socket.game = game;
         }
-    });
-
-    socket.on('join', function (room) {
-        chatSocket.join(socket, room);
-    });
-
-    socket.on('message', function (message) {
-        chatSocket.message(socket, message);
-    });
-
-    socket.on('disconnect', function () {
-        chatSocket.leave(socket);
     });
 
     socket.on('onCreateGame', function (data) {
@@ -216,6 +204,13 @@ io.on('connection', function (socket) {
             });
         });
     });
+});
+
+io.of('/play').on('connection', function (socket) {
+    socket.username = socket.handshake.query.username;
+    socket.userId = socket.handshake.query.userId;
+
+    //
 
     socket.on('onCardDraw', function (data) {
         if (!(socket.game && socket.game.status == 'in-game')) {
@@ -233,6 +228,25 @@ io.on('connection', function (socket) {
                 card: JSON.parse(card)
             });
         });
+    });
+});
+
+var chatSocket = require('./src/socket.io/chat');
+
+io.of('/chat').on('connection', function (socket) {
+    socket.username = socket.handshake.query.username;
+    socket.userId = socket.handshake.query.userId;
+
+    socket.on('join', function (room) {
+        chatSocket.join(socket, room);
+    });
+
+    socket.on('message', function (message) {
+        chatSocket.message(socket, message);
+    });
+
+    socket.on('disconnect', function () {
+        chatSocket.leave(socket);
     });
 });
 
