@@ -105,7 +105,7 @@ io.on('connection', function (socket) {
         chatSocket.join(socket, room);
     });
 
-    socket.on('chatMessage', function (message) {
+    socket.on('message', function (message) {
         chatSocket.message(socket, message);
     });
 

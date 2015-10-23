@@ -15,18 +15,18 @@ $(function () {
     $('form.chat').submit(function (e) {
         e.preventDefault();
 
-        socket.emit('chatMessage', $('#m').val());
+        socket.emit('message', $('#m').val());
         $('#m').val('');
     });
 
-    socket.on('userList', function (users) {
+    socket.on('users', function (users) {
         $('.chat-users').empty();
         $.each(users, function (key, user) {
             $('.chat-users').prepend($('<div>').text(user.username));
         });
     });
 
-    socket.on('archiveMessages', function (messages) {
+    socket.on('messages', function (messages) {
         var container = $('.chat-messages');
         container.empty();
         $.each(messages, function (key, message) {
@@ -35,7 +35,7 @@ $(function () {
         container.scrollTop(container[0].scrollHeight);
     });
 
-    socket.on('chatMessage', function (message) {
+    socket.on('message', function (message) {
         var container = $('.chat-messages');
         container.append($('<div>').text(message.username + ', ' + message.created_at + ', ' + message.message));
         container.scrollTop(container[0].scrollHeight);
@@ -51,5 +51,6 @@ $(function () {
         $(this).addClass('active');
 
         socket.emit('join', room);
+        console.log('emittted');
     });
 });

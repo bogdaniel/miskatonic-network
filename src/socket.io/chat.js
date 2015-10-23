@@ -2,17 +2,17 @@ var moment = require('moment');
 var redis = require('../database/redis/chat');
 
 function getUsersInRoom(socket, room) {
-    var userList = [];
+    var users = [];
 
     for (var socketId in socket.server.nsps['/'].adapter.rooms[room]) {
         var userObj = socket.server.sockets.connected[socketId];
 
-        userList.push({
+        users.push({
             username: userObj.username
         });
     }
 
-    return userList;
+    return users;
 }
 
 exports.join = function (socket, room) {
@@ -21,12 +21,12 @@ exports.join = function (socket, room) {
     socket.join(room);
     socket.room = room;
 
-    var userList = getUsersInRoom(socket, room);
+    var users = getUsersInRoom(socket, room);
 
-    socket.server.to(room).emit('userList', userList);
+    socket.server.to(room).emit('users', users);
 
     redis.all(room).then(function (messages) {
-        socket.emit('archiveMessages', messages);
+        socket.emit('messages', messages);
     });
 };
 
@@ -43,7 +43,7 @@ exports.message = function (socket, message) {
         created_at: moment().format('YYYY-MM-DD HH:mm:ss')
     };
 
-    socket.server.to(socket.room).emit('chatMessage', message);
+    socket.server.to(socket.room).emit('message', message);
 
     redis.save(socket.room, message);
 };
@@ -54,7 +54,7 @@ exports.leave = function (socket) {
     socket.leave(room);
     socket.room = null;
 
-    var userList = getUsersInRoom(socket, room);
+    var users = getUsersInRoom(socket, room);
 
-    socket.server.to(room).emit('userList', userList);
+    socket.server.to(room).emit('users', users);
 };
