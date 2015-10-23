@@ -12,6 +12,9 @@ var User = require('../database/mysql/models/user');
 var Set = require('../database/mysql/models/set');
 var Card = require('../database/mysql/models/card');
 
+var lobbyController = require('../controllers/lobby');
+
+
 Promise.promisifyAll(redis);
 
 router.post('/login', function (req, res) {
@@ -64,42 +67,32 @@ router.get('/deck-builder', firewall.restrict, function (req, res) {
     res.render('deck-builder.nunj');
 });
 
-router.get('/lobby', firewall.restrict, function (req, res) {
-    return Promise.all([
-        redis.zrevrangeAsync('Games', 0, -1).then(redisHelper.dataToJSON)
-    ]).then(function (result) {
-        var games = result[0];
-
-        res.render('lobby.nunj', {
-            games: games
-        });
-    });
-});
+router.get('/lobby', firewall.restrict, lobbyController.index);
 
 router.get('/leave', firewall.restrict, function (req, res) {
-    redis.zrangebyscoreAsync('Games', req.session.game.id, req.session.game.id).then(function (game) {
+    redis.zrangebyscoreAsync('games', req.session.game.id, req.session.game.id).then(function (game) {
         game = JSON.parse(game);
         game.players = _.without(game.players, _.findWhere(game.players, {id: req.session.user.id + ''}));
 
         game.players.forEach(function (player) {
-            redis.set('Current:' + player.id, JSON.stringify(game));
+            redis.set('current:' + player.id, JSON.stringify(game));
         });
-        redis.del('Current:' + req.session.user.id);
-        redis.zremrangebyscore('Games', game.id, game.id);
-        redis.zadd('Games', game.id, JSON.stringify(game));
+        redis.del('current:' + req.session.user.id);
+        redis.zremrangebyscore('games', game.id, game.id);
+        redis.zadd('games', game.id, JSON.stringify(game));
 
         var gameId = game.id;
 
-        redis.del('Deck:' + gameId + ':' + req.session.user.id);
-        redis.del('Hand:' + gameId + ':' + req.session.user.id);
-        redis.del('Discard:' + gameId + ':' + req.session.user.id);
-        redis.del('Played:' + gameId + ':' + req.session.user.id);
-        redis.del('Committed:' + gameId + ':' + req.session.user.id);
+        redis.del('deck:' + gameId + ':' + req.session.user.id);
+        redis.del('hand:' + gameId + ':' + req.session.user.id);
+        redis.del('discard:' + gameId + ':' + req.session.user.id);
+        redis.del('played:' + gameId + ':' + req.session.user.id);
+        redis.del('committed:' + gameId + ':' + req.session.user.id);
 
         if (game.players.length === 0) {
-            redis.del('StoryDeck:' + gameId);
-            redis.del('StoryCards:' + gameId);
-            redis.zremrangebyscore('Games', gameId, gameId);
+            redis.del('storyDeck:' + gameId);
+            redis.del('storyCards:' + gameId);
+            redis.zremrangebyscore('games', gameId, gameId);
         }
 
         res.redirect('/lobby');

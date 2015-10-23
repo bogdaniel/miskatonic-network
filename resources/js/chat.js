@@ -1,13 +1,6 @@
 $(function () {
     "use strict";
 
-    function joinRoom(username, room) {
-        socket.emit('join', {
-            username: username,
-            room: room
-        });
-    }
-
     var parsedUrl = parseUri(window.location.href);
     var room = 'general';
 
@@ -16,7 +9,7 @@ $(function () {
     }
 
     if (parsedUrl.path == '/') {
-        joinRoom(username, room);
+        socket.emit('join', room);
     }
 
     $('form.chat').submit(function (e) {
@@ -37,7 +30,6 @@ $(function () {
         var container = $('.chat-messages');
         container.empty();
         $.each(messages, function (key, message) {
-            message = $.parseJSON(message);
             container.append($('<div>').text(message.username + ', ' + message.created_at + ', ' + message.message));
         });
         container.scrollTop(container[0].scrollHeight);
@@ -58,6 +50,6 @@ $(function () {
         $('a.channel').removeClass('active');
         $(this).addClass('active');
 
-        joinRoom(username, room);
+        socket.emit('join', room);
     });
 });

@@ -60,7 +60,7 @@ app.use(function (req, res, next) {
         userId = req.session.user.id;
     }
 
-    redis.getAsync('Current:' + userId).then(function (game) {
+    redis.getAsync('current:' + userId).then(function (game) {
         game = JSON.parse(game);
 
         req.session.game = game;
@@ -87,11 +87,13 @@ nunjucks.configure(__dirname + '/src/views', {
     express: app
 });
 
+var chatSocket = require('./src/socket.io/chat');
+
 io.on('connection', function (socket) {
     socket.username = socket.handshake.query.username;
     socket.userId = socket.handshake.query.userId;
 
-    redis.getAsync('Current:' + socket.userId).then(function (game) {
+    redis.getAsync('current:' + socket.userId).then(function (game) {
         if (game) {
             game = JSON.parse(game);
 
@@ -99,69 +101,16 @@ io.on('connection', function (socket) {
         }
     });
 
-    function leaveRoom() {
-        var room = socket.room;
-
-        socket.leave(socket.room);
-        socket.room = null;
-
-        var userList = [];
-        for (var socketId in io.nsps['/'].adapter.rooms[room]) {
-            var userObj = io.sockets.connected[socketId];
-
-            userList.push({
-                username: userObj.username
-            });
-        }
-
-        io.to(room).emit('userList', userList);
-    }
-
-    socket.on('join', function (user) {
-        leaveRoom();
-
-        socket.join(user.room);
-        socket.room = user.room;
-
-        var userList = [];
-        for (var socketId in io.nsps['/'].adapter.rooms[socket.room]) {
-            var userObj = io.sockets.connected[socketId];
-
-            userList.push({
-                username: userObj.username
-            });
-        }
-
-        io.to(socket.room).emit('userList', userList);
-
-        redis.lrange('chat_' + socket.room, 0, -1, function (error, reply) {
-            socket.emit('archiveMessages', reply);
-        });
+    socket.on('join', function (room) {
+        chatSocket.join(socket, room);
     });
 
     socket.on('chatMessage', function (message) {
-        message = message.trim();
-
-        if (message) {
-            message = {
-                username: socket.username,
-                message: message,
-                created_at: moment().format('YYYY-MM-DD HH:mm:ss')
-            };
-
-            io.to(socket.room).emit('chatMessage', message);
-
-            redis.rpush('chat_' + socket.room, JSON.stringify(message));
-            redis.llen('chat_' + socket.room, function (error, reply) {
-                if (reply > 50) {
-                    redis.lpop('chat_' + socket.room);
-                }
-            });
-        }
+        chatSocket.message(socket, message);
     });
 
     socket.on('disconnect', function () {
-        leaveRoom();
+        chatSocket.leave(socket);
     });
 
     socket.on('onCreateGame', function (data) {
@@ -180,8 +129,8 @@ io.on('connection', function (socket) {
         };
 
         socket.game = game;
-        redis.set('Current:' + socket.userId, JSON.stringify(game));
-        redis.zadd('Games', game.id, JSON.stringify(game));
+        redis.set('current:' + socket.userId, JSON.stringify(game));
+        redis.zadd('games', game.id, JSON.stringify(game));
 
         io.emit('afterCreateGame', {
             game: game
@@ -193,21 +142,21 @@ io.on('connection', function (socket) {
             return;
         }
 
-        redis.zrangebyscoreAsync('Games', socket.game.id, socket.game.id).then(function (game) {
+        redis.zrangebyscoreAsync('games', socket.game.id, socket.game.id).then(function (game) {
             if (game) {
                 game = JSON.parse(game);
 
                 game.players = _.without(game.players, _.findWhere(game.players, {id: socket.userId}));
                 game.players.forEach(function (player) {
-                    redis.set('Current:' + player.id, JSON.stringify(game));
+                    redis.set('current:' + player.id, JSON.stringify(game));
                 });
-                redis.del('Current:' + socket.userId);
+                redis.del('current:' + socket.userId);
 
                 if (game.players.length === 0) {
-                    redis.zremrangebyscore('Games', game.id, game.id);
+                    redis.zremrangebyscore('games', game.id, game.id);
                 } else {
-                    redis.zremrangebyscore('Games', game.id, game.id);
-                    redis.zadd('Games', game.id, JSON.stringify(game));
+                    redis.zremrangebyscore('games', game.id, game.id);
+                    redis.zadd('games', game.id, JSON.stringify(game));
                 }
 
                 delete socket.game;
@@ -224,7 +173,7 @@ io.on('connection', function (socket) {
             return;
         }
 
-        redis.zrangebyscoreAsync('Games', game.id, game.id).then(function (game) {
+        redis.zrangebyscoreAsync('games', game.id, game.id).then(function (game) {
             game = JSON.parse(game);
 
             game.players.push({
@@ -235,10 +184,10 @@ io.on('connection', function (socket) {
             socket.game = game;
 
             game.players.forEach(function (player) {
-                redis.set('Current:' + player.id, JSON.stringify(game));
+                redis.set('current:' + player.id, JSON.stringify(game));
             });
-            redis.zremrangebyscore('Games', game.id, game.id);
-            redis.zadd('Games', game.id, JSON.stringify(game));
+            redis.zremrangebyscore('games', game.id, game.id);
+            redis.zadd('games', game.id, JSON.stringify(game));
 
             io.emit('afterJoinGame', {
                 game: game
@@ -251,16 +200,16 @@ io.on('connection', function (socket) {
             return;
         }
 
-        redis.zrangebyscoreAsync('Games', socket.game.id, socket.game.id).then(function (game) {
+        redis.zrangebyscoreAsync('games', socket.game.id, socket.game.id).then(function (game) {
             game = JSON.parse(game);
 
             game.status = 'in-game';
 
             game.players.forEach(function (player) {
-                redis.set('Current:' + player.id, JSON.stringify(game));
+                redis.set('current:' + player.id, JSON.stringify(game));
             });
-            redis.zremrangebyscore('Games', game.id, game.id);
-            redis.zadd('Games', game.id, JSON.stringify(game));
+            redis.zremrangebyscore('games', game.id, game.id);
+            redis.zadd('games', game.id, JSON.stringify(game));
 
             io.emit('afterStartGame', {
                 game: game
@@ -273,8 +222,8 @@ io.on('connection', function (socket) {
             return;
         }
 
-        var rDeck = 'Deck:' + socket.game.id + ':' + socket.userId;
-        var rHand = 'Hand:' + socket.game.id + ':' + socket.userId;
+        var rDeck = 'deck:' + socket.game.id + ':' + socket.userId;
+        var rHand = 'hand:' + socket.game.id + ':' + socket.userId;
 
         redis.spopAsync(rDeck).then(function (card) {
             redis.sadd(rHand, card);
