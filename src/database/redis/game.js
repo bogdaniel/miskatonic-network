@@ -1,3 +1,6 @@
+"use strict";
+
+var _ = require('underscore');
 var redis = require('../redis');
 var Promise = require('bluebird');
 
@@ -14,7 +17,7 @@ function tableNames(gameId, playerId) {
         discardPile: 'discardPile:' + gameId + ':' + playerId,
         playedCards: 'playedCards:' + gameId + ':' + playerId,
         committedCards: 'committedCards:' + gameId + ':' + playerId
-    }
+    };
 }
 
 exports.all = function () {

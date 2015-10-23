@@ -64,8 +64,8 @@ function replaceGet(url, getKey, getValue) {
     return parsed.path + uri;
 }
 
-function getNamespace() {
-    var parsedUrl = parseUri(window.location.href);
+function getNamespace(url) {
+    var parsedUrl = parseUri(url);
 
     if (parsedUrl.path == '/') {
         return '/chat';

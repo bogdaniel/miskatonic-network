@@ -1,3 +1,5 @@
+"use strict";
+
 var moment = require('moment');
 var redis = require('../database/redis/chat');
 

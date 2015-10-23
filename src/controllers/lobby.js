@@ -1,3 +1,5 @@
+"use strict";
+
 var moment = require('moment');
 var random = require('../helpers/random');
 var game = require('../database/redis/game');
