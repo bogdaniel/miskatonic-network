@@ -51,6 +51,5 @@ $(function () {
         $(this).addClass('active');
 
         socket.emit('join', room);
-        console.log('emittted');
     });
 });
