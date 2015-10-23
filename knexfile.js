@@ -1,13 +1,12 @@
-var common = require('./common');
-var config = common.config();
+var config = require('./config').all();
 
 module.exports = {
     client: 'mysql2',
     connection: {
-        host: config.database_host,
-        user: config.database_user,
-        password: config.database_password,
-        database: config.database_name
+        host: config.mysql_host,
+        user: config.mysql_user,
+        password: config.mysql_password,
+        database: config.mysql_name
     },
     migrations: {
         directory: __dirname + '/storage/migrations',

@@ -13,7 +13,7 @@ module.exports = function (grunt) {
             },
             all: [
                 '**/*.js',
-                '!web/**/*',
+                '!public/**/*',
                 '!bower_components/**/*',
                 '!node_modules/**/*'
             ]
@@ -21,7 +21,7 @@ module.exports = function (grunt) {
         uglify: {
             build: {
                 files: {
-                    'web/build/script.js': [
+                    'public/build/script.js': [
                         'resources/js/*.js'
                     ]
                 }
@@ -30,12 +30,12 @@ module.exports = function (grunt) {
         concat: {
             build: {
                 files: {
-                    'web/build/<%= pkg.name %>.min.js': [
+                    'public/build/<%= pkg.name %>.min.js': [
                         'bower_components/jquery/dist/jquery.min.js',
                         'bower_components/bootstrap/dist/js/bootstrap.min.js',
-                        'web/build/script.js'
+                        'public/build/script.js'
                     ],
-                    'web/build/<%= pkg.name %>.min.css': [
+                    'public/build/<%= pkg.name %>.min.css': [
                         'bower_components/bootstrap/dist/css/bootstrap.min.css',
                         'bower_components/bootstrap/dist/css/bootstrap-theme.min.css',
                         'resources/css/*.css'

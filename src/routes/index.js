@@ -2,15 +2,15 @@
 
 var expressPromiseRouter = require('express-promise-router');
 var router = expressPromiseRouter();
-var firewall = require('../security/firewall');
+var firewall = require('../../security/firewall');
 var scrypt = require('scrypt-for-humans');
 var redis = require('redis').createClient();
-var redisHelper = require('../libs/helpers/redis');
+var redisHelper = require('../../libs/helpers/redis');
 var _ = require('underscore');
 var Promise = require('bluebird');
-var User = require('./model').User;
-var Set = require('./model').Set;
-var Card = require('./model').Card;
+var User = require('../models/user');
+var Set = require('../models/set');
+var Card = require('../models/card');
 
 Promise.promisifyAll(redis);
 

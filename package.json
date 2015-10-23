@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "license": "MIT",
   "description": "Web based platform to play with others.",
+  "homepage": "http://www.miskatonic-network.com",
   "repository": {
     "type": "git",
     "url": "https://github.com/lordjancso/miskatonic-network.git"
@@ -12,7 +13,7 @@
     "grunt": "echo '=> grunting' && grunt default",
     "deploy": "echo '=> building' && npm install && npm run bower -s && npm run grunt -s"
   },
-  "script": "server.js",
+  "script": "app.js",
   "dependencies": {
     "bluebird": "^2.10.2",
     "body-parser": "^1.14.1",
@@ -32,7 +33,6 @@
     "knex": "^0.8.6",
     "moment": "^2.10.6",
     "mysql2": "^0.15.8",
-    "node-gyp": "^3.0.3",
     "nunjucks": "^2.1.0",
     "pm2": "^0.15.7",
     "redis": "^2.1.0",

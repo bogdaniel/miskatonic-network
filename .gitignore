@@ -1,8 +1,10 @@
 /.idea/*
 /bower_components/*
 /node_modules/*
-/web/build/*
-!.gitkeep
+/public/build/*
+
 /ecosystem.json
 /env.json
 /npm-debug.log
+
+!.gitkeep

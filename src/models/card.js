@@ -1,32 +1,9 @@
 "use strict";
 
-var knex = require('./database');
-var bookshelf = require('bookshelf')(knex);
+var mysql = require('../database/mysql');
 var Promise = require('bluebird');
-var scrypt = require('scrypt-for-humans');
 
-exports.User = bookshelf.Model.extend({
-    tableName: 'users',
-    hasTimestamps: true
-}, {
-    login: Promise.method(function (email, password) {
-        if (!email || !password) {
-            throw new Error('Email and password are both required');
-        }
-
-        return new this({email: email.toLowerCase().trim()}).fetch({require: true}).tap(function (user) {
-            return scrypt.verifyHash(password, user.get('password'));
-        });
-    })
-});
-
-exports.Set = bookshelf.Model.extend({
-    tableName: 'sets'
-}, {
-    //
-});
-
-exports.Card = bookshelf.Model.extend({
+module.exports = mysql.Model.extend({
     tableName: 'cards'
 }, {
     filter: Promise.method(function (query) {

@@ -5,11 +5,11 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var session = require('express-session');
-var knex = require('./config/database');
+var knex = require('./src/database/mysql/knex');
 var knexSessionStore = require('connect-session-knex')(session);
 var bodyParser = require('body-parser');
 var nunjucks = require('nunjucks');
-var routing = require('./config/routing');
+var routes = require('./src/routes');
 var moment = require('moment');
 var redis = require('redis').createClient();
 var Promise = require('bluebird');
@@ -17,7 +17,7 @@ var _ = require('underscore');
 
 Promise.promisifyAll(redis);
 
-app.use(express.static(__dirname + '/web'));
+app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(session({
     secret: 'keyboard cat',
@@ -74,7 +74,7 @@ app.use(function (req, res, next) {
         next();
     });
 });
-app.use(routing);
+app.use(routes);
 app.use(function (req, res, next) {
     res.status(404).send('Sorry cant find that!');
 });
@@ -83,7 +83,7 @@ app.use(function (err, req, res, next) {
     res.status(500).send('Something broke!');
 });
 
-nunjucks.configure(__dirname + '/views', {
+nunjucks.configure(__dirname + '/src/views', {
     express: app
 });
 
