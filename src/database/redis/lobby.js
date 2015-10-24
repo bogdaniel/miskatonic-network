@@ -53,6 +53,11 @@ exports.create = function (game, playerId) {
 exports.update = function (game) {
     redis.zremrangebyscore('games', game.id, game.id);
     redis.zadd('games', game.id, JSON.stringify(game));
+
+    game.players.forEach(function (player) {
+        redis.del('current:' + player.id);
+        redis.set('current:' + player.id, JSON.stringify(game));
+    })
 };
 
 exports.delete = function (game) {
@@ -61,8 +66,8 @@ exports.delete = function (game) {
     redis.zremrangebyscore('games', game.id, game.id);
 };
 
-exports.join = function (gameId, playerId) {
-    //
+exports.join = function (game, playerId) {
+    redis.set('current:' + playerId, JSON.stringify(game));
 };
 
 exports.leave = function (gameId, playerId) {

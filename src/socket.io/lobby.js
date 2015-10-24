@@ -51,3 +51,24 @@ exports.leave = function (socket) {
         });
     });
 };
+
+exports.join = function(socket, data) {
+    if (socket.game) {
+        return;
+    }
+
+    redis.get(data.id).then(function (game) {
+        game.players.push({
+            id: socket.userId,
+            username: socket.username
+        });
+
+        socket.game = game;
+
+        redis.update(game);
+
+        socket.server.of('/lobby').emit('joined', {
+            game: game
+        });
+    });
+};

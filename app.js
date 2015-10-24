@@ -109,31 +109,8 @@ io.of('/lobby').on('connection', function (socket) {
         lobbySocket.leave(socket);
     });
 
-    socket.on('join', function (game) {
-        if (socket.game) {
-            return;
-        }
-
-        redis.zrangebyscoreAsync('games', game.id, game.id).then(function (game) {
-            game = JSON.parse(game);
-
-            game.players.push({
-                id: socket.userId,
-                username: socket.username
-            });
-
-            socket.game = game;
-
-            game.players.forEach(function (player) {
-                redis.set('current:' + player.id, JSON.stringify(game));
-            });
-            redis.zremrangebyscore('games', game.id, game.id);
-            redis.zadd('games', game.id, JSON.stringify(game));
-
-            io.emit('joined', {
-                game: game
-            });
-        });
+    socket.on('join', function (data) {
+        lobbySocket.join(socket, data);
     });
 
     socket.on('start', function () {
