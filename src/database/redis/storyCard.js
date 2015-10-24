@@ -6,7 +6,7 @@ var Promise = require('bluebird');
 Promise.promisifyAll(redis);
 
 exports.getActive = function (gameId) {
-    redis.smembersAsync('storyCards:' + gameId).then(function (cards) {
+    return redis.smembersAsync('storyCards:' + gameId).then(function (cards) {
         if (!cards.length) {
             return false;
         }

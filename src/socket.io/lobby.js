@@ -3,6 +3,8 @@
 var _ = require('underscore');
 var moment = require('moment');
 var redis = require('../database/redis/lobby');
+var prepare = require('../database/redis/prepare');
+var Card = require('../database/mysql/models/card');
 
 exports.current = function (socket) {
     return redis.current(socket.userId).then(function (game) {
@@ -12,7 +14,7 @@ exports.current = function (socket) {
 
 exports.create = function (socket, data) {
     if (socket.game) {
-        return;
+        return false;
     }
 
     var game = {
@@ -36,10 +38,10 @@ exports.create = function (socket, data) {
 
 exports.leave = function (socket) {
     if (!socket.game) {
-        return;
+        return false;
     }
 
-    redis.get(socket.game.id).then(function (game) {
+    return redis.get(socket.game.id).then(function (game) {
         game.players = _.without(game.players, _.findWhere(game.players, {id: socket.userId}));
 
         redis.leave(game.id, socket.userId);
@@ -60,10 +62,10 @@ exports.leave = function (socket) {
 
 exports.join = function (socket, data) {
     if (socket.game) {
-        return;
+        return false;
     }
 
-    redis.get(data.id).then(function (game) {
+    return redis.get(data.id).then(function (game) {
         game.players.push({
             id: socket.userId,
             username: socket.username
@@ -81,10 +83,24 @@ exports.join = function (socket, data) {
 
 exports.start = function (socket) {
     if (!socket.game || socket.game.players.length !== 2) {
-        return;
+        return false;
     }
 
-    redis.get(socket.game.id).then(function (game) {
+    var game = socket.game;
+
+    return Card.where('type', '=', 'Story').where('set_id', '=', 1).query(function (qb) {
+        qb.orderByRaw('RAND()');
+    }).fetchAll().then(cards => cards.toJSON()).then(function (cards) {
+        prepare.storyCards(game.id, cards);
+    }).then(function () {
+        return Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
+            qb.orderByRaw('RAND()').limit(50);
+        }).fetchAll().then(cards => cards.toJSON());
+    }).then(function (cards) {
+        game.players.forEach(function (player) {
+            prepare.playerDeck(game.id, player.id, cards);
+        });
+    }).then(function () {
         game.status = 'in-game';
 
         redis.update(game);

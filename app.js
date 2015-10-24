@@ -82,7 +82,9 @@ nunjucks.configure(__dirname + '/src/views', {
     express: app
 });
 
+var chatSocket = require('./src/socket.io/chat');
 var lobbySocket = require('./src/socket.io/lobby');
+var playSocket = require('./src/socket.io/play');
 
 io.of('/lobby').on('connection', function (socket) {
     socket.username = socket.handshake.query.username;
@@ -111,14 +113,12 @@ io.of('/play').on('connection', function (socket) {
     socket.username = socket.handshake.query.username;
     socket.userId = socket.handshake.query.userId;
 
-    lobbySocket.current(socket);
+    lobbySocket.current(socket).then(function () {
+        playSocket.displayTable(socket);
+    });
 
     socket.on('leave', function () {
         lobbySocket.leave(socket);
-    });
-
-    socket.on('connection', function () {
-        console.log('conn');
     });
 
     socket.on('onCardDraw', function (data) {
@@ -139,8 +139,6 @@ io.of('/play').on('connection', function (socket) {
         });
     });
 });
-
-var chatSocket = require('./src/socket.io/chat');
 
 io.of('/chat').on('connection', function (socket) {
     socket.username = socket.handshake.query.username;
