@@ -95,7 +95,7 @@ body {
     max-width: 350px;
 }
 
-.row-enemy {
+.row-opponent {
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
