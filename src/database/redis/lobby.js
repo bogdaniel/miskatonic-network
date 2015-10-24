@@ -57,7 +57,7 @@ exports.update = function (game) {
     game.players.forEach(function (player) {
         redis.del('current:' + player.id);
         redis.set('current:' + player.id, JSON.stringify(game));
-    })
+    });
 };
 
 exports.delete = function (game) {
