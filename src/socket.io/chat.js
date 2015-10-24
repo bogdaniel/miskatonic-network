@@ -7,7 +7,7 @@ function getUsersInRoom(socket, room) {
     var users = [];
 
     for (var socketId in socket.server.nsps['/chat'].adapter.rooms[room]) {
-        var userObj = socket.server.sockets.connected[socketId];
+        var userObj = socket.server.nsps['/chat'].connected[socketId];
 
         users.push({
             username: userObj.handshake.query.username
