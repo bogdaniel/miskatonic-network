@@ -97,9 +97,13 @@ exports.start = function (socket) {
             qb.orderByRaw('RAND()').limit(50);
         }).fetchAll().then(cards => cards.toJSON());
     }).then(function (cards) {
-        game.players.forEach(function (player) {
-            prepare.playerDeck(game.id, player.id, cards);
-        });
+        prepare.playerDeck(game.id, game.players[0].id, cards);
+    }).then(function () {
+        return Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
+            qb.orderByRaw('RAND()').limit(50);
+        }).fetchAll().then(cards => cards.toJSON());
+    }).then(function (cards) {
+        prepare.playerDeck(game.id, game.players[1].id, cards);
     }).then(function () {
         game.status = 'in-game';
 
