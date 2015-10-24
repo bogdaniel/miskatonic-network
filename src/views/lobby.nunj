@@ -39,7 +39,7 @@
                     <div id="player-2">{% if app.game %}{{ app.game.players[1].username }}{% endif %}</div>
                     <div>
                         <button id="start-game">Start</button>
-                        <button id="leave-game">Leave</button>
+                        <button class="leave-game">Leave</button>
                     </div>
                 </div>
             </div>

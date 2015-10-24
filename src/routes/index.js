@@ -69,37 +69,10 @@ router.get('/deck-builder', firewall.restrict, function (req, res) {
 
 router.get('/lobby', firewall.restrict, lobbyController.index);
 
-router.get('/leave', firewall.restrict, function (req, res) {
-    redis.zrangebyscoreAsync('games', req.session.game.id, req.session.game.id).then(function (game) {
-        game = JSON.parse(game);
-        game.players = _.without(game.players, _.findWhere(game.players, {id: req.session.user.id + ''}));
-
-        game.players.forEach(function (player) {
-            redis.set('current:' + player.id, JSON.stringify(game));
-        });
-        redis.del('current:' + req.session.user.id);
-        redis.zremrangebyscore('games', game.id, game.id);
-        redis.zadd('games', game.id, JSON.stringify(game));
-
-        var gameId = game.id;
-
-        redis.del('deck:' + gameId + ':' + req.session.user.id);
-        redis.del('hand:' + gameId + ':' + req.session.user.id);
-        redis.del('discard:' + gameId + ':' + req.session.user.id);
-        redis.del('played:' + gameId + ':' + req.session.user.id);
-        redis.del('committed:' + gameId + ':' + req.session.user.id);
-
-        if (game.players.length === 0) {
-            redis.del('storyDeck:' + gameId);
-            redis.del('storyCards:' + gameId);
-            redis.zremrangebyscore('games', gameId, gameId);
-        }
-
-        res.redirect('/lobby');
-    });
-});
-
 router.get('/play', firewall.restrict, function (req, res) {
+    res.render('play.nunj');
+
+    /*
     var gameId = req.session.game.id;
     var playerId;
     var enemyId;
@@ -231,7 +204,7 @@ router.get('/play', firewall.restrict, function (req, res) {
             enemyPlayed: enemyPlayed,
             enemyCommitted: enemyCommitted
         });
-    });
+    });*/
 });
 
 router.get('/about', function (req, res) {

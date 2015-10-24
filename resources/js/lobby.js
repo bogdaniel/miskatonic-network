@@ -65,11 +65,17 @@ $(function () {
         renderGameItem(game);
     });
 
-    $(document).on('click', '#leave-game', function () {
+    $(document).on('click', '.leave-game', function (e) {
+        e.preventDefault();
+
         socket.emit('leave');
 
         $('#panel-create-game').show();
         $('#panel-start-game').hide();
+
+        if ($(this).attr('href')) {
+            window.location = $(this).attr('href');
+        }
     });
 
     socket.on('left', function (data) {

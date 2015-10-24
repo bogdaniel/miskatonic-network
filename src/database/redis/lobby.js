@@ -54,10 +54,8 @@ exports.current = function (playerId) {
 };
 
 exports.create = function (game, playerId) {
-    return Promise.all([
-        redis.set('current:' + playerId, JSON.stringify(game)),
-        redis.zadd('games', game.id, JSON.stringify(game))
-    ]);
+    redis.set('current:' + playerId, JSON.stringify(game));
+    redis.zadd('games', game.id, JSON.stringify(game));
 };
 
 exports.update = function (game) {

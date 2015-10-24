@@ -10,7 +10,6 @@ var knexSessionStore = require('connect-session-knex')(session);
 var bodyParser = require('body-parser');
 var nunjucks = require('nunjucks');
 var routes = require('./src/routes');
-var moment = require('moment');
 var redis = require('redis').createClient();
 var Promise = require('bluebird');
 var _ = require('underscore');
@@ -60,9 +59,7 @@ app.use(function (req, res, next) {
         userId = req.session.user.id;
     }
 
-    redis.getAsync('current:' + userId).then(function (game) {
-        game = JSON.parse(game);
-
+    require('./src/database/redis/lobby').current(userId).then(function (game) {
         res.locals.app = {
             url: req.url,
             user: req.session.user,
@@ -114,7 +111,15 @@ io.of('/play').on('connection', function (socket) {
     socket.username = socket.handshake.query.username;
     socket.userId = socket.handshake.query.userId;
 
-    //
+    lobbySocket.current(socket);
+
+    socket.on('leave', function () {
+        lobbySocket.leave(socket);
+    });
+
+    socket.on('connection', function () {
+        console.log('conn');
+    });
 
     socket.on('onCardDraw', function (data) {
         if (!(socket.game && socket.game.status == 'in-game')) {

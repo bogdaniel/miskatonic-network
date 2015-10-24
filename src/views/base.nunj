@@ -34,7 +34,7 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if app.game and app.game.status != 'lobby' %}
-                    <li><a href="/leave">Leave game</a></li>
+                    <li><a href="/lobby" class="leave-game">Leave game</a></li>
                 {% endif %}
                 <li><a href="#">X Games</a></li>
                 {% if not app.user %}
