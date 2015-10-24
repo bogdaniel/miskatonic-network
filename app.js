@@ -91,15 +91,7 @@ io.of('/lobby').on('connection', function (socket) {
     socket.username = socket.handshake.query.username;
     socket.userId = socket.handshake.query.userId;
 
-    //
-
-    redis.getAsync('current:' + socket.userId).then(function (game) {
-        if (game) {
-            game = JSON.parse(game);
-
-            socket.game = game;
-        }
-    });
+    lobbySocket.current(socket);
 
     socket.on('create', function (data) {
         lobbySocket.create(socket, data);
@@ -114,25 +106,7 @@ io.of('/lobby').on('connection', function (socket) {
     });
 
     socket.on('start', function () {
-        if (socket.game.players.length !== 2) {
-            return;
-        }
-
-        redis.zrangebyscoreAsync('games', socket.game.id, socket.game.id).then(function (game) {
-            game = JSON.parse(game);
-
-            game.status = 'in-game';
-
-            game.players.forEach(function (player) {
-                redis.set('current:' + player.id, JSON.stringify(game));
-            });
-            redis.zremrangebyscore('games', game.id, game.id);
-            redis.zadd('games', game.id, JSON.stringify(game));
-
-            io.emit('started', {
-                game: game
-            });
-        });
+        lobbySocket.start(socket);
     });
 });
 

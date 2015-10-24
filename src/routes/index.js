@@ -13,7 +13,7 @@ var Set = require('../database/mysql/models/set');
 var Card = require('../database/mysql/models/card');
 
 var lobbyController = require('../controllers/lobby');
-
+var playController = require('../controllers/play');
 
 Promise.promisifyAll(redis);
 

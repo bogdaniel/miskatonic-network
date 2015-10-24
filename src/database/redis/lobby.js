@@ -43,6 +43,16 @@ exports.get = function (gameId) {
     });
 };
 
+exports.current = function (playerId) {
+    return redis.getAsync('current:' + playerId).then(function (game) {
+        if (!game) {
+            return false;
+        }
+
+        return JSON.parse(game);
+    });
+};
+
 exports.create = function (game, playerId) {
     return Promise.all([
         redis.set('current:' + playerId, JSON.stringify(game)),

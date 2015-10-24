@@ -4,6 +4,12 @@ var _ = require('underscore');
 var moment = require('moment');
 var redis = require('../database/redis/lobby');
 
+exports.current = function (socket) {
+    return redis.current(socket.userId).then(function (game) {
+        socket.game = game;
+    });
+};
+
 exports.create = function (socket, data) {
     if (socket.game) {
         return;
@@ -52,7 +58,7 @@ exports.leave = function (socket) {
     });
 };
 
-exports.join = function(socket, data) {
+exports.join = function (socket, data) {
     if (socket.game) {
         return;
     }
@@ -68,6 +74,22 @@ exports.join = function(socket, data) {
         redis.update(game);
 
         socket.server.of('/lobby').emit('joined', {
+            game: game
+        });
+    });
+};
+
+exports.start = function (socket) {
+    if (!socket.game || socket.game.players.length !== 2) {
+        return;
+    }
+
+    redis.get(socket.game.id).then(function (game) {
+        game.status = 'in-game';
+
+        redis.update(game);
+
+        socket.server.of('/lobby').emit('started', {
             game: game
         });
     });
