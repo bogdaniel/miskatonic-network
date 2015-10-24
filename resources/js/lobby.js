@@ -50,7 +50,7 @@ $(function () {
     }
 
     $(document).on('click', '#create-game', function () {
-        socket.emit('onCreateGame', {
+        socket.emit('create', {
             title: $('#game-title').val(),
             allow_spectators: $('#allow_spectators').val()
         });
@@ -59,27 +59,27 @@ $(function () {
         $('#panel-start-game').show();
     });
 
-    socket.on('afterCreateGame', function (data) {
+    socket.on('created', function (data) {
         var game = data.game;
 
         renderGameItem(game);
     });
 
     $(document).on('click', '#leave-game', function () {
-        socket.emit('onLeaveGame');
+        socket.emit('leave');
 
         $('#panel-create-game').show();
         $('#panel-start-game').hide();
     });
 
-    socket.on('afterLeaveGame', function (data) {
+    socket.on('left', function (data) {
         var game = data.game;
 
         renderGameItem(game);
     });
 
     $(document).on('click', '#join-game', function () {
-        socket.emit('onJoinGame', {
+        socket.emit('join', {
             id: $(this).closest('div.game').data('id')
         });
 
@@ -87,17 +87,17 @@ $(function () {
         $('#panel-start-game').show();
     });
 
-    socket.on('afterJoinGame', function (data) {
+    socket.on('joined', function (data) {
         var game = data.game;
 
         renderGameItem(game);
     });
 
     $(document).on('click', '#start-game', function () {
-        socket.emit('onStartGame');
+        socket.emit('start');
     });
 
-    socket.on('afterStartGame', function (data) {
+    socket.on('started', function (data) {
         var game = data.game;
         var container = $('div.game[data-id="' + game.id + '"]');
 
@@ -109,12 +109,12 @@ $(function () {
     });
 
     $(document).on('click', '.row-player .draw-deck', function () {
-        socket.emit('onCardDraw', {
+        socket.emit('draw', {
             amount: 1
         });
     });
 
-    socket.on('afterCardDraw', function (data) {
+    socket.on('drawn', function (data) {
         var drawDeckCounter;
         var drawDeck;
         var handDeckCounter;

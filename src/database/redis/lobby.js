@@ -1,6 +1,5 @@
 "use strict";
 
-var _ = require('underscore');
 var redis = require('../redis');
 var Promise = require('bluebird');
 
@@ -52,23 +51,13 @@ exports.create = function (game, playerId) {
 };
 
 exports.update = function (game) {
-    this.delete(game);
-    this.create(game);
+    redis.zremrangebyscore('games', game.id, game.id);
+    redis.zadd('games', game.id, JSON.stringify(game));
 };
 
 exports.delete = function (game) {
     redis.del('storyDeck:' + game.id);
     redis.del('storyCards:' + game.id);
-
-    game.players.forEach(function (player) {
-        redis.del('current:' + player.id);
-        redis.del('deck:' + game.id + ':' + player.id);
-        redis.del('hand:' + game.id + ':' + player.id);
-        redis.del('discardPile:' + game.id + ':' + player.id);
-        redis.del('playedCards:' + game.id + ':' + player.id);
-        redis.del('committedCards:' + game.id + ':' + player.id);
-    });
-
     redis.zremrangebyscore('games', game.id, game.id);
 };
 
@@ -77,15 +66,10 @@ exports.join = function (gameId, playerId) {
 };
 
 exports.leave = function (gameId, playerId) {
-    var self = this;
-
-    self.get(gameId).then(function (game) {
-        game.players = _.without(game.players, _.findWhere(game.players, {id: playerId}));
-
-        if (game.players.length === 0) {
-            self.delete(game);
-        } else {
-            self.update(game);
-        }
-    });
+    redis.del('current:' + playerId);
+    redis.del('deck:' + gameId + ':' + playerId);
+    redis.del('hand:' + gameId + ':' + playerId);
+    redis.del('discardPile:' + gameId + ':' + playerId);
+    redis.del('playedCards:' + gameId + ':' + playerId);
+    redis.del('committedCards:' + gameId + ':' + playerId);
 };

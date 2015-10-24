@@ -63,8 +63,6 @@ app.use(function (req, res, next) {
     redis.getAsync('current:' + userId).then(function (game) {
         game = JSON.parse(game);
 
-        req.session.game = game;
-
         res.locals.app = {
             url: req.url,
             user: req.session.user,
@@ -87,6 +85,8 @@ nunjucks.configure(__dirname + '/src/views', {
     express: app
 });
 
+var lobbySocket = require('./src/socket.io/lobby');
+
 io.of('/lobby').on('connection', function (socket) {
     socket.username = socket.handshake.query.username;
     socket.userId = socket.handshake.query.userId;
@@ -101,62 +101,15 @@ io.of('/lobby').on('connection', function (socket) {
         }
     });
 
-    socket.on('onCreateGame', function (data) {
-        if (socket.game) {
-            return;
-        }
-
-        var game = {
-            id: (new Date()).getTime(),
-            title: data.title,
-            status: 'lobby',
-            is_started: false,
-            players: [{id: socket.userId, username: socket.username}],
-            allow_spectators: false,
-            created_at: moment().format('YYYY-MM-DD HH:mm:ss')
-        };
-
-        socket.game = game;
-        redis.set('current:' + socket.userId, JSON.stringify(game));
-        redis.zadd('games', game.id, JSON.stringify(game));
-
-        io.emit('afterCreateGame', {
-            game: game
-        });
+    socket.on('create', function (data) {
+        lobbySocket.create(socket, data);
     });
 
-    socket.on('onLeaveGame', function () {
-        if (!socket.game) {
-            return;
-        }
-
-        redis.zrangebyscoreAsync('games', socket.game.id, socket.game.id).then(function (game) {
-            if (game) {
-                game = JSON.parse(game);
-
-                game.players = _.without(game.players, _.findWhere(game.players, {id: socket.userId}));
-                game.players.forEach(function (player) {
-                    redis.set('current:' + player.id, JSON.stringify(game));
-                });
-                redis.del('current:' + socket.userId);
-
-                if (game.players.length === 0) {
-                    redis.zremrangebyscore('games', game.id, game.id);
-                } else {
-                    redis.zremrangebyscore('games', game.id, game.id);
-                    redis.zadd('games', game.id, JSON.stringify(game));
-                }
-
-                delete socket.game;
-
-                io.emit('afterLeaveGame', {
-                    game: game
-                });
-            }
-        });
+    socket.on('leave', function () {
+        lobbySocket.leave(socket);
     });
 
-    socket.on('onJoinGame', function (game) {
+    socket.on('join', function (game) {
         if (socket.game) {
             return;
         }
@@ -177,13 +130,13 @@ io.of('/lobby').on('connection', function (socket) {
             redis.zremrangebyscore('games', game.id, game.id);
             redis.zadd('games', game.id, JSON.stringify(game));
 
-            io.emit('afterJoinGame', {
+            io.emit('joined', {
                 game: game
             });
         });
     });
 
-    socket.on('onStartGame', function () {
+    socket.on('start', function () {
         if (socket.game.players.length !== 2) {
             return;
         }
@@ -199,7 +152,7 @@ io.of('/lobby').on('connection', function (socket) {
             redis.zremrangebyscore('games', game.id, game.id);
             redis.zadd('games', game.id, JSON.stringify(game));
 
-            io.emit('afterStartGame', {
+            io.emit('started', {
                 game: game
             });
         });
