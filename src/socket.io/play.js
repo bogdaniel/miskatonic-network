@@ -23,11 +23,14 @@ exports.displayTable = function (socket) {
                 socket.emit('playerDeckCount', count);
             } else {
                 socket.emit('opponentDeckCount', count);
+                hand.count(game.id, player.id).then(function (count) {
+                    socket.emit('opponentHandCount', count);
+                });
             }
         });
     });
 
-    hand.all(game.id, socket.userId).then(function(cards) {
+    hand.all(game.id, socket.userId).then(function (cards) {
         socket.emit('playerHand', cards);
     });
 
@@ -38,8 +41,12 @@ exports.displayTable = function (socket) {
 exports.playerDrawCard = function (socket) {
     var game = socket.game;
 
-    deck.draw(game.id, socket.userId).then(function(data) {
+    deck.draw(game.id, socket.userId).then(function (data) {
         socket.emit('playerDrawnCard', data);
         socket.broadcast.emit('opponenetDrawnCard', data.count);
+    }).then(function () {
+        return hand.count(game.id, socket.userId);
+    }).then(function (count) {
+        socket.broadcast.emit('opponentHandCount', count);
     });
 };

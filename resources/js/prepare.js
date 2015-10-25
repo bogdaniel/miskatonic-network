@@ -58,7 +58,7 @@ $(function () {
         $('.row-opponent .draw-deck .count').text(count);
     });
 
-    socket.on('opponentHandDeckCount', function (count) {
+    socket.on('opponentHandCount', function (count) {
         $('.row-opponent .hand-deck .count').text(count);
     });
 
