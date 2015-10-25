@@ -65,4 +65,13 @@ $(function () {
     socket.on('playerDrawDeckCount', function (count) {
         $('.row-player .draw-deck .counter').text(count);
     });
+
+    socket.on('playerHandCards', function (cards) {
+        $('.row-hand').empty();
+
+        $.each(cards, function (index, card) {
+            var cardFrame = renderCard(card);
+            $('.row-hand').append(cardFrame);
+        });
+    });
 });

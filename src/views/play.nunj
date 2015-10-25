@@ -100,15 +100,7 @@
                     <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
                 </div>
             </div>
-            <div class="row-hand">
-                {#
-                {% for card in playerHand %}
-                    <div class="card-frame card-active">
-                        <img src="/images/cards/{{ card.image }}" class="img-responsive"/>
-                    </div>
-                {% endfor %}
-                #}
-            </div>
+            <div class="row-hand"></div>
             <div class="row-player">
                 <div class="card-frame draw-deck card-back">
                     <span class="header">Draw (<span class="counter"></span>)</span>
