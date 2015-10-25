@@ -1,6 +1,10 @@
 $(function () {
     "use strict";
 
+    $(document).on('click', '.leave-game', function () {
+        socket.emit('leave');
+    });
+
     $(document).on('click', '.row-player .draw-deck', function () {
         socket.emit('playerDrawCard', {
             amount: 1

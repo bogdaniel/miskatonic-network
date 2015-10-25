@@ -72,10 +72,6 @@ $(function () {
 
         $('#panel-create-game').show();
         $('#panel-start-game').hide();
-
-        if ($(this).attr('href')) {
-            window.location = $(this).attr('href');
-        }
     });
 
     socket.on('left', function (data) {
