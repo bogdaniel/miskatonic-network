@@ -14,7 +14,7 @@
                 <div id="panel-create-game"{% if app.game %} style="display: none;"{% endif %}>
                     <div>
                         <label for="game-title">Game title</label>
-                        <input id="game-title" type="text" value="{{ app.user.username }}' game"/>
+                        <input id="game-title" type="text" value="{{ app.user.username }}'s game"/>
                     </div>
                     <div>
                         <label for="allow_spectators">Allow spectators</label>
