@@ -113,36 +113,4 @@ $(function () {
             window.location = '/play';
         }
     });
-
-    $(document).on('click', '.row-player .draw-deck', function () {
-        socket.emit('draw', {
-            amount: 1
-        });
-    });
-
-    socket.on('drawn', function (data) {
-        var drawDeckCounter;
-        var drawDeck;
-        var handDeckCounter;
-        var handDeck;
-
-        if (data.userId == userId) {
-            drawDeckCounter = $('.row-player .draw-deck .counter');
-            drawDeck = parseInt(drawDeckCounter.text()) - 1;
-            drawDeckCounter.text(drawDeck);
-
-            var cardImage = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + data.card.image);
-            var cardFrame = $('<div>').addClass('card-frame card-active');
-            cardFrame.append(cardImage);
-
-            $('.row-hand').append(cardFrame);
-        } else {
-            drawDeckCounter = $('.row-enemy .draw-deck .counter');
-            handDeckCounter = $('.row-enemy .hand-deck .counter');
-            drawDeck = parseInt(drawDeckCounter.text()) - 1;
-            handDeck = parseInt(handDeckCounter.text()) + 1;
-            drawDeckCounter.text(drawDeck);
-            handDeckCounter.text(handDeck);
-        }
-    });
 });

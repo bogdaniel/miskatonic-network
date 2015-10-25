@@ -40,6 +40,10 @@
     </style>
 {% endblock %}
 
+{% block js %}
+    <script src="/build/chat.min.js"></script>
+{% endblock %}
+
 {% block body %}
     <div class="container">
         <div class="row">

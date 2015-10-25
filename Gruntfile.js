@@ -21,8 +21,9 @@ module.exports = function (grunt) {
         uglify: {
             build: {
                 files: {
-                    'public/build/script.js': [
-                        'resources/js/*.js'
+                    'public/build/scripts.js': [
+                        'resources/js/parseuri.js',
+                        'resources/js/scripts.js'
                     ]
                 }
             }
@@ -33,7 +34,19 @@ module.exports = function (grunt) {
                     'public/build/<%= pkg.name %>.min.js': [
                         'bower_components/jquery/dist/jquery.min.js',
                         'bower_components/bootstrap/dist/js/bootstrap.min.js',
-                        'public/build/script.js'
+                        'public/build/scripts.js'
+                    ],
+                    'public/build/chat.min.js': [
+                        'resources/js/chat.js'
+                    ],
+                    'public/build/lobby.min.js': [
+                        'resources/js/lobby.js'
+                    ],
+                    'public/build/play.min.js': [
+                        'resources/js/play.js'
+                    ],
+                    'public/build/prepare.min.js': [
+                        'resources/js/prepare.js'
                     ],
                     'public/build/<%= pkg.name %>.min.css': [
                         'bower_components/bootstrap/dist/css/bootstrap.min.css',

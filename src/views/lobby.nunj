@@ -1,5 +1,9 @@
 {% extends "base.nunj" %}
 
+{% block js %}
+    <script src="/build/lobby.min.js"></script>
+{% endblock %}
+
 {% block body %}
     <div class="container">
         <div class="row">

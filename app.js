@@ -121,22 +121,8 @@ io.of('/play').on('connection', function (socket) {
         lobbySocket.leave(socket);
     });
 
-    socket.on('onCardDraw', function (data) {
-        if (!(socket.game && socket.game.status == 'in-game')) {
-            return;
-        }
-
-        var rDeck = 'deck:' + socket.game.id + ':' + socket.userId;
-        var rHand = 'hand:' + socket.game.id + ':' + socket.userId;
-
-        redis.spopAsync(rDeck).then(function (card) {
-            redis.sadd(rHand, card);
-
-            io.emit('afterCardDraw', {
-                userId: socket.userId,
-                card: JSON.parse(card)
-            });
-        });
+    socket.on('playerDrawCard', function (data) {
+        playSocket.playerDrawCard(socket);
     });
 });
 
