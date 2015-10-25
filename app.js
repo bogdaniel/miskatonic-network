@@ -90,7 +90,9 @@ io.of('/lobby').on('connection', function (socket) {
     socket.username = socket.handshake.query.username;
     socket.userId = socket.handshake.query.userId;
 
-    lobbySocket.current(socket);
+    lobbySocket.current(socket).then(function () {
+        lobbySocket.displayGames(socket);
+    });
 
     socket.on('create', function (data) {
         lobbySocket.create(socket, data);

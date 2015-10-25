@@ -16,6 +16,7 @@ $(function () {
         var player1 = $('<div>').addClass('player-1');
         var player2 = $('<div>').addClass('player-2');
         var join = $('<div>').append($('<button>').attr('id', 'join-game').text('Join'));
+        var watch = $('<div>').append($('<button>').attr('id', 'watch-game').text('Watch'));
 
         if (game.players[0]) {
             player1.text(game.players[0].username);
@@ -31,8 +32,12 @@ $(function () {
             $('#player-2').text('');
         }
 
-        if (game.players[0].id == userId || game.players.length == 2) {
+        if (game.players[0].id == userId || game.players.length == 2 || game.status == 'in-game' || game.status == 'finished') {
             join.hide();
+        }
+
+        if (game.players[0].id == userId || game.status == 'finished') {
+            watch.hide();
         }
 
         players.append(player1);
@@ -40,6 +45,7 @@ $(function () {
         container.append(title);
         container.append(players);
         container.append(join);
+        container.append(watch);
         container.append($('<hr>'));
 
         if (oldContainer.length) {
@@ -48,6 +54,14 @@ $(function () {
             $('#game-list').prepend(container);
         }
     }
+
+    socket.on('gameList', function (games) {
+        $('#game-list').empty();
+
+        $.each(games, function (index, game) {
+            renderGameItem(game);
+        });
+    });
 
     $(document).on('click', '#create-game', function () {
         socket.emit('create', {
@@ -72,6 +86,7 @@ $(function () {
 
         $('#panel-create-game').show();
         $('#panel-start-game').hide();
+
     });
 
     socket.on('left', function (data) {
@@ -101,9 +116,8 @@ $(function () {
 
     socket.on('started', function (data) {
         var game = data.game;
-        var container = $('div.game[data-id="' + game.id + '"]');
 
-        container.remove();
+        renderGameItem(game);
 
         if (game.players[0].id == userId || game.players[1].id == userId) {
             window.location = '/play';

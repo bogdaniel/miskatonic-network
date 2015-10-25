@@ -12,6 +12,12 @@ exports.current = function (socket) {
     });
 };
 
+exports.displayGames = function (socket) {
+    return redis.all().then(function (games) {
+        socket.emit('gameList', games);
+    });
+};
+
 exports.create = function (socket, data) {
     if (socket.game) {
         return false;
@@ -43,6 +49,7 @@ exports.leave = function (socket) {
 
     return redis.get(socket.game.id).then(function (game) {
         game.players = _.without(game.players, _.findWhere(game.players, {id: socket.userId}));
+        game.status = 'finished';
 
         redis.leave(game.id, socket.userId);
 

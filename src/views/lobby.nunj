@@ -9,21 +9,7 @@
         <div class="row">
             <h1>Lobby</h1>
 
-            <div class="col-xs-6" id="game-list">
-                {% for game in games %}
-                    <div class="game" data-id="{{ game.id }}">
-                        <div class="title">{{ game.title }}</div>
-                        <div class="players">
-                            <div class="player-1">{{ game.players[0].username }}</div>
-                            <div class="player-2">{% if game.players[1] %}{{ game.players[1].username }}{% endif %}</div>
-                        </div>
-                        <div{% if game.players[0].id == app.user.id or game.players.length == 2 %} style="display: none;"{% endif %}>
-                            <button id="join-game">Join</button>
-                        </div>
-                        <hr/>
-                    </div>
-                {% endfor %}
-            </div>
+            <div class="col-xs-6" id="game-list"></div>
             <div class="col-xs-6">
                 <div id="panel-create-game"{% if app.game %} style="display: none;"{% endif %}>
                     <div>
