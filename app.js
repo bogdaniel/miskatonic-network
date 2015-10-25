@@ -10,11 +10,6 @@ var knexSessionStore = require('connect-session-knex')(session);
 var bodyParser = require('body-parser');
 var nunjucks = require('nunjucks');
 var routes = require('./src/routes');
-var redis = require('redis').createClient();
-var Promise = require('bluebird');
-var _ = require('underscore');
-
-Promise.promisifyAll(redis);
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended: false}));
