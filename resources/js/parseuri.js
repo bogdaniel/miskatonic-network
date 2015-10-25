@@ -65,11 +65,13 @@ function replaceGet(url, getKey, getValue) {
 }
 
 function getNamespace(url) {
-    var parsedUrl = parseUri(url);
+    if (typeof url == 'string') {
+        url = parseUri(url);
+    }
 
-    if (parsedUrl.path == '/') {
+    if (url.path == '/') {
         return '/chat';
     }
 
-    return parsedUrl.path;
+    return url.path;
 }

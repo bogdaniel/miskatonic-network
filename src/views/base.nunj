@@ -70,7 +70,8 @@
 <script type="text/javascript">
     var username = '{{ app.user.username }}';
     var userId = '{{ app.user.id }}';
-    var socket = io('http://localhost:3000' + getNamespace(window.location.href), {
+    var parsedUri = parseUri(window.location.href);
+    var socket = io('http://' + parsedUri.host + ':3000' + getNamespace(window.location.href), {
         query: 'username=' + username + '&userId=' + userId
     });
 </script>
