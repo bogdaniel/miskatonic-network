@@ -22,7 +22,9 @@ $(function () {
 
     socket.on('opponentPlayedCard', function (card) {
         var cardFrame = $.renderCard(card);
+        var handCount = $('.row-opponent .hand-deck .count');
 
+        handCount.text(parseInt(handCount.text()) - 1);
         $('.opponent.row-played').append(cardFrame);
     });
 
@@ -39,7 +41,9 @@ $(function () {
         var resourceId = data.resourceId;
         var card = data.card;
         var cardFrame = $.renderCard(card);
+        var handCount = $('.row-opponent .hand-deck .count');
 
+        handCount.text(parseInt(handCount.text()) - 1);
         $('.opponent.row-domain .domain-' + resourceId).prepend(cardFrame);
     });
 });
