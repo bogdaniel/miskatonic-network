@@ -52,13 +52,15 @@ body {
     -ms-flex-pack: justify;
     justify-content: space-between;
 
-    margin-right: 30px;
+    margin-right: 10px;
 }
 
 .col-second {
     -webkit-justify-content: space-between;
     -ms-flex-pack: justify;
     justify-content: space-between;
+
+    margin-right: 10px;
 }
 
 .row-played {
@@ -108,7 +110,9 @@ body {
     -ms-flex-align: end;
     align-items: flex-end;
 
-    max-width: 350px;
+    min-width: 170px;
+    max-width: 330px;
+    margin-right: 10px;
 }
 
 .row-opponent {
@@ -265,6 +269,10 @@ body {
 
 .highlight {
     cursor: pointer;
+}
+
+.chat {
+    margin-bottom: 5px;
 }
 
 .img-responsive {
