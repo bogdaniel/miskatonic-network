@@ -5,20 +5,6 @@ var Promise = require('bluebird');
 
 Promise.promisifyAll(redis);
 
-function tableNames(gameId, playerId) {
-    return {
-        game: 'games',
-        currentGame: 'current:' + playerId,
-        storyDeck: 'storyDeck:' + gameId,
-        storyCards: 'storyCards:' + gameId,
-        deck: 'deck:' + gameId + ':' + playerId,
-        hand: 'hand:' + gameId + ':' + playerId,
-        discardPile: 'discardPile:' + gameId + ':' + playerId,
-        playedCards: 'playedCards:' + gameId + ':' + playerId,
-        committedCards: 'committedCards:' + gameId + ':' + playerId
-    };
-}
-
 exports.all = function () {
     return redis.zrevrangeAsync('games', 0, -1).then(function (games) {
         if (!games.length) {
@@ -79,10 +65,23 @@ exports.join = function (game, playerId) {
 };
 
 exports.leave = function (gameId, playerId) {
-    redis.del('current:' + playerId);
-    redis.del('deck:' + gameId + ':' + playerId);
-    redis.del('hand:' + gameId + ':' + playerId);
-    redis.del('discardPile:' + gameId + ':' + playerId);
-    redis.del('playedCards:' + gameId + ':' + playerId);
-    redis.del('committedCards:' + gameId + ':' + playerId);
+    this.get(gameId).then(function (game) {
+        redis.del('current:' + playerId);
+        redis.del('deck:' + gameId + ':' + playerId);
+        redis.del('hand:' + gameId + ':' + playerId);
+        redis.del('discardPile:' + gameId + ':' + playerId);
+        redis.del('playedCards:' + gameId + ':' + playerId);
+
+        if (game.storyCards) {
+            game.storyCards.forEach(function (storyCard) {
+                redis.del('committedCards:' + gameId + ':' + playerId + ':' + storyCard.cid);
+            });
+        }
+
+        game.players.forEach(function (player) {
+            player.resources.forEach(function (resourceId) {
+                redis.del('resourcedCards:' + gameId + ':' + playerId + ':' + resourceId);
+            });
+        });
+    });
 };

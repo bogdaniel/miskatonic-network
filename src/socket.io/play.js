@@ -28,7 +28,7 @@ exports.displayTable = function (socket) {
             }).then(function () {
                 if (player.id === socket.userId) {
                     game.storyCards.forEach(function (storyCard) {
-                        committed.all(game.id, player.id, storyCard.id).then(function (cards) {
+                        committed.all(game.id, player.id, storyCard.cid).then(function (cards) {
                             socket.emit('playerCommittedCards', {
                                 storyCard: storyCard,
                                 cards: cards
@@ -37,7 +37,7 @@ exports.displayTable = function (socket) {
                     });
                 } else {
                     game.storyCards.forEach(function (storyCard) {
-                        committed.all(game.id, player.id, storyCard.id).then(function (cards) {
+                        committed.all(game.id, player.id, storyCard.cid).then(function (cards) {
                             socket.emit('opponentCommittedCards', {
                                 storyCard: storyCard,
                                 cards: cards
@@ -50,7 +50,7 @@ exports.displayTable = function (socket) {
             }).then(function () {
                 if (player.id !== socket.userId) {
                     hand.count(game.id, player.id).then(function (count) {
-                        socket.broadcast.emit('opponentHandCount', count);
+                        socket.emit('opponentHandCount', count);
                     });
                 }
             }).then(function () {
@@ -94,5 +94,12 @@ exports.playCard = function (socket, cardId) {
 };
 
 exports.commitCard = function (socket, data) {
-    //
+    var game = socket.game;
+
+    played.commit(game.id, socket.userId, data.storyId, data.cardId).then(function (card) {
+        socket.broadcast.emit('opponentCommittedCard', {
+            storyId: data.storyId,
+            card: card
+        });
+    });
 };

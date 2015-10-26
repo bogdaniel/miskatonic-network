@@ -28,7 +28,11 @@ exports.create = function (socket, data) {
         title: data.title,
         status: 'lobby',
         is_started: false,
-        players: [{id: socket.userId, username: socket.username}],
+        players: [{
+            id: socket.userId,
+            username: socket.username,
+            resources: [1, 2, 3]
+        }],
         allow_spectators: false,
         created_at: moment().format('YYYY-MM-DD HH:mm:ss')
     };
@@ -75,7 +79,8 @@ exports.join = function (socket, data) {
     return redis.get(data.id).then(function (game) {
         game.players.push({
             id: socket.userId,
-            username: socket.username
+            username: socket.username,
+            resources: [1, 2, 3]
         });
 
         socket.game = game;

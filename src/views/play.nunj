@@ -3,18 +3,6 @@
 {% block js %}
     <script src="/build/prepare.min.js"></script>
     <script src="/build/play.min.js"></script>
-
-    <script type="text/javascript">
-        $(function () {
-            $('.row-hand, .player.row-played').sortable({
-                items: '> div',
-                handle: 'img',
-                connectWith: '.player.row-played',
-                placeholder: 'card-highlight',
-                receive: $.playCardfromHand
-            }).disableSelection();
-        });
-    </script>
 {% endblock %}
 
 {% block css %}

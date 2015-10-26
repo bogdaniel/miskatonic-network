@@ -1,6 +1,9 @@
 $(function () {
     "use strict";
 
+    $.setSortable('.player.row-played', '.player.row-committed .col-committed', $.playCardfromHand);
+    $.setSortable('.row-hand', '.player.row-played', null);
+
     socket.on('activeStoryCards', function (cards) {
         $('.row-story').empty();
 
@@ -33,7 +36,7 @@ $(function () {
         var cards = data.cards;
 
         $('.opponent.row-committed .col-committed.committed-story-' + storyCard.cid).remove();
-        var colCommitted = $('<div>').addClass('col-committed').addClass('committed-story-' + storyCard.cid);
+        var colCommitted = $('<div>').addClass('col-committed').addClass('committed-story-' + storyCard.cid).attr('data-id', storyCard.cid);
 
         $.each(cards, function (index, card) {
             var cardFrame = $.renderCard(card);
@@ -48,7 +51,7 @@ $(function () {
         var cards = data.cards;
 
         $('.player.row-committed .col-committed.committed-story-' + storyCard.cid).remove();
-        var colCommitted = $('<div>').addClass('col-committed').addClass('committed-story-' + storyCard.cid);
+        var colCommitted = $('<div>').addClass('col-committed').addClass('committed-story-' + storyCard.cid).attr('data-id', storyCard.cid);
 
         $.each(cards, function (index, card) {
             var cardFrame = $.renderCard(card);
@@ -56,6 +59,7 @@ $(function () {
         });
 
         $('.player.row-committed').append(colCommitted);
+        $.setSortable('.player.row-committed .col-committed', false, $.commitCard);
     });
 
     socket.on('opponentDeckCount', function (count) {

@@ -20,9 +20,18 @@ $(function () {
         $('.row-opponent .draw-deck .count').text(count);
     });
 
-    socket.on('opponentPlayedCard', function(card) {
+    socket.on('opponentPlayedCard', function (card) {
         var cardFrame = $.renderCard(card);
 
         $('.opponent.row-played').append(cardFrame);
+    });
+
+    socket.on('opponentCommittedCard', function (data) {
+        var storyId = data.storyId;
+        var card = data.card;
+        var cardFrame = $.renderCard(card);
+
+        $('.opponent.row-played .card-frame[data-id=' + card.cid + ']').remove();
+        $('.opponent.row-committed .committed-story-' + storyId).append(cardFrame);
     });
 });

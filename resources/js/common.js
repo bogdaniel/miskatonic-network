@@ -14,4 +14,25 @@ $(function () {
 
         socket.emit('playCard', card.data('id'));
     };
+
+    $.commitCard = function (event, ui) {
+        var card = ui.item;
+
+        card.removeClass('card-active').addClass('card-exhausted');
+
+        socket.emit('commitCard', {
+            storyId: $(event.target).data('id'),
+            cardId: card.data('id')
+        });
+    };
+
+    $.setSortable = function (element, connection, handler) {
+        $(element).sortable({
+            items: '> div',
+            handle: 'img',
+            connectWith: connection,
+            placeholder: 'card-highlight',
+            receive: handler
+        }).disableSelection();
+    };
 });
