@@ -20,9 +20,11 @@ exports.all = function (gameId) {
 };
 
 exports.count = function (gameId) {
-    return redis.scardAsync('storyDeck:' + gameId).then(function (count) {
-        return count;
-    });
+    return redis.scardAsync('storyDeck:' + gameId);
+};
+
+exports.add = function (gameId, card) {
+    return redis.sadd('storyDeck:' + gameId, JSON.stringify(card));
 };
 
 exports.draw = function (gameId) {

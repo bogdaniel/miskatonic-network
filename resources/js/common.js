@@ -12,6 +12,6 @@ $(function () {
     $.playCardfromHand = function (event, ui) {
         var card = ui.item;
 
-
+        socket.emit('playCard', card.data('id'));
     };
 });

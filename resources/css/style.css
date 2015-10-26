@@ -137,6 +137,13 @@ body {
     -webkit-flex-wrap: wrap;
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
+
+    min-width: 90px;
+    min-height: 120px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+    padding: 10px 0 0 10px;
+    margin-bottom: 5px;
 }
 
 .col-fourth {

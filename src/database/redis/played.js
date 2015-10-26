@@ -6,7 +6,7 @@ var Promise = require('bluebird');
 Promise.promisifyAll(redis);
 
 exports.all = function (gameId, playerId) {
-    return redis.smembersAsync('playedCards:' + gameId + ':' + playerId).then(function (cards) {
+    return redis.zrangeAsync('playedCards:' + gameId + ':' + playerId, 0, -1).then(function (cards) {
         if (!cards.length) {
             return false;
         }
@@ -20,11 +20,9 @@ exports.all = function (gameId, playerId) {
 };
 
 exports.count = function (gameId, playerId) {
-    return redis.scardAsync('playedCards:' + gameId + ':' + playerId).then(function (count) {
-        return count;
-    });
+    return redis.zcountAsync('playedCards:' + gameId + ':' + playerId, '-inf', '+inf');
 };
 
-exports.commit = function (gameId, playerId, cardId) {
-    //
+exports.add = function (gameId, playerId, card) {
+    return redis.zadd('playedCards:' + gameId + ':' + playerId, card.cid, JSON.stringify(card));
 };

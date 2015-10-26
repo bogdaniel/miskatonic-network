@@ -5,6 +5,7 @@ var storyCard = require('../database/redis/storyCard');
 var storyDeck = require('../database/redis/storyDeck');
 var deck = require('../database/redis/deck');
 var hand = require('../database/redis/hand');
+var played = require('../database/redis/played');
 
 exports.displayTable = function (socket) {
     var game = socket.game;
@@ -21,8 +22,25 @@ exports.displayTable = function (socket) {
         deck.count(game.id, player.id).then(function (count) {
             if (player.id === socket.userId) {
                 socket.emit('playerDeckCount', count);
+
+                played.all(game.id, player.id).then(function (cards) {
+                    socket.emit('playerPlayedCards', cards);
+                });
+
+                //TODO committed
+
+                //TODO resources
             } else {
                 socket.emit('opponentDeckCount', count);
+
+                played.all(game.id, player.id).then(function (cards) {
+                    socket.emit('opponentPlayedCards', cards);
+                });
+
+                //TODO committed
+
+                //TODO resources
+
                 hand.count(game.id, player.id).then(function (count) {
                     socket.emit('opponentHandCount', count);
                 });
@@ -33,12 +51,17 @@ exports.displayTable = function (socket) {
     hand.all(game.id, socket.userId).then(function (cards) {
         socket.emit('playerHand', cards);
     });
-
-    //TODO
-    //fetch all cards and emit to the socket
 };
 
-exports.playerDrawCard = function (socket) {
+exports.playCard = function (socket, cardId) {
+    var game = socket.game;
+
+    hand.play(game.id, socket.userId, cardId).then(function (card) {
+        socket.broadcast.emit('opponentPlayedCard', card);
+    });
+};
+
+exports.drawCard = function (socket) {
     var game = socket.game;
 
     deck.draw(game.id, socket.userId).then(function (data) {

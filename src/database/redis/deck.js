@@ -2,6 +2,7 @@
 
 var redis = require('../redis');
 var Promise = require('bluebird');
+var hand = require('./hand');
 
 Promise.promisifyAll(redis);
 
@@ -19,20 +20,32 @@ exports.all = function (gameId, playerId) {
     });
 };
 
-exports.count = function (gameId, playerId) {
-    return redis.scardAsync('deck:' + gameId + ':' + playerId).then(function (count) {
-        return count;
+exports.getAndRemoveRandom = function (gameId, playerId) {
+    return redis.spopAsync('deck:' + gameId + ':' + playerId).then(function (card) {
+        if (!card.length) {
+            return false;
+        }
+
+        return JSON.parse(card);
     });
+};
+
+exports.count = function (gameId, playerId) {
+    return redis.scardAsync('deck:' + gameId + ':' + playerId);
+};
+
+exports.add = function (gameId, playerId, card) {
+    return redis.sadd('deck:' + gameId + ':' + playerId, JSON.stringify(card));
 };
 
 exports.draw = function (gameId, playerId) {
     var self = this;
     var data = {};
 
-    return redis.spopAsync('deck:' + gameId + ':' + playerId).then(function (card) {
-        redis.sadd('hand:' + gameId + ':' + playerId, card);
+    return self.getAndRemoveRandom(gameId, playerId).then(function (card) {
+        hand.add(gameId, playerId, card);
 
-        data.card = JSON.parse(card);
+        data.card = card;
     }).then(function () {
         return self.count(gameId, playerId);
     }).then(function (count) {

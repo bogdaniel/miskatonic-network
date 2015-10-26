@@ -18,3 +18,7 @@ exports.all = function (gameId) {
         return cards;
     });
 };
+
+exports.add = function (gameId, card) {
+    return redis.sadd('storyCards:' + gameId, JSON.stringify(card));
+};

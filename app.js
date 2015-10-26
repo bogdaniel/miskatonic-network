@@ -118,8 +118,12 @@ io.of('/play').on('connection', function (socket) {
         lobbySocket.leave(socket);
     });
 
-    socket.on('playerDrawCard', function (data) {
-        playSocket.playerDrawCard(socket);
+    socket.on('playCard', function (data) {
+        playSocket.playCard(socket, data);
+    });
+
+    socket.on('drawCard', function () {
+        playSocket.drawCard(socket);
     });
 });
 

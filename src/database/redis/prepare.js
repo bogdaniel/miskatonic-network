@@ -2,30 +2,33 @@
 
 var redis = require('../redis');
 var Promise = require('bluebird');
+var storyDeck = require('./storyDeck');
+var storyCard = require('./storyCard');
+var deck = require('./deck');
 
 Promise.promisifyAll(redis);
 
 exports.storyCards = function (gameId, cards) {
     var i;
-    var storyCards = [];
-    var storyDeck = cards;
+    var _storyCards = [];
+    var _storyDeck = cards;
 
-    for (i = 0; i < storyDeck.length; i++) {
-        storyDeck[i].cid = i + 1;
-        storyDeck[i].status = 'story';
+    for (i = 0; i < _storyDeck.length; i++) {
+        _storyDeck[i].cid = i + 1;
+        _storyDeck[i].status = 'story';
     }
 
     for (i = 0; i < 3; i++) {
-        storyCards.push(storyDeck[i]);
-        storyDeck.splice(i, 1);
+        _storyCards.push(_storyDeck[i]);
+        _storyDeck.splice(i, 1);
     }
 
-    storyDeck.forEach(function (card) {
-        redis.sadd('storyDeck:' + gameId, JSON.stringify(card));
+    _storyDeck.forEach(function (card) {
+        storyDeck.add(gameId, card);
     });
 
-    storyCards.forEach(function (card) {
-        redis.sadd('storyCards:' + gameId, JSON.stringify(card));
+    _storyCards.forEach(function (card) {
+        storyCard.add(gameId, card);
     });
 };
 
@@ -39,6 +42,6 @@ exports.playerDeck = function (gameId, playerId, cards) {
     }
 
     playerDeck.forEach(function (card) {
-        redis.sadd('deck:' + gameId + ':' + playerId, JSON.stringify(card));
+        deck.add(gameId, playerId, card);
     });
 };
