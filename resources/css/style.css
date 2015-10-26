@@ -12,6 +12,10 @@ body {
     background-attachment: fixed;
 }
 
+.navbar {
+    margin-bottom: 10px;
+}
+
 .vbox {
     display: -ms-flexbox;
     display: -webkit-flex;
@@ -39,8 +43,8 @@ body {
     -ms-flex-pack: justify;
     justify-content: space-between;
 
-    height: calc(100% - 72px);
-    padding: 0 10px;
+    height: calc(100% - 62px);
+    padding: 0 10px 5px 10px;
 }
 
 .col-first {
@@ -61,6 +65,12 @@ body {
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
+
+    min-height: 120px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+    padding: 10px 0 0 10px;
+    margin-bottom: 5px;
 }
 
 .row-committed {

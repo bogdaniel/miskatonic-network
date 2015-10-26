@@ -1,11 +1,3 @@
-function renderCard(card, type) {
-    var cardImage = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + card.image);
-    var cardFrame = $('<div>').addClass('card-frame').addClass('card-' + card.status);
-    cardFrame.append(cardImage);
-
-    return cardFrame;
-}
-
 $(function () {
     "use strict";
 
@@ -13,7 +5,7 @@ $(function () {
         $('.opponent.row-played').empty();
 
         $.each(cards, function (index, card) {
-            var cardFrame = renderCard(card);
+            var cardFrame = $.renderCard(card);
             $('.opponent.row-played').append(cardFrame);
         });
     });
@@ -22,7 +14,7 @@ $(function () {
         $('.opponent.row-committed').empty();
 
         $.each(cards, function (index, card) {
-            var cardFrame = renderCard(card);
+            var cardFrame = $.renderCard(card);
             $('.opponent.row-committed').append(cardFrame);
         });
     });
@@ -31,7 +23,7 @@ $(function () {
         $('.row-story').empty();
 
         $.each(cards, function (index, card) {
-            var cardFrame = renderCard(card);
+            var cardFrame = $.renderCard(card);
             $('.row-story').append(cardFrame);
         });
     });
@@ -40,7 +32,7 @@ $(function () {
         $('.player.row-committed').empty();
 
         $.each(cards, function (index, card) {
-            var cardFrame = renderCard(card);
+            var cardFrame = $.renderCard(card);
             $('.player.row-committed').append(cardFrame);
         });
     });
@@ -49,7 +41,7 @@ $(function () {
         $('.player.row-played').empty();
 
         $.each(cards, function (index, card) {
-            var cardFrame = renderCard(card);
+            var cardFrame = $.renderCard(card);
             $('.player.row-played').append(cardFrame);
         });
     });
@@ -70,7 +62,7 @@ $(function () {
         $('.row-hand').empty();
 
         $.each(cards, function (index, card) {
-            var cardFrame = renderCard(card);
+            var cardFrame = $.renderCard(card);
             $('.row-hand').append(cardFrame);
         });
     });

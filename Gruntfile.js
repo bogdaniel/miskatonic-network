@@ -23,6 +23,7 @@ module.exports = function (grunt) {
                 files: {
                     'public/build/scripts.js': [
                         'resources/js/parseuri.js',
+                        'resources/js/common.js',
                         'resources/js/scripts.js'
                     ]
                 }

@@ -5,8 +5,6 @@ var Promise = require('bluebird');
 
 Promise.promisifyAll(redis);
 
-
-
 exports.removeAndDrawStoryCard = function (gameId, cardId) {
     var storyCards = [];
 
