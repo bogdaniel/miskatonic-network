@@ -30,6 +30,8 @@ exports.storyCards = function (gameId, cards) {
     _storyCards.forEach(function (card) {
         storyCard.add(gameId, card);
     });
+
+    return _storyCards;
 };
 
 exports.playerDeck = function (gameId, playerId, cards) {

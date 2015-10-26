@@ -98,7 +98,9 @@ exports.start = function (socket) {
     return Card.where('type', '=', 'Story').where('set_id', '=', 1).query(function (qb) {
         qb.orderByRaw('RAND()');
     }).fetchAll().then(cards => cards.toJSON()).then(function (cards) {
-        prepare.storyCards(game.id, cards);
+        return prepare.storyCards(game.id, cards);
+    }).then(function (storyCards) {
+        game.storyCards = _.sortBy(storyCards, 'cid');
     }).then(function () {
         return Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
             qb.orderByRaw('RAND()').limit(50);

@@ -1,24 +1,6 @@
 $(function () {
     "use strict";
 
-    socket.on('opponentPlayedCards', function (cards) {
-        $('.opponent.row-played').empty();
-
-        $.each(cards, function (index, card) {
-            var cardFrame = $.renderCard(card);
-            $('.opponent.row-played').append(cardFrame);
-        });
-    });
-
-    socket.on('opponentCommittedCards', function (cards) {
-        $('.opponent.row-committed').empty();
-
-        $.each(cards, function (index, card) {
-            var cardFrame = $.renderCard(card);
-            $('.opponent.row-committed').append(cardFrame);
-        });
-    });
-
     socket.on('activeStoryCards', function (cards) {
         $('.row-story').empty();
 
@@ -28,12 +10,12 @@ $(function () {
         });
     });
 
-    socket.on('playerCommittedCards', function (cards) {
-        $('.player.row-committed').empty();
+    socket.on('opponentPlayedCards', function (cards) {
+        $('.opponent.row-played').empty();
 
         $.each(cards, function (index, card) {
             var cardFrame = $.renderCard(card);
-            $('.player.row-committed').append(cardFrame);
+            $('.opponent.row-played').append(cardFrame);
         });
     });
 
@@ -46,12 +28,38 @@ $(function () {
         });
     });
 
-    socket.on('opponentDeckCount', function (count) {
-        $('.row-opponent .draw-deck .count').text(count);
+    socket.on('opponentCommittedCards', function (data) {
+        var storyCard = data.storyCard;
+        var cards = data.cards;
+
+        $('.opponent.row-committed .col-committed.committed-story-' + storyCard.cid).remove();
+        var colCommitted = $('<div>').addClass('col-committed').addClass('committed-story-' + storyCard.cid);
+
+        $.each(cards, function (index, card) {
+            var cardFrame = $.renderCard(card);
+            colCommitted.append(cardFrame);
+        });
+
+        $('.opponent.row-committed').append(colCommitted);
     });
 
-    socket.on('opponentHandCount', function (count) {
-        $('.row-opponent .hand-deck .count').text(count);
+    socket.on('playerCommittedCards', function (data) {
+        var storyCard = data.storyCard;
+        var cards = data.cards;
+
+        $('.player.row-committed .col-committed.committed-story-' + storyCard.cid).remove();
+        var colCommitted = $('<div>').addClass('col-committed').addClass('committed-story-' + storyCard.cid);
+
+        $.each(cards, function (index, card) {
+            var cardFrame = $.renderCard(card);
+            colCommitted.append(cardFrame);
+        });
+
+        $('.player.row-committed').append(colCommitted);
+    });
+
+    socket.on('opponentDeckCount', function (count) {
+        $('.row-opponent .draw-deck .count').text(count);
     });
 
     socket.on('playerDeckCount', function (count) {
@@ -65,5 +73,9 @@ $(function () {
             var cardFrame = $.renderCard(card);
             $('.row-hand').append(cardFrame);
         });
+    });
+
+    socket.on('opponentHandCount', function (count) {
+        $('.row-opponent .hand-deck .count').text(count);
     });
 });

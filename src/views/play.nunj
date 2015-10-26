@@ -75,37 +75,9 @@
         <div class="vbox col-second">
             <div class="opponent row-played"></div>
             <div class="section-story">
-                <div class="opponent row-committed">
-                    {#
-                    {% for i in [1, 2, 3] %}
-                        <div class="col-committed">
-                            {% for card in enemyCommitted %}
-                                {% if card.committed == i %}
-                                    <div class="card-frame card-{{ card.status }}">
-                                        <img src="/images/cards/{{ card.image }}" class="img-responsive"/>
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-                    #}
-                </div>
+                <div class="opponent row-committed"></div>
                 <div class="row-story"></div>
-                <div class="player row-committed">
-                    {#
-                    {% for i in [1, 2, 3] %}
-                        <div class="col-committed">
-                            {% for card in playerCommitted %}
-                                {% if card.committed == i %}
-                                    <div class="card-frame card-{{ card.status }}">
-                                        <img src="/images/cards/{{ card.image }}" class="img-responsive"/>
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-                    #}
-                </div>
+                <div class="player row-committed"></div>
             </div>
             <div class="player row-played"></div>
         </div>

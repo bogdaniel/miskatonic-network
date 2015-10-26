@@ -2,6 +2,7 @@
 
 var redis = require('../redis');
 var Promise = require('bluebird');
+var storyCard = require('./storyCard');
 
 Promise.promisifyAll(redis);
 
@@ -31,7 +32,7 @@ exports.draw = function (gameId) {
     var data = {};
 
     return redis.spopAsync('storyDeck:' + gameId).then(function (card) {
-        redis.sadd('storyCards:' + gameId, card);
+        storyCard.add(gameId, card);
 
         data.card = JSON.parse(card);
     }).then(function () {

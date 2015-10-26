@@ -6,7 +6,7 @@ var Promise = require('bluebird');
 Promise.promisifyAll(redis);
 
 exports.all = function (gameId) {
-    return redis.smembersAsync('storyCards:' + gameId).then(function (cards) {
+    return redis.zrangeAsync('storyCards:' + gameId, 0, -1).then(function (cards) {
         if (!cards.length) {
             return false;
         }
@@ -20,5 +20,5 @@ exports.all = function (gameId) {
 };
 
 exports.add = function (gameId, card) {
-    return redis.sadd('storyCards:' + gameId, JSON.stringify(card));
+    return redis.zadd('storyCards:' + gameId, card.cid, JSON.stringify(card));
 };
