@@ -26,6 +26,20 @@ $(function () {
         });
     };
 
+    $.resourceCard = function (event, ui) {
+        var resourceId = $(event.target).data('id');
+        var card = ui.draggable;
+
+        card.removeClass('card-active').addClass('card-resource');
+        card.clone().attr('style', '').prependTo('.player.row-domain .domain-' + resourceId);
+        card.remove();
+
+        socket.emit('resourceCard', {
+            resourceId: resourceId,
+            cardId: card.data('id')
+        });
+    };
+
     $.setSortable = function (element, connection, handler) {
         $(element).sortable({
             items: '> div',

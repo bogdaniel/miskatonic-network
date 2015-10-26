@@ -129,6 +129,10 @@ io.of('/play').on('connection', function (socket) {
     socket.on('commitCard', function (data) {
         playSocket.commitCard(socket, data);
     });
+
+    socket.on('resourceCard', function (data) {
+        playSocket.resourceCard(socket, data);
+    });
 });
 
 io.of('/chat').on('connection', function (socket) {

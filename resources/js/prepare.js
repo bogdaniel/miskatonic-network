@@ -62,6 +62,31 @@ $(function () {
         $.setSortable('.player.row-committed .col-committed', false, $.commitCard);
     });
 
+    socket.on('opponentResourcedCards', function (data) {
+        var resourceId = data.resourceId;
+        var cards = data.cards;
+
+        $.each(cards, function (index, card) {
+            var cardFrame = $.renderCard(card);
+            $('.opponent.row-domain .domain-' + resourceId).prepend(cardFrame);
+        });
+    });
+
+    socket.on('playerResourcedCards', function (data) {
+        var resourceId = data.resourceId;
+        var cards = data.cards;
+
+        $.each(cards, function (index, card) {
+            var cardFrame = $.renderCard(card);
+            $('.player.row-domain .domain-' + resourceId).prepend(cardFrame);
+        });
+
+        $('.player.row-domain .domain-' + resourceId).droppable({
+            accept: '.row-hand .card-frame',
+            drop: $.resourceCard
+        });
+    });
+
     socket.on('opponentDeckCount', function (count) {
         $('.row-opponent .draw-deck .count').text(count);
     });

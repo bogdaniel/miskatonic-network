@@ -19,43 +19,37 @@
 {% block body %}
     <div class="gameboard">
         <div class="vbox col-first">
-            <div class="vbox row-domain">
-                <div class="domain">
+            <div class="vbox opponent row-domain">
+                <div class="domain domain-1" data-id="1">
                     <div class="card-frame card-domain">
                         <img src="/images/cards/back/domain1.jpg" class="img-responsive"/>
                     </div>
                 </div>
-                <div class="domain">
+                <div class="domain domain-2" data-id="2">
                     <div class="card-frame card-domain">
                         <img src="/images/cards/back/domain2.jpg" class="img-responsive"/>
                     </div>
                 </div>
-                <div class="domain">
+                <div class="domain domain-3" data-id="3">
                     <div class="card-frame card-domain">
                         <img src="/images/cards/back/domain3.jpg" class="img-responsive"/>
                     </div>
                 </div>
             </div>
-            <div class="vbox row-domain">
-                <div class="domain">
-                    <div class="card-frame card-resource">
-                        <img src="http://www.cardgamedb.com/forums/uploads/1283397923/gallery_1_41_48716.jpg" class="img-responsive"/>
-                    </div>
-                    <div class="card-frame card-resource">
-                        <img src="http://www.cardgamedb.com/forums/uploads/coc/uroborus-wab.jpg" class="img-responsive"/>
-                    </div>
+            <div class="vbox player row-domain">
+                <div class="domain domain-1" data-id="1">
                     <div class="card-frame card-domain">
-                        <img src="/images/cards/back/domain3.jpg" class="img-responsive"/>
+                        <img src="/images/cards/back/domain1.jpg" class="img-responsive"/>
                     </div>
                 </div>
-                <div class="domain">
+                <div class="domain domain-2" data-id="2">
                     <div class="card-frame card-domain">
                         <img src="/images/cards/back/domain2.jpg" class="img-responsive"/>
                     </div>
                 </div>
-                <div class="domain">
+                <div class="domain domain-3" data-id="3">
                     <div class="card-frame card-domain">
-                        <img src="/images/cards/back/domain1.jpg" class="img-responsive"/>
+                        <img src="/images/cards/back/domain3.jpg" class="img-responsive"/>
                     </div>
                 </div>
             </div>

@@ -3,6 +3,7 @@
 var redis = require('../redis');
 var Promise = require('bluebird');
 var played = require('./played');
+var resourced = require('./resourced');
 
 Promise.promisifyAll(redis);
 
@@ -48,6 +49,19 @@ exports.play = function (gameId, playerId, cardId) {
     return self.get(gameId, playerId, cardId).then(function (card) {
         self.remove(gameId, playerId, card);
         played.add(gameId, playerId, card);
+
+        return card;
+    });
+};
+
+exports.resource = function (gameId, playerId, resourceId, cardId) {
+    var self = this;
+
+    return self.get(gameId, playerId, cardId).then(function (card) {
+        card.status = 'resource';
+
+        self.remove(gameId, playerId, card);
+        resourced.add(gameId, playerId, resourceId, card);
 
         return card;
     });

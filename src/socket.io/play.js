@@ -7,6 +7,7 @@ var deck = require('../database/redis/deck');
 var hand = require('../database/redis/hand');
 var played = require('../database/redis/played');
 var committed = require('../database/redis/committed');
+var resourced = require('../database/redis/resourced');
 
 exports.displayTable = function (socket) {
     var game = socket.game;
@@ -46,7 +47,25 @@ exports.displayTable = function (socket) {
                     });
                 }
             }).then(function () {
-                //TODO resources
+                if (player.id === socket.userId) {
+                    player.resources.forEach(function (resourceId) {
+                        resourced.all(game.id, player.id, resourceId).then(function (cards) {
+                            socket.emit('playerResourcedCards', {
+                                resourceId: resourceId,
+                                cards: cards
+                            });
+                        });
+                    });
+                } else {
+                    player.resources.forEach(function (resourceId) {
+                        resourced.all(game.id, player.id, resourceId).then(function (cards) {
+                            socket.emit('opponentResourcedCards', {
+                                resourceId: resourceId,
+                                cards: cards
+                            });
+                        });
+                    });
+                }
             }).then(function () {
                 if (player.id !== socket.userId) {
                     hand.count(game.id, player.id).then(function (count) {
@@ -99,6 +118,17 @@ exports.commitCard = function (socket, data) {
     played.commit(game.id, socket.userId, data.storyId, data.cardId).then(function (card) {
         socket.broadcast.emit('opponentCommittedCard', {
             storyId: data.storyId,
+            card: card
+        });
+    });
+};
+
+exports.resourceCard = function (socket, data) {
+    var game = socket.game;
+
+    hand.resource(game.id, socket.userId, data.resourceId, data.cardId).then(function (card) {
+        socket.broadcast.emit('opponentResourcedCard', {
+            resourceId: data.resourceId,
             card: card
         });
     });

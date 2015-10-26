@@ -34,4 +34,12 @@ $(function () {
         $('.opponent.row-played .card-frame[data-id=' + card.cid + ']').remove();
         $('.opponent.row-committed .committed-story-' + storyId).append(cardFrame);
     });
+
+    socket.on('opponentResourcedCard', function (data) {
+        var resourceId = data.resourceId;
+        var card = data.card;
+        var cardFrame = $.renderCard(card);
+
+        $('.opponent.row-domain .domain-' + resourceId).prepend(cardFrame);
+    });
 });
