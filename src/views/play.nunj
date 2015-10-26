@@ -5,17 +5,6 @@
     <script src="/build/play.min.js"></script>
 {% endblock %}
 
-{% block css %}
-    <style>
-        .card-highlight {
-            width: 70px;
-            height: 100px;
-            margin: 0 10px 10px 0;
-            background: green;
-        }
-    </style>
-{% endblock %}
-
 {% block body %}
     <div class="gameboard">
         <div class="vbox col-first">

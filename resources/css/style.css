@@ -249,6 +249,27 @@ body {
     margin: 10px 15px;
 }
 
+.player.row-played .card-highlight, .row-hand .card-highlight {
+    width: 70px;
+    height: 100px;
+    margin: 0 10px 10px 0;
+    background: green;
+}
+
+.player.row-committed .card-highlight {
+    width: 100px;
+    height: 70px;
+    margin-bottom: 10px;
+    background: green;
+}
+
+.player.row-domain .domain .card-highlight {
+    width: 100px;
+    height: 70px;
+    margin-left: -90px;
+    background: green;
+}
+
 .domain {
     display: -ms-flexbox;
     display: -webkit-flex;

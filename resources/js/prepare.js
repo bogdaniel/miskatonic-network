@@ -66,6 +66,8 @@ $(function () {
         var resourceId = data.resourceId;
         var cards = data.cards;
 
+        $('.opponent.row-domain .domain-' + resourceId + ' div:not(:last)').remove();
+
         $.each(cards, function (index, card) {
             var cardFrame = $.renderCard(card);
             $('.opponent.row-domain .domain-' + resourceId).prepend(cardFrame);
@@ -76,6 +78,8 @@ $(function () {
         var resourceId = data.resourceId;
         var cards = data.cards;
 
+        $('.player.row-domain .domain-' + resourceId + ' div:not(:last)').remove();
+
         $.each(cards, function (index, card) {
             var cardFrame = $.renderCard(card);
             $('.player.row-domain .domain-' + resourceId).prepend(cardFrame);
@@ -83,7 +87,14 @@ $(function () {
 
         $('.player.row-domain .domain-' + resourceId).droppable({
             accept: '.row-hand .card-frame',
-            drop: $.resourceCard
+            drop: $.resourceCard,
+            over: function (event, ui) {
+                var highlight = $('<div>').addClass('card-highlight');
+                $(this).prepend(highlight);
+            },
+            out: function (event, ui) {
+                $(this).find('.card-highlight').remove();
+            }
         });
     });
 

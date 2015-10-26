@@ -30,6 +30,7 @@ $(function () {
         var resourceId = $(event.target).data('id');
         var card = ui.draggable;
 
+        $(event.target).find('.card-highlight').remove();
         card.removeClass('card-active').addClass('card-resource');
         card.clone().attr('style', '').prependTo('.player.row-domain .domain-' + resourceId);
         card.remove();
@@ -46,6 +47,7 @@ $(function () {
             handle: 'img',
             connectWith: connection,
             placeholder: 'card-highlight',
+            scroll: false,
             receive: handler
         }).disableSelection();
     };
