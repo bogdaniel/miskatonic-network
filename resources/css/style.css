@@ -75,6 +75,10 @@ body {
     margin-bottom: 5px;
 }
 
+.section-story {
+    margin: 5px 0 10px 0;
+}
+
 .row-committed {
     display: -ms-flexbox;
     display: -webkit-flex;
@@ -161,7 +165,7 @@ body {
     background: rgba(0, 0, 0, 0.4);
     border-radius: 5px;
     padding: 10px 0 0 10px;
-    margin-bottom: 5px;
+    margin: 10px 0;
 }
 
 .col-fourth {
