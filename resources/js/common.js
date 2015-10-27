@@ -41,6 +41,11 @@ $(function () {
         var target = $(event.target);
 
         target.find('.card-highlight').remove();
+
+        if ($.inArray('resourceCard', gameActions) == -1) {
+            return false;
+        }
+
         card.removeClass('card-active').addClass('card-resource');
         card.clone().attr('style', '').prependTo(target);
         card.remove();
@@ -60,7 +65,7 @@ $(function () {
         $(this).find('.card-highlight').remove();
     };
 
-    $.setSortable = function (element, handler) {
+    $.setSortable = function (element) {
         $(element).sortable({
             items: '> div',
             handle: 'img',

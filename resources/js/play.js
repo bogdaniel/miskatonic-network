@@ -6,7 +6,9 @@ $(function () {
     });
 
     $(document).on('click', '.row-player .draw-deck', function () {
-        socket.emit('drawCard');
+        if ($.inArray('drawCard', gameActions) > -1) {
+            socket.emit('drawCard');
+        }
     });
 
     socket.on('playerDrawnCard', function (data) {
@@ -47,7 +49,7 @@ $(function () {
         $('.opponent.row-domain .domain-' + resourceId).prepend(cardFrame);
     });
 
-    socket.on('gameActions', function (data) {
-        console.log(data);
+    socket.on('gameActions', function (actions) {
+        gameActions = actions;
     });
 });

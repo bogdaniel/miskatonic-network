@@ -21,6 +21,10 @@ exports.displayTable = function (socket) {
             socket.emit('activeStoryCards', cards);
         });
     }).then(function () {
+        var player = _.findWhere(game.players, {id: socket.userId});
+
+        socket.emit('gameActions', player.actions);
+    }).then(function () {
         game.players.forEach(function (player) {
             deck.count(game.id, player.id).then(function (count) {
                 if (player.id === socket.userId) {
@@ -95,7 +99,12 @@ exports.displayTable = function (socket) {
 
 exports.drawCard = function (socket) {
     var game = socket.game;
+    var player = _.findWhere(game.players, {id: socket.userId});
     var data = {};
+
+    if (_.indexOf(player.actions, 'drawCard') == -1) {
+        return false;
+    }
 
     return Promise.try(function () {
         return deck.draw(game.id, socket.userId);
@@ -106,42 +115,20 @@ exports.drawCard = function (socket) {
         data.card = result.card;
         data.count = result.count;
     }).then(function () {
-        return Game.opponentId(socket.userId);
-    }).then(function (opponentId) {
-        data.opponentId = opponentId;
-    }).then(function () {
-        return Promise.all([
-            hand.count(game.id, socket.userId),
-            hand.count(game.id, data.opponentId)
-        ]);
-    }).then(function (result) {
-        var playerHandCount = result[0];
-        var opponentHandCount = result[1];
-        var player = _.findWhere(game.players, {id: socket.userId});
+        return hand.count(game.id, socket.userId)
+    }).then(function (count) {
+        if (game.phase == 'setup' && count === 8) {
+            player.actions = ['resourceCard'];
 
-        socket.broadcast.emit('opponentHandCount', playerHandCount);
+            game.players.forEach(function (p, i) {
+                if (p.id === player.id) {
+                    game.players[i] = player;
+                }
+            });
 
-        var actions = game.actions;
-        if (actions.phase == 'setup' && !player.setup.drawSetupHand) {
-            if (playerHandCount == 8) {
-                player.setup.drawSetupHand = true;
+            Game.update(game);
 
-                socket.emit('gameActions', {
-                    turn: 0,
-                    phase: 'setup',
-                    step: 'attach-resources',
-                    activePlayer: 0
-                });
-            }
-            if (playerHandCount == 8 && opponentHandCount == 8) {
-                console.log('OK');
-                /*socket.server.of('/play').emit('gameActions', {
-                 turn: 1,
-                 phase: 'refresh',
-                 step: null,
-                 activePlayer: game.players[0].id
-                 });*/
-            }
+            socket.emit('gameActions', player.actions);
         }
     });
 };

@@ -69,6 +69,7 @@
 <script src="/build/miskatonic-network.min.js"></script>
 <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script type="text/javascript">
+    var gameActions;
     var username = '{{ app.user.username }}';
     var userId = '{{ app.user.id }}';
     var parsedUri = parseUri(window.location.href);

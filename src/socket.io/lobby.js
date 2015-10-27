@@ -32,10 +32,7 @@ exports.create = function (socket, data) {
             id: socket.userId,
             username: socket.username,
             resources: [1, 2, 3],
-            setup: {
-                drawSetupHand: false,
-                attachResources: false
-            }
+            actions: ['drawCard']
         }],
         host: socket.userId,
         allow_spectators: false,
@@ -88,10 +85,7 @@ exports.join = function (socket, data) {
             id: socket.userId,
             username: socket.username,
             resources: [1, 2, 3],
-            setup: {
-                drawSetupHand: false,
-                attachResources: false
-            }
+            actions: ['drawCard']
         });
 
         socket.game = game;
@@ -133,10 +127,8 @@ exports.start = function (socket) {
         game.status = 'in-game';
         game.turn = 0;
         game.activePlayer = 0;
-        game.actions = {
-            phase: 'setup',
-            step: null
-        };
+        game.phase = 'setup';
+        game.step = null;
 
         Game.update(game);
 
