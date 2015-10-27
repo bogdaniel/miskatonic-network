@@ -117,6 +117,8 @@ exports.drawCard = function (socket) {
     }).then(function () {
         return hand.count(game.id, socket.userId)
     }).then(function (count) {
+        socket.broadcast.emit('opponentHandCount', count);
+
         if (game.phase == 'setup' && count === 8) {
             player.actions = ['resourceCard'];
 
@@ -154,11 +156,73 @@ exports.commitCard = function (socket, data) {
 
 exports.resourceCard = function (socket, data) {
     var game = socket.game;
+    var player = _.findWhere(game.players, {id: socket.userId});
 
-    hand.resource(game.id, socket.userId, data.resourceId, data.cardId).then(function (card) {
-        socket.broadcast.emit('opponentResourcedCard', {
-            resourceId: data.resourceId,
-            card: card
-        });
+    if (_.indexOf(player.actions, 'resourceCard') == -1) {
+        return false;
+    }
+
+    Promise.try(function () {
+        if (game.phase == 'setup') {
+            return Promise.try(function () {
+                return resourced.count(game.id, player.id, data.resourceId);
+            });
+        }
+    }).then(function (count) {
+        if (count == 1) {
+            return false;
+        } else {
+            return Promise.try(function () {
+                return hand.resource(game.id, player.id, data.resourceId, data.cardId);
+            }).then(function (card) {
+                socket.broadcast.emit('opponentResourcedCard', {
+                    resourceId: data.resourceId,
+                    card: card
+                });
+            }).then(function () {
+                if (game.phase == 'setup') {
+                    return Promise.try(function () {
+                        return Game.opponentId(player.id);
+                    }).then(function (opponentId) {
+                        return Promise.props({
+                            playerCount: resourced.countAll(game.id, player.id),
+                            opponentCount: resourced.countAll(game.id, opponentId)
+                        });
+                    }).then(function (count) {
+                        if (count.playerCount == 3) {
+                            player.actions = ['none'];
+
+                            game.players.forEach(function (p, i) {
+                                if (p.id === player.id) {
+                                    game.players[i] = player;
+                                }
+                            });
+
+                            Game.update(game);
+
+                            socket.emit('gameActions', player.actions);
+                        }
+
+                        if (count.playerCount == 3 && count.opponentCount == 3) {
+                            game.players.forEach(function (p, i) {
+                                game.players[i].actions = ['drawCard'];
+                            });
+
+                            game.turn = 1;
+                            game.activePlayer = game.host;
+                            game.phase = 'draw';
+
+                            Game.update(game);
+
+                            if (game.activePlayer == player.id) {
+                                socket.emit('gameActions', player.actions);
+                            } else {
+                                socket.broadcast.emit('gameActions', player.actions);
+                            }
+                        }
+                    })
+                }
+            });
+        }
     });
 };

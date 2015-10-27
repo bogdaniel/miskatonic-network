@@ -14,6 +14,11 @@ $(function () {
         var target = $(event.target);
 
         target.find('.card-highlight').remove();
+
+        if ($.inArray('playCard', gameActions) == -1) {
+            return false;
+        }
+
         card.clone().attr('style', '').prependTo(target);
         card.remove();
 
@@ -25,6 +30,11 @@ $(function () {
         var target = $(event.target);
 
         target.find('.card-highlight').remove();
+
+        if ($.inArray('commitCard', gameActions) == -1) {
+            return false;
+        }
+
         card.removeClass('card-active').addClass('card-exhausted');
         card.clone().attr('style', '').prependTo(target);
         card.remove();
