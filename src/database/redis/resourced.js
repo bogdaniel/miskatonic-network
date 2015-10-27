@@ -33,7 +33,7 @@ exports.countEach = function (gameId, playerId) {
     }).then(function (game) {
         var player = _.findWhere(game.players, {id: playerId});
 
-        return player.resources
+        return player.resources;
     }).map(function (resourceId) {
         return self.count(gameId, playerId, resourceId);
     });
@@ -47,7 +47,7 @@ exports.countAll = function (gameId, playerId) {
     }).then(function (game) {
         var player = _.findWhere(game.players, {id: playerId});
 
-        return player.resources
+        return player.resources;
     }).map(function (resourceId) {
         return self.count(gameId, playerId, resourceId);
     }).then(function (result) {

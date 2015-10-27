@@ -15,7 +15,7 @@ $(function () {
 
         target.find('.card-highlight').remove();
 
-        if ($.inArray('playCard', gameActions) == -1) {
+        if (!$.isAllowed('playCard')) {
             return false;
         }
 
@@ -31,7 +31,7 @@ $(function () {
 
         target.find('.card-highlight').remove();
 
-        if ($.inArray('commitCard', gameActions) == -1) {
+        if (!$.isAllowed('commitCard')) {
             return false;
         }
 
@@ -52,7 +52,11 @@ $(function () {
 
         target.find('.card-highlight').remove();
 
-        if ($.inArray('resourceCard', gameActions) == -1) {
+        if (!$.isAllowed('resourceCard')) {
+            return false;
+        }
+
+        if (gameInfo.phase == 'setup' && target.children('.card-resource').length == 1) {
             return false;
         }
 
@@ -106,5 +110,13 @@ $(function () {
         });
 
         return p;
+    };
+
+    $.isAllowed = function (action) {
+        if ($.inArray(action, gameInfo.actions) != -1 && (gameInfo.activePlayer == userId || gameInfo.activePlayer === 0)) {
+            return true;
+        }
+
+        return false;
     };
 });

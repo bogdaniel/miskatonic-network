@@ -1,5 +1,6 @@
 "use strict";
 
+var _ = require('underscore');
 var redis = require('../redis');
 var Promise = require('bluebird');
 var storyDeck = require('./storyDeck');
@@ -31,7 +32,7 @@ exports.storyCards = function (gameId, cards) {
         storyCard.add(gameId, card);
     });
 
-    return _storyCards;
+    return _.sortBy(_storyCards, 'cid');
 };
 
 exports.playerDeck = function (gameId, playerId, cards) {

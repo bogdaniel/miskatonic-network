@@ -25,8 +25,6 @@ $(function () {
         });
     }
 
-    $(document).disableSelection();
-
     var fadeHighlight;
     $(document).on('mouseenter', '.card-active, .card-exhausted, .card-story, .card-resource', function () {
         clearTimeout(fadeHighlight);

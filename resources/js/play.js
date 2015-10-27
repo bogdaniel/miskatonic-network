@@ -1,12 +1,14 @@
 $(function () {
     "use strict";
 
+    $('.gameboard').disableSelection();
+
     $(document).on('click', '.leave-game', function () {
         socket.emit('leave');
     });
 
     $(document).on('click', '.row-player .draw-deck', function () {
-        if ($.inArray('drawCard', gameActions) > -1) {
+        if ($.isAllowed('drawCard')) {
             socket.emit('drawCard');
         }
     });
@@ -49,7 +51,9 @@ $(function () {
         $('.opponent.row-domain .domain-' + resourceId).prepend(cardFrame);
     });
 
-    socket.on('gameActions', function (actions) {
-        gameActions = actions;
+    socket.on('gameInfo', function (data) {
+        gameInfo = data;
     });
 });
+
+var gameInfo;

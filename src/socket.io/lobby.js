@@ -2,13 +2,14 @@
 
 var _ = require('underscore');
 var moment = require('moment');
+var Promise = require('bluebird');
 var Game = require('../database/redis/game');
 var prepare = require('../database/redis/prepare');
 var Card = require('../database/mysql/models/card');
 
 exports.current = function (socket) {
     return Game.current(socket.userId).then(function (game) {
-        socket.game = game;
+        socket.gameId = game.id;
     });
 };
 
@@ -19,7 +20,7 @@ exports.displayGames = function (socket) {
 };
 
 exports.create = function (socket, data) {
-    if (socket.game) {
+    if (socket.gameId) {
         return false;
     }
 
@@ -39,7 +40,7 @@ exports.create = function (socket, data) {
         created_at: moment().format('YYYY-MM-DD HH:mm:ss')
     };
 
-    socket.game = newGame;
+    socket.gameId = newGame.id;
 
     Game.create(newGame, socket.userId);
 
@@ -49,11 +50,11 @@ exports.create = function (socket, data) {
 };
 
 exports.leave = function (socket) {
-    if (!socket.game) {
+    if (!socket.gameId) {
         return false;
     }
 
-    return Game.get(socket.game.id).then(function (game) {
+    return Game.get(socket.gameId).then(function (game) {
         game.players = _.without(game.players, _.findWhere(game.players, {id: socket.userId}));
         game.status = 'finished';
 
@@ -67,7 +68,7 @@ exports.leave = function (socket) {
             Game.update(game);
         }
 
-        delete socket.game;
+        delete socket.gameId;
 
         socket.server.of('/lobby').emit('left', {
             game: game
@@ -76,7 +77,7 @@ exports.leave = function (socket) {
 };
 
 exports.join = function (socket, data) {
-    if (socket.game) {
+    if (socket.gameId) {
         return false;
     }
 
@@ -88,7 +89,7 @@ exports.join = function (socket, data) {
             actions: ['drawCard']
         });
 
-        socket.game = game;
+        socket.gameId = game.id;
 
         Game.update(game);
 
@@ -99,41 +100,47 @@ exports.join = function (socket, data) {
 };
 
 exports.start = function (socket) {
-    if (!socket.game || socket.game.players.length !== 2) {
+    if (!socket.gameId) {
         return false;
     }
 
-    var game = socket.game;
+    var game;
 
-    return Card.where('type', '=', 'Story').where('set_id', '=', 1).query(function (qb) {
-        qb.orderByRaw('RAND()');
-    }).fetchAll().then(cards => cards.toJSON()).then(function (cards) {
-        return prepare.storyCards(game.id, cards);
-    }).then(function (storyCards) {
-        game.storyCards = _.sortBy(storyCards, 'cid');
-    }).then(function () {
-        return Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
-            qb.orderByRaw('RAND()').limit(50);
-        }).fetchAll().then(cards => cards.toJSON());
-    }).then(function (cards) {
-        prepare.playerDeck(game.id, game.players[0].id, cards);
-    }).then(function () {
-        return Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
-            qb.orderByRaw('RAND()').limit(50);
-        }).fetchAll().then(cards => cards.toJSON());
-    }).then(function (cards) {
-        prepare.playerDeck(game.id, game.players[1].id, cards);
-    }).then(function () {
-        game.status = 'in-game';
-        game.turn = 0;
-        game.activePlayer = 0;
-        game.phase = 'setup';
-        game.step = null;
+    return Promise.try(function () {
+        return Game.current(socket.userId);
+    }).then(function (result) {
+        game = result;
 
-        Game.update(game);
+        if (game.players.length !== 2) {
+            return false;
+        }
 
-        socket.server.of('/lobby').emit('started', {
-            game: game
+        return Promise.props({
+            storyCards: Card.where('type', '=', 'Story').where('set_id', '=', 1).query(function (qb) {
+                qb.orderByRaw('RAND()');
+            }).fetchAll().then(cards => cards.toJSON()),
+            playerDeck: Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
+                qb.orderByRaw('RAND()').limit(50);
+            }).fetchAll().then(cards => cards.toJSON()),
+            opponentDeck: Card.where('type', '!=', 'Story').where('set_id', '=', 1).query(function (qb) {
+                qb.orderByRaw('RAND()').limit(50);
+            }).fetchAll().then(cards => cards.toJSON())
+        }).then(function (result) {
+            game.storyCards = prepare.storyCards(game.id, result.storyCards);
+            prepare.playerDeck(game.id, game.players[0].id, result.playerDeck);
+            prepare.playerDeck(game.id, game.players[1].id, result.opponentDeck);
+        }).then(function () {
+            game.status = 'in-game';
+            game.turn = 0;
+            game.activePlayer = 0;
+            game.phase = 'setup';
+            game.step = null;
+
+            Game.update(game);
+
+            socket.server.of('/lobby').emit('started', {
+                game: game
+            });
         });
     });
 };
