@@ -7,7 +7,7 @@ $(function () {
         if (game.players.length === 0 && oldContainer.length) {
             oldContainer.remove();
 
-            return;
+            return false;
         }
 
         var container = $('<div>').addClass('game').attr('data-id', game.id);

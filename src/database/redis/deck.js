@@ -38,11 +38,21 @@ exports.add = function (gameId, playerId, card) {
     return redis.sadd('deck:' + gameId + ':' + playerId, JSON.stringify(card));
 };
 
+/**
+ * Draw a card from players deck.
+ * Returns the drawn card and the number of cards in players deck.
+ *
+ * @param gameId
+ * @param playerId
+ * @returns {*}
+ */
 exports.draw = function (gameId, playerId) {
     var self = this;
     var data = {};
 
-    return self.getAndRemoveRandom(gameId, playerId).then(function (card) {
+    return Promise.try(function () {
+        return self.getAndRemoveRandom(gameId, playerId);
+    }).then(function (card) {
         hand.add(gameId, playerId, card);
 
         data.card = card;

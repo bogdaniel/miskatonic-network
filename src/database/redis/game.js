@@ -39,6 +39,20 @@ exports.current = function (playerId) {
     });
 };
 
+exports.opponentId = function (playerId) {
+    return this.current(playerId).then(function (game) {
+        var id;
+
+        game.players.forEach(function (player) {
+            if (player.id !== playerId) {
+                id = player.id;
+            }
+        });
+
+        return id;
+    });
+};
+
 exports.create = function (game, playerId) {
     redis.set('current:' + playerId, JSON.stringify(game));
     redis.zadd('games', game.id, JSON.stringify(game));
@@ -58,10 +72,6 @@ exports.delete = function (game) {
     redis.del('storyDeck:' + game.id);
     redis.del('storyCards:' + game.id);
     redis.zremrangebyscore('games', game.id, game.id);
-};
-
-exports.join = function (game, playerId) {
-    redis.set('current:' + playerId, JSON.stringify(game));
 };
 
 exports.leave = function (gameId, playerId) {

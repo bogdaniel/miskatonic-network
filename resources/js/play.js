@@ -46,4 +46,8 @@ $(function () {
         handCount.text(parseInt(handCount.text()) - 1);
         $('.opponent.row-domain .domain-' + resourceId).prepend(cardFrame);
     });
+
+    socket.on('gameActions', function (data) {
+        console.log(data);
+    });
 });

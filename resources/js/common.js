@@ -68,4 +68,28 @@ $(function () {
             scroll: false
         }).disableSelection();
     };
+
+    $.player = function (game) {
+        var p = false;
+
+        $.each(game.players, function (index, player) {
+            if (player.id === userId) {
+                p = player;
+            }
+        });
+
+        return p;
+    };
+
+    $.opponent = function (game) {
+        var p = false;
+
+        $.each(game.players, function (index, player) {
+            if (player.id !== userId) {
+                p = player;
+            }
+        });
+
+        return p;
+    };
 });

@@ -54,7 +54,7 @@ app.use(function (req, res, next) {
         userId = req.session.user.id;
     }
 
-    require('./src/database/redis/lobby').current(userId).then(function (game) {
+    require('./src/database/redis/game').current(userId).then(function (game) {
         res.locals.app = {
             url: req.url,
             user: req.session.user,

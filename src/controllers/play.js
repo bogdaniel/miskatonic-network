@@ -1,6 +1,6 @@
 "use strict";
 
-var lobby = require('../database/redis/lobby');
+var game = require('../database/redis/game');
 
 exports.index = function (req, res) {
     //

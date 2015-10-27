@@ -1,6 +1,8 @@
 "use strict";
 
+var _ = require('underscore');
 var Promise = require('bluebird');
+var Game = require('../database/redis/game');
 var storyCard = require('../database/redis/storyCard');
 var storyDeck = require('../database/redis/storyDeck');
 var deck = require('../database/redis/deck');
@@ -93,14 +95,54 @@ exports.displayTable = function (socket) {
 
 exports.drawCard = function (socket) {
     var game = socket.game;
+    var data = {};
 
-    deck.draw(game.id, socket.userId).then(function (data) {
-        socket.emit('playerDrawnCard', data);
-        socket.broadcast.emit('opponenetDrawnCard', data.count);
+    return Promise.try(function () {
+        return deck.draw(game.id, socket.userId);
+    }).then(function (result) {
+        socket.emit('playerDrawnCard', result);
+        socket.broadcast.emit('opponenetDrawnCard', result.count);
+
+        data.card = result.card;
+        data.count = result.count;
     }).then(function () {
-        return hand.count(game.id, socket.userId);
-    }).then(function (count) {
-        socket.broadcast.emit('opponentHandCount', count);
+        return Game.opponentId(socket.userId);
+    }).then(function (opponentId) {
+        data.opponentId = opponentId;
+    }).then(function () {
+        return Promise.all([
+            hand.count(game.id, socket.userId),
+            hand.count(game.id, data.opponentId)
+        ]);
+    }).then(function (result) {
+        var playerHandCount = result[0];
+        var opponentHandCount = result[1];
+        var player = _.findWhere(game.players, {id: socket.userId});
+
+        socket.broadcast.emit('opponentHandCount', playerHandCount);
+
+        var actions = game.actions;
+        if (actions.phase == 'setup' && !player.setup.drawSetupHand) {
+            if (playerHandCount == 8) {
+                player.setup.drawSetupHand = true;
+
+                socket.emit('gameActions', {
+                    turn: 0,
+                    phase: 'setup',
+                    step: 'attach-resources',
+                    activePlayer: 0
+                });
+            }
+            if (playerHandCount == 8 && opponentHandCount == 8) {
+                console.log('OK');
+                /*socket.server.of('/play').emit('gameActions', {
+                 turn: 1,
+                 phase: 'refresh',
+                 step: null,
+                 activePlayer: game.players[0].id
+                 });*/
+            }
+        }
     });
 };
 

@@ -1,9 +1,9 @@
 "use strict";
 
-var lobby = require('../database/redis/lobby');
+var game = require('../database/redis/game');
 
 exports.index = function (req, res) {
-    lobby.all().then(function (games) {
+    game.all().then(function (games) {
         res.render('lobby.nunj', {
             games: games
         });
