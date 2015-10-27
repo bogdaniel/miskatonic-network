@@ -13,9 +13,10 @@ module.exports = function (grunt) {
             },
             all: [
                 '**/*.js',
-                '!public/**/*',
                 '!bower_components/**/*',
-                '!node_modules/**/*'
+                '!node_modules/**/*',
+                '!public/**/*',
+                '!resources/libs/**/*'
             ]
         },
         uglify: {
@@ -35,6 +36,7 @@ module.exports = function (grunt) {
                     'public/build/<%= pkg.name %>.min.js': [
                         'bower_components/jquery/dist/jquery.min.js',
                         'bower_components/bootstrap/dist/js/bootstrap.min.js',
+                        'resources/libs/fancybox2/jquery.fancybox.pack.js',
                         'public/build/scripts.js'
                     ],
                     'public/build/chat.min.js': [
@@ -52,6 +54,7 @@ module.exports = function (grunt) {
                     'public/build/<%= pkg.name %>.min.css': [
                         'bower_components/bootstrap/dist/css/bootstrap.min.css',
                         'bower_components/bootstrap/dist/css/bootstrap-theme.min.css',
+                        'resources/libs/fancybox2/jquery.fancybox.css',
                         'resources/css/*.css'
                     ]
                 }
