@@ -6,6 +6,7 @@ $(function () {
             href: $(e.target).attr('src'),
             scrolling: 'no',
             closeClick: true,
+            closeBtn: false,
             type: 'image',
             openEffect: 'none',
             closeEffect: 'none',
