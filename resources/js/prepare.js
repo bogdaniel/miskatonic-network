@@ -1,8 +1,15 @@
 $(function () {
     "use strict";
 
-    $.setSortable('.player.row-played', '.player.row-committed .col-committed', $.playCardfromHand);
-    $.setSortable('.row-hand', '.player.row-played', null);
+    $.setSortable('.row-hand');
+    $.setSortable('.player.row-played');
+
+    $('.player.row-played').droppable({
+        accept: '.row-hand .card-frame',
+        drop: $.playCard,
+        over: $.droppableOver,
+        out: $.droppableOut
+    });
 
     socket.on('activeStoryCards', function (cards) {
         $('.row-story').empty();
@@ -59,7 +66,13 @@ $(function () {
         });
 
         $('.player.row-committed').append(colCommitted);
-        $.setSortable('.player.row-committed .col-committed', false, $.commitCard);
+        $.setSortable('.player.row-committed .col-committed');
+        $('.player.row-committed .col-committed').droppable({
+            accept: '.player.row-played .card-frame',
+            drop: $.commitCard,
+            over: $.droppableOver,
+            out: $.droppableOut
+        });
     });
 
     socket.on('opponentResourcedCards', function (data) {
@@ -88,13 +101,8 @@ $(function () {
         $('.player.row-domain .domain-' + resourceId).droppable({
             accept: '.row-hand .card-frame',
             drop: $.resourceCard,
-            over: function (event, ui) {
-                var highlight = $('<div>').addClass('card-highlight');
-                $(this).prepend(highlight);
-            },
-            out: function (event, ui) {
-                $(this).find('.card-highlight').remove();
-            }
+            over: $.droppableOver,
+            out: $.droppableOut
         });
     });
 

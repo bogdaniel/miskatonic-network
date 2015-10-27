@@ -9,16 +9,25 @@ $(function () {
         return cardFrame;
     };
 
-    $.playCardfromHand = function (event, ui) {
-        var card = ui.item;
+    $.playCard = function (event, ui) {
+        var card = ui.draggable;
+        var target = $(event.target);
+
+        target.find('.card-highlight').remove();
+        card.clone().attr('style', '').prependTo(target);
+        card.remove();
 
         socket.emit('playCard', card.data('id'));
     };
 
     $.commitCard = function (event, ui) {
-        var card = ui.item;
+        var card = ui.draggable;
+        var target = $(event.target);
 
+        target.find('.card-highlight').remove();
         card.removeClass('card-active').addClass('card-exhausted');
+        card.clone().attr('style', '').prependTo(target);
+        card.remove();
 
         socket.emit('commitCard', {
             storyId: $(event.target).data('id'),
@@ -29,10 +38,11 @@ $(function () {
     $.resourceCard = function (event, ui) {
         var resourceId = $(event.target).data('id');
         var card = ui.draggable;
+        var target = $(event.target);
 
-        $(event.target).find('.card-highlight').remove();
+        target.find('.card-highlight').remove();
         card.removeClass('card-active').addClass('card-resource');
-        card.clone().attr('style', '').prependTo('.player.row-domain .domain-' + resourceId);
+        card.clone().attr('style', '').prependTo(target);
         card.remove();
 
         socket.emit('resourceCard', {
@@ -41,14 +51,21 @@ $(function () {
         });
     };
 
-    $.setSortable = function (element, connection, handler) {
+    $.droppableOver = function (event, ui) {
+        var highlight = $('<div>').addClass('card-highlight');
+        $(this).prepend(highlight);
+    };
+
+    $.droppableOut = function (event, ui) {
+        $(this).find('.card-highlight').remove();
+    };
+
+    $.setSortable = function (element, handler) {
         $(element).sortable({
             items: '> div',
             handle: 'img',
-            connectWith: connection,
             placeholder: 'card-highlight',
-            scroll: false,
-            receive: handler
+            scroll: false
         }).disableSelection();
     };
 });
