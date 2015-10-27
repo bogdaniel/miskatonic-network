@@ -123,6 +123,10 @@ body {
     -webkit-justify-content: space-between;
     -ms-flex-pack: justify;
     justify-content: space-between;
+
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+    padding: 10px 0 0 10px;
 }
 
 .row-player {
@@ -133,6 +137,10 @@ body {
     -webkit-justify-content: space-between;
     -ms-flex-pack: justify;
     justify-content: space-between;
+
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+    padding: 10px 0 0 10px;
 }
 
 .row-hand {
