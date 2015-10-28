@@ -34,6 +34,23 @@ $(function () {
         $('.opponent.row-domain .domain-' + resourceId).prepend(cardFrame);
     });
 
+    $(document).on('click', '#restore-insane', function () {
+        //TODO
+        //allow player to choose an insane card
+
+        if ($.isAllowed('restoreInsane')) {
+            socket.emit('restoreInsane');
+        }
+    });
+
+    socket.on('playerRestoredInsane', function () {
+        //TODO
+    });
+
+    socket.on('opponentRestoredInsane', function () {
+        //TODO
+    });
+
     $(document).on('click', '#refresh-all', function () {
         if ($.isAllowed('refreshAll')) {
             socket.emit('refreshAll');
@@ -94,7 +111,8 @@ $(function () {
         if (data.activePlayer == userId) {
             if (data.phase == 'refresh') {
                 content += '<hr/>';
-                content += '<button id="refresh-all" type="button">RefreshAll</button>'
+                content += '<button id="restore-insane" type="button">RestoreInsane</button>';
+                content += '<button id="refresh-all" type="button">RefreshAll</button>';
             }
         }
 

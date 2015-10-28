@@ -229,6 +229,10 @@ exports.resourceCard = function (socket, data) {
     });
 };
 
+exports.restoreInsane = function (socket, data) {
+    //
+};
+
 exports.refreshAll = function (socket) {
     var game;
     var player;

@@ -126,6 +126,10 @@ io.of('/play').on('connection', function (socket) {
         playSocket.resourceCard(socket, data);
     });
 
+    socket.on('restoreInsane', function (data) {
+        playSocket.restoreInsane(socket, data);
+    });
+
     socket.on('refreshAll', function () {
         playSocket.refreshAll(socket);
     });
