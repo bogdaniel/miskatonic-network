@@ -41,3 +41,9 @@ exports.updatePlayer = function (game, player) {
 
     return game;
 };
+
+exports.domain = function (game, playerId, domainId) {
+    var player = this.player(game, playerId);
+
+    return _.findWhere(player.domains, {id: domainId});
+};

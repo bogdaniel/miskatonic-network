@@ -238,7 +238,6 @@ body {
     width: 100px;
     height: 70px;
     z-index: 1;
-    margin-bottom: 10px;
 }
 
 .card-resource {
@@ -298,6 +297,13 @@ body {
     -webkit-justify-content: flex-end;
     -ms-flex-pack: end;
     justify-content: flex-end;
+
+    margin-bottom: 10px;
+}
+
+.domain.target {
+    border-top: 2px solid red;
+    border-bottom: 2px solid red;
 }
 
 .highlight {

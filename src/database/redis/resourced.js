@@ -7,8 +7,8 @@ var Game = require('./game');
 
 Promise.promisifyAll(redis);
 
-exports.all = function (gameId, playerId, resourceId) {
-    return redis.zrangeAsync('resourcedCards:' + gameId + ':' + playerId + ':' + resourceId, 0, -1).then(function (cards) {
+exports.all = function (gameId, playerId, domainId) {
+    return redis.zrangeAsync('resourcedCards:' + gameId + ':' + playerId + ':' + domainId, 0, -1).then(function (cards) {
         if (!cards.length) {
             return false;
         }
@@ -21,8 +21,8 @@ exports.all = function (gameId, playerId, resourceId) {
     });
 };
 
-exports.count = function (gameId, playerId, resourceId) {
-    return redis.zcountAsync('resourcedCards:' + gameId + ':' + playerId + ':' + resourceId, '-inf', '+inf');
+exports.count = function (gameId, playerId, domainId) {
+    return redis.zcountAsync('resourcedCards:' + gameId + ':' + playerId + ':' + domainId, '-inf', '+inf');
 };
 
 exports.countEach = function (gameId, playerId) {
@@ -33,9 +33,9 @@ exports.countEach = function (gameId, playerId) {
     }).then(function (game) {
         var player = _.findWhere(game.players, {id: playerId});
 
-        return player.resources;
-    }).map(function (resource) {
-        return self.count(gameId, playerId, resource.id);
+        return player.domains;
+    }).map(function (domain) {
+        return self.count(gameId, playerId, domain.id);
     });
 };
 
@@ -47,9 +47,9 @@ exports.countAll = function (gameId, playerId) {
     }).then(function (game) {
         var player = _.findWhere(game.players, {id: playerId});
 
-        return player.resources;
-    }).map(function (resource) {
-        return self.count(gameId, playerId, resource.id);
+        return player.domains;
+    }).map(function (domain) {
+        return self.count(gameId, playerId, domain.id);
     }).then(function (result) {
         var count = 0;
 
@@ -61,6 +61,6 @@ exports.countAll = function (gameId, playerId) {
     });
 };
 
-exports.add = function (gameId, playerId, resourceId, card) {
-    return redis.zadd('resourcedCards:' + gameId + ':' + playerId + ':' + resourceId, (new Date()).getTime(), JSON.stringify(card));
+exports.add = function (gameId, playerId, domainId, card) {
+    return redis.zadd('resourcedCards:' + gameId + ':' + playerId + ':' + domainId, (new Date()).getTime(), JSON.stringify(card));
 };

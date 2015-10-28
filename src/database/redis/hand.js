@@ -54,14 +54,14 @@ exports.play = function (gameId, playerId, cardId) {
     });
 };
 
-exports.resource = function (gameId, playerId, resourceId, cardId) {
+exports.resource = function (gameId, playerId, domainId, cardId) {
     var self = this;
 
     return self.get(gameId, playerId, cardId).then(function (card) {
         card.status = 'resource';
 
         self.remove(gameId, playerId, card);
-        resourced.add(gameId, playerId, resourceId, card);
+        resourced.add(gameId, playerId, domainId, card);
 
         return card;
     });

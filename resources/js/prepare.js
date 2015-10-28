@@ -76,29 +76,29 @@ $(function () {
     });
 
     socket.on('opponentResourcedCards', function (data) {
-        var resourceId = data.resourceId;
+        var domainId = data.domainId;
         var cards = data.cards;
 
-        $('.opponent.row-domain .domain-' + resourceId + ' div:not(:last)').remove();
+        $('.opponent.row-domain .domain-' + domainId + ' div:not(:last)').remove();
 
         $.each(cards, function (index, card) {
             var cardFrame = $.renderCard(card);
-            $('.opponent.row-domain .domain-' + resourceId).prepend(cardFrame);
+            $('.opponent.row-domain .domain-' + domainId).prepend(cardFrame);
         });
     });
 
     socket.on('playerResourcedCards', function (data) {
-        var resourceId = data.resourceId;
+        var domainId = data.domainId;
         var cards = data.cards;
 
-        $('.player.row-domain .domain-' + resourceId + ' div:not(:last)').remove();
+        $('.player.row-domain .domain-' + domainId + ' div:not(:last)').remove();
 
         $.each(cards, function (index, card) {
             var cardFrame = $.renderCard(card);
-            $('.player.row-domain .domain-' + resourceId).prepend(cardFrame);
+            $('.player.row-domain .domain-' + domainId).prepend(cardFrame);
         });
 
-        $('.player.row-domain .domain-' + resourceId).droppable({
+        $('.player.row-domain .domain-' + domainId).droppable({
             accept: '.row-hand .card-frame',
             drop: $.resourceCard,
             over: $.droppableOver,

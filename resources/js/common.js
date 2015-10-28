@@ -9,20 +9,62 @@ $(function () {
         return cardFrame;
     };
 
+    $.resourceCard = function (event, ui) {
+        var card = ui.draggable;
+        var target = $(event.target);
+        var domainId = target.data('id');
+
+        target.find('.card-highlight').remove();
+
+        if (!$.isAllowed('resourceCard')) {
+            return false;
+        }
+
+        if (gameInfo.phase == 'setup' && target.children('.card-resource').length == 1) {
+            return false;
+        }
+
+        card.removeClass('card-active').addClass('card-resource');
+        card.clone().attr('style', '').prependTo(target);
+        card.remove();
+
+        socket.emit('resourceCard', {
+            domainId: domainId,
+            cardId: card.data('id')
+        });
+    };
+
+    $(document).on('click', '.player.row-domain .domain', function () {
+        if (!$.isAllowed('playCard')) {
+            return false;
+        }
+
+        if ($(this).hasClass('target')) {
+            $(this).removeClass('target');
+        } else {
+            $('.player.row-domain .domain').removeClass('target');
+            $(this).addClass('target');
+        }
+    });
+
     $.playCard = function (event, ui) {
+        var domain = $('.domain.target');
         var card = ui.draggable;
         var target = $(event.target);
 
         target.find('.card-highlight').remove();
 
-        if (!$.isAllowed('playCard')) {
+        if (!$.isAllowed('playCard') || !domain.length) {
             return false;
         }
 
         card.clone().attr('style', '').prependTo(target);
         card.remove();
 
-        socket.emit('playCard', card.data('id'));
+        socket.emit('playCard', {
+            cardId: card.data('id'),
+            domainId: domain.data('id')
+        });
     };
 
     $.commitCard = function (event, ui) {
@@ -41,31 +83,6 @@ $(function () {
 
         socket.emit('commitCard', {
             storyId: $(event.target).data('id'),
-            cardId: card.data('id')
-        });
-    };
-
-    $.resourceCard = function (event, ui) {
-        var resourceId = $(event.target).data('id');
-        var card = ui.draggable;
-        var target = $(event.target);
-
-        target.find('.card-highlight').remove();
-
-        if (!$.isAllowed('resourceCard')) {
-            return false;
-        }
-
-        if (gameInfo.phase == 'setup' && target.children('.card-resource').length == 1) {
-            return false;
-        }
-
-        card.removeClass('card-active').addClass('card-resource');
-        card.clone().attr('style', '').prependTo(target);
-        card.remove();
-
-        socket.emit('resourceCard', {
-            resourceId: resourceId,
             cardId: card.data('id')
         });
     };

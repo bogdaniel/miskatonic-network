@@ -138,6 +138,10 @@ io.of('/play').on('connection', function (socket) {
         playSocket.playCard(socket, data);
     });
 
+    socket.on('endPhase', function (socket) {
+        playSocket.endPhase(socket);
+    })
+
     socket.on('commitCard', function (data) {
         playSocket.commitCard(socket, data);
     });

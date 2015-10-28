@@ -25,13 +25,13 @@ $(function () {
     });
 
     socket.on('opponentResourcedCard', function (data) {
-        var resourceId = data.resourceId;
+        var domainId = data.domainId;
         var card = data.card;
         var cardFrame = $.renderCard(card);
         var handCount = $('.row-opponent .hand-deck .count');
 
         handCount.text(parseInt(handCount.text()) - 1);
-        $('.opponent.row-domain .domain-' + resourceId).prepend(cardFrame);
+        $('.opponent.row-domain .domain-' + domainId).prepend(cardFrame);
     });
 
     $(document).on('click', '#restore-insane', function () {
@@ -83,6 +83,16 @@ $(function () {
         $('.opponent.row-played').append(cardFrame);
     });
 
+    socket.on('opponentDrainedDomain', function (domainId) {
+        //TODO
+    });
+
+    $(document).on('click', '#end-phase', function () {
+        if ($.isAllowed('endPhase')) {
+            socket.emit('endPhase');
+        }
+    });
+
     socket.on('opponentCommittedCard', function (data) {
         var storyId = data.storyId;
         var card = data.card;
@@ -109,10 +119,12 @@ $(function () {
         content += 'Actions: ' + data.actions.join(', ');
 
         if (data.activePlayer == userId) {
+            content += '<hr/>';
             if (data.phase == 'refresh') {
-                content += '<hr/>';
                 content += '<button id="restore-insane" type="button">RestoreInsane</button>';
                 content += '<button id="refresh-all" type="button">RefreshAll</button>';
+            } else if (data.phase == 'operations') {
+                content += '<button id="end-phase" type="button">EndPhase</button>';
             }
         }
 

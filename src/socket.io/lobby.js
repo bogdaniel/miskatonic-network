@@ -32,7 +32,7 @@ exports.create = function (socket, data) {
         players: [{
             id: socket.userId,
             username: socket.username,
-            resources: [{id: 1, status: 'active'}, {id: 2, status: 'active'}, {id: 3, status: 'active'}],
+            domains: [{id: 1, status: 'active'}, {id: 2, status: 'active'}, {id: 3, status: 'active'}],
             actions: ['drawCard']
         }],
         host: socket.userId,
@@ -87,7 +87,7 @@ exports.join = function (socket, data) {
         game.players.push({
             id: socket.userId,
             username: socket.username,
-            resources: [{id: 1, status: 'active'}, {id: 2, status: 'active'}, {id: 3, status: 'active'}],
+            domains: [{id: 1, status: 'active'}, {id: 2, status: 'active'}, {id: 3, status: 'active'}],
             actions: ['drawCard']
         });
 

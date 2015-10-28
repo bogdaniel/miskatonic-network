@@ -39,20 +39,6 @@ exports.current = function (playerId) {
     });
 };
 
-exports.opponentId = function (playerId) {
-    return this.current(playerId).then(function (game) {
-        var id;
-
-        game.players.forEach(function (player) {
-            if (player.id !== playerId) {
-                id = player.id;
-            }
-        });
-
-        return id;
-    });
-};
-
 exports.create = function (game, playerId) {
     redis.set('current:' + playerId, JSON.stringify(game));
     redis.zadd('games', game.id, JSON.stringify(game));
@@ -89,8 +75,8 @@ exports.leave = function (gameId, playerId) {
         }
 
         game.players.forEach(function (player) {
-            player.resources.forEach(function (resourceId) {
-                redis.del('resourcedCards:' + gameId + ':' + playerId + ':' + resourceId);
+            player.domains.forEach(function (domainId) {
+                redis.del('resourcedCards:' + gameId + ':' + playerId + ':' + domainId);
             });
         });
     });
