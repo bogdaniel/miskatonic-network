@@ -36,6 +36,9 @@ exports.create = function (socket, data) {
             actions: ['drawCard']
         }],
         host: socket.userId,
+        temp: {
+            drawnCards: 0
+        },
         allow_spectators: false,
         created_at: moment().format('YYYY-MM-DD HH:mm:ss')
     };

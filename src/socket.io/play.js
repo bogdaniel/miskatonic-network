@@ -137,10 +137,14 @@ exports.drawCard = function (socket) {
 
                 socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
             } else if (game.phase == 'draw') {
-                player.actions = ['resourceCard'];
+                game.temp.drawnCards += 1;
 
-                game = gameHelper.updatePlayer(game, player);
-                game.phase = 'resource';
+                if (game.temp.drawnCards == 2 || (game.turn == 1 && game.firstPlayer == player.id && game.temp.drawnCards == 1)) {
+                    player.actions = ['resourceCard'];
+                    game = gameHelper.updatePlayer(game, player);
+                    game.temp.drawnCards = 0;
+                    game.phase = 'resource';
+                }
 
                 Game.update(game);
 
@@ -195,6 +199,7 @@ exports.resourceCard = function (socket, data) {
                             if (count.playerCount == 3 && count.opponentCount == 3) {
                                 game.turn = 1;
                                 game.activePlayer = game.players[randomHelper.getRandomIntInclusive(0, 1)].id;
+                                game.firstPlayer = game.activePlayer;
                                 game.phase = 'refresh';
 
                                 game.players.forEach(function (p, i) {
@@ -251,7 +256,7 @@ exports.refreshAll = function (socket) {
         Game.update(game);
 
         return Promise.try(function () {
-            return played.all(game.id, player.id)
+            return played.all(game.id, player.id);
         }).then(function (cards) {
             if (cards.length) {
                 cards.forEach(function (card) {
