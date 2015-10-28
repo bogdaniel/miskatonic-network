@@ -2,6 +2,7 @@
 
 var _ = require('underscore');
 var gameHelper = require('../helpers/gameHelper');
+var randomHelper = require('../helpers/randomHelper');
 var Promise = require('bluebird');
 var Game = require('../database/redis/game');
 var storyCard = require('../database/redis/storyCard');
@@ -193,7 +194,7 @@ exports.resourceCard = function (socket, data) {
                         }).then(function (count) {
                             if (count.playerCount == 3 && count.opponentCount == 3) {
                                 game.turn = 1;
-                                game.activePlayer = game.host;
+                                game.activePlayer = game.players[randomHelper.getRandomIntInclusive(0, 1)].id;
                                 game.phase = 'refresh';
 
                                 game.players.forEach(function (p, i) {
