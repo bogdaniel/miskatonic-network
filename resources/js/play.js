@@ -160,10 +160,16 @@ $(function () {
 
         if (data.activePlayer == userId) {
             content += '<hr/>';
-            if (data.phase == 'refresh') {
+
+            if ($.inArray('restoreInsane', data.actions) != -1) {
                 content += '<button id="restore-insane" type="button">RestoreInsane</button>';
+            }
+
+            if ($.inArray('refreshAll', data.actions) != -1) {
                 content += '<button id="refresh-all" type="button">RefreshAll</button>';
-            } else if (data.phase == 'operations') {
+            }
+
+            if ($.inArray('endPhase', data.actions) != -1) {
                 content += '<button id="end-phase" type="button">EndPhase</button>';
             }
         }
