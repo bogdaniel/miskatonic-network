@@ -96,6 +96,7 @@ $(function () {
     //domains
 
     //TODO
+    //rebuild domains
 
     //resourcedCards
 

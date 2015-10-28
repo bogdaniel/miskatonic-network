@@ -20,14 +20,9 @@ $(function () {
         var resources = domainContainer.data('resources') || {};
         var cardFrame = $.renderCard(card);
 
-        domainContainer.addClass('domain-' + domain.status);
-        domainContainer.find('.card-resource').remove();
-
         if (domain.status == 'drained') {
             $.drainDomain(owner, domain.id);
         }
-
-        domainContainer.prepend(cardFrame);
 
         if (resources[card.faction]) {
             resources[card.faction] += 1;
@@ -36,6 +31,8 @@ $(function () {
         }
 
         domainContainer.data('resources', resources);
+        domainContainer.addClass('domain-' + domain.status);
+        domainContainer.prepend(cardFrame);
 
         //TODO
         //display domain resource marker
@@ -68,7 +65,7 @@ $(function () {
         //display domain resource marker
 
         card.removeClass('card-active').addClass('card-resource');
-        card.clone().attr('style', '').prependTo(domain);
+        card.clone().removeAttr('style').prependTo(domain);
         card.remove();
 
         socket.emit('resourceCard', {
