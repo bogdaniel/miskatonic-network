@@ -52,6 +52,21 @@ $(function () {
     });
 
     socket.on('gameInfo', function (data) {
+        var activePlayer = 'Opponent';
+        if (data.activePlayer === 0) {
+            activePlayer = 'Both';
+        } else if (data.activePlayer == userId) {
+            activePlayer = 'You';
+        }
+
+        var content = '';
+        content += 'Turn: ' + data.turn + '<br/>';
+        content += 'Active player: ' + activePlayer + '<br/>';
+        content += 'Phase: ' + data.phase + '<br/>';
+        content += 'Step: ' + data.step + '<br/>';
+        content += 'Actions: ' + data.actions.join(', ');
+        $('.control').html(content);
+
         gameInfo = data;
     });
 });
