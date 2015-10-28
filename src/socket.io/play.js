@@ -273,6 +273,8 @@ exports.refreshAll = function (socket) {
         }).then(function (cards) {
             if (cards.length) {
                 cards.forEach(function (card) {
+                    card.status = 'active';
+
                     played.update(game.id, player.id, card);
                 });
             }
@@ -366,13 +368,28 @@ exports.endPhase = function (socket) {
 
             player.actions = ['commitCard', 'endPhase'];
         } else if (game.phase == 'story' && game.step == 'playerCommit') {
-            nextPhase = 'story';
-            nextStep = 'opponentCommit';
+            if (Object.keys(game.temp.storyCommits).length) {
+                nextPhase = 'story';
+                nextStep = 'opponentCommit';
 
-            player.actions = [];
-            opponent.actions = ['commitCard', 'endPhase'];
+                player.actions = [];
+                opponent.actions = ['commitCard', 'endPhase'];
 
-            game.activePlayer = opponent.id;
+                game.activePlayer = opponent.id;
+            } else {
+                nextPhase = 'refresh';
+                nextStep = null;
+
+                player.actions = [];
+                opponent.actions = ['restoreInsane', 'refreshAll'];
+
+                game.temp.storyCommits = {};
+                game.activePlayer = opponent.id;
+
+                if (player.id != game.host) {
+                    game.turn += 1;
+                }
+            }
         } else if (game.phase == 'story' && game.step == 'opponentCommit') {
             nextPhase = 'story';
             nextStep = 'resolveStories';
@@ -388,11 +405,21 @@ exports.endPhase = function (socket) {
             player.actions = [];
             opponent.actions = ['restoreInsane', 'refreshAll'];
 
+            for (var storyId in game.temp.storyCommits) {
+                if (game.temp.storyCommits.hasOwnProperty(storyId)) {
+                    committed.removeAll(game.id, player.id, storyId);
+                    committed.removeAll(game.id, opponent.id, storyId);
+                }
+            }
+
+            game.temp.storyCommits = {};
             game.activePlayer = opponent.id;
 
             if (player.id != game.host) {
                 game.turn += 1;
             }
+
+            socket.broadcast.emit('endTurn');
         }
 
         game.phase = nextPhase;
@@ -408,10 +435,40 @@ exports.endPhase = function (socket) {
 };
 
 exports.commitCard = function (socket, data) {
-    played.commit(socket.gameId, socket.userId, data.storyId, data.cardId).then(function (card) {
-        socket.broadcast.emit('opponentCommittedCard', {
-            storyId: data.storyId,
-            card: card
+    var game;
+    var player;
+    var opponent;
+
+    return Promise.try(function () {
+        return Game.current(socket.userId);
+    }).then(function (result) {
+        game = result;
+        player = gameHelper.player(game, socket.userId);
+        opponent = gameHelper.opponent(game, socket.userId);
+
+        if (!gameHelper.isAllowed(player, 'commitCard')) {
+            return false;
+        }
+
+        return Promise.try(function () {
+            return played.get(game.id, player.id, data.cardId);
+        }).then(function (card) {
+            if (card.status != 'active') {
+                return false;
+            }
+
+            return Promise.try(function () {
+                return played.commit(game.id, player.id, data.storyId, data.cardId);
+            }).then(function (card) {
+                game.temp.storyCommits[data.storyId] = true;
+
+                Game.update(game);
+
+                socket.broadcast.emit('opponentCommittedCard', {
+                    storyId: data.storyId,
+                    card: card
+                });
+            });
         });
     });
 };

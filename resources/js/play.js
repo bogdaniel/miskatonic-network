@@ -138,8 +138,21 @@ $(function () {
 
     $(document).on('click', '#end-phase', function () {
         if ($.isAllowed('endPhase')) {
+            if (gameInfo.phase == 'operations') {
+                $('.player.row-domain .domain.target .icon-target').remove();
+                $('.player.row-domain .domain.target').removeClass('target');
+            }
+
+            if (gameInfo.phase == 'story' && gameInfo.step == 'resolveStories') {
+                $.uncommitAll();
+            }
+
             socket.emit('endPhase');
         }
+    });
+
+    socket.on('endTurn', function () {
+        $.uncommitAll();
     });
 
     socket.on('gameInfo', function (data) {

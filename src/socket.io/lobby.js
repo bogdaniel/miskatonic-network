@@ -37,7 +37,8 @@ exports.create = function (socket, data) {
         }],
         host: socket.userId,
         temp: {
-            drawnCards: 0
+            drawnCards: 0,
+            storyCommits: {}
         },
         allow_spectators: false,
         created_at: moment().format('YYYY-MM-DD HH:mm:ss')

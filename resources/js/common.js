@@ -92,13 +92,13 @@ $(function () {
             return false;
         }
 
-        /*var cardCost = card.data('cost');
-         var cardFaction = card.data('faction');
-         var resources = domain.data('resources');
+        var cardCost = card.data('cost');
+        var cardFaction = card.data('faction');
+        var resources = domain.data('resources');
 
-         if (!(resources[cardFaction] && $.domainResourceCount(resources) >= cardCost)) {
-         return false;
-         }*/
+        if (!(resources[cardFaction] && $.domainResourceCount(resources) >= cardCost)) {
+            return false;
+        }
 
         $.drainDomain('player', domainId);
 
@@ -117,7 +117,7 @@ $(function () {
 
         target.find('.card-highlight').remove();
 
-        if (!$.isAllowed('commitCard')) {
+        if (!$.isAllowed('commitCard') || !card.hasClass('card-active')) {
             return false;
         }
 
@@ -129,6 +129,20 @@ $(function () {
             storyId: $(event.target).data('id'),
             cardId: card.data('id')
         });
+    };
+
+    $.uncommitAll = function () {
+        $('.player.row-committed .col-committed .card-frame').each(function () {
+            $.uncommitCard('player', $(this));
+        });
+
+        $('.opponent.row-committed .col-committed .card-frame').each(function () {
+            $.uncommitCard('opponent', $(this));
+        });
+    };
+
+    $.uncommitCard = function (owner, card) {
+        card.appendTo('.' + owner + '.row-played');
     };
 
     $.droppableOver = function (event, ui) {
@@ -166,6 +180,7 @@ $(function () {
             domainContainer = $('.' + owner + '.row-domain .domain-' + domainId);
         }
 
+        domainContainer.removeClass('domain-drained').addClass('domain-active');
         domainContainer.find('.icon').remove();
     };
 
