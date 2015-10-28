@@ -47,3 +47,15 @@ exports.domain = function (game, playerId, domainId) {
 
     return _.findWhere(player.domains, {id: domainId});
 };
+
+exports.updateDomain = function (game, domain, playerId) {
+    var player = this.player(game, playerId);
+
+    player.domains.forEach(function (d, i) {
+        if (d.id == domain.id) {
+            player.domains[i] = domain;
+        }
+    });
+
+    return this.updatePlayer(game, player);
+};

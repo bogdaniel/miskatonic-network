@@ -61,7 +61,7 @@ exports.displayTable = function (socket) {
                     player.domains.forEach(function (domain) {
                         resourced.all(game.id, player.id, domain.id).then(function (cards) {
                             socket.emit('playerResourcedCards', {
-                                domainId: domain.id,
+                                domain: domain,
                                 cards: cards
                             });
                         });
@@ -70,7 +70,7 @@ exports.displayTable = function (socket) {
                     player.domains.forEach(function (domain) {
                         resourced.all(game.id, player.id, domain.id).then(function (cards) {
                             socket.emit('opponentResourcedCards', {
-                                domainId: domain.id,
+                                domain: domain,
                                 cards: cards
                             });
                         });
@@ -305,21 +305,28 @@ exports.playCard = function (socket, data) {
             return false;
         }
 
-        return Promise.try(function () {
-            return hand.get(game.id, player.id, cardId);
-        }).then(function (card) {
+        return Promise.props({
+            card: hand.get(game.id, player.id, cardId),
+            count: resourced.count(game.id, player.id, domainId)
+        }).then(function (result) {
+            var card = result.card;
+            var availableResources = result.count;
             var domain = gameHelper.domain(game, player.id, domainId);
 
-            if (domain == 'active') {
-
+            if (domain.status != 'active' || card.cost > availableResources) {
+                return false;
             }
-        });
 
-        return Promise.try(function () {
-            return hand.play(game.id, player.id, cardId);
-        }).then(function (card) {
-            socket.broadcast.emit('opponentPlayedCard', card);
-            socket.broadcast.emit('opponentDrainedDomain', domainId);
+            domain.status = 'drained';
+            game = gameHelper.updateDomain(game, domain, player.id);
+            Game.update(game);
+
+            return Promise.try(function () {
+                return hand.play(game.id, player.id, cardId);
+            }).then(function (card) {
+                socket.broadcast.emit('opponentPlayedCard', card);
+                socket.broadcast.emit('opponentDrainedDomain', domainId);
+            });
         });
     });
 };

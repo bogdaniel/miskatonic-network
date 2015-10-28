@@ -35,15 +35,21 @@ $(function () {
     };
 
     $(document).on('click', '.player.row-domain .domain', function () {
-        if (!$.isAllowed('playCard')) {
+        if (!$.isAllowed('playCard') || ($(this).hasClass('domain-drained') && !$(this).hasClass('domain-active'))) {
             return false;
         }
 
         if ($(this).hasClass('target')) {
             $(this).removeClass('target');
+            $(this).find('.icon-target').remove();
         } else {
-            $('.player.row-domain .domain').removeClass('target');
+            var domains = $('.player.row-domain .domain');
+            var iconTarget = $('<div>').addClass('icon icon-target').append($('<img>').attr('src', '/images/target.jpg'));
+
+            domains.removeClass('target');
+            domains.find('.icon-target').remove();
             $(this).addClass('target');
+            $(this).append(iconTarget);
         }
     });
 

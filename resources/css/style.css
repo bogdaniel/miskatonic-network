@@ -298,12 +298,15 @@ body {
     -ms-flex-pack: end;
     justify-content: flex-end;
 
+    position: relative;
     margin-bottom: 10px;
 }
 
-.domain.target {
-    border-top: 2px solid red;
-    border-bottom: 2px solid red;
+.icon-target, .icon-drained {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
 }
 
 .highlight {

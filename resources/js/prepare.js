@@ -76,29 +76,45 @@ $(function () {
     });
 
     socket.on('opponentResourcedCards', function (data) {
-        var domainId = data.domainId;
+        var domain = data.domain;
         var cards = data.cards;
+        var domainContainer = $('.opponent.row-domain .domain-' + domain.id);
 
-        $('.opponent.row-domain .domain-' + domainId + ' div:not(:last)').remove();
+        domainContainer.addClass('domain-' + domain.status);
+        domainContainer.find('.card-resource').remove();
+
+        if (domain.status == 'drained') {
+            var iconDrained = $('<div>').addClass('icon icon-drained').append($('<img>').attr('src', '/images/drained.jpg'));
+
+            domainContainer.append(iconDrained);
+        }
 
         $.each(cards, function (index, card) {
             var cardFrame = $.renderCard(card);
-            $('.opponent.row-domain .domain-' + domainId).prepend(cardFrame);
+            domainContainer.prepend(cardFrame);
         });
     });
 
     socket.on('playerResourcedCards', function (data) {
-        var domainId = data.domainId;
+        var domain = data.domain;
         var cards = data.cards;
+        var domainContainer = $('.player.row-domain .domain-' + domain.id);
 
-        $('.player.row-domain .domain-' + domainId + ' div:not(:last)').remove();
+        domainContainer.addClass('domain-' + domain.status);
+        domainContainer.find('.card-resource').remove();
+
+        if (domain.status == 'drained') {
+            var iconDrained = $('<div>').addClass('icon icon-drained').append($('<img>').attr('src', '/images/drained.jpg'));
+
+            domainContainer.append(iconDrained);
+        }
 
         $.each(cards, function (index, card) {
             var cardFrame = $.renderCard(card);
-            $('.player.row-domain .domain-' + domainId).prepend(cardFrame);
+            domainContainer.prepend(cardFrame);
         });
 
-        $('.player.row-domain .domain-' + domainId).droppable({
+        domainContainer.droppable({
             accept: '.row-hand .card-frame',
             drop: $.resourceCard,
             over: $.droppableOver,
