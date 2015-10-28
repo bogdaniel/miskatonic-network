@@ -4,28 +4,71 @@ $(function () {
     $.renderCard = function (card) {
         var cardImage = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + card.image);
         var cardFrame = $('<div>').addClass('card-frame').addClass('card-' + card.status).attr('data-id', card.cid);
+
+        if (card.type != 'Story') {
+            cardFrame.attr('data-cost', card.cost)
+                .attr('data-faction', card.faction);
+        }
+
         cardFrame.append(cardImage);
 
         return cardFrame;
     };
 
-    $.resourceCard = function (event, ui) {
-        var card = ui.draggable;
-        var target = $(event.target);
-        var domainId = target.data('id');
+    $.resourceCard = function (owner, domain, card) {
+        var domainContainer = $('.' + owner + '.row-domain .domain-' + domain.id);
+        var resources = domainContainer.data('resources') || {};
+        var cardFrame = $.renderCard(card);
 
-        target.find('.card-highlight').remove();
+        domainContainer.addClass('domain-' + domain.status);
+        domainContainer.find('.card-resource').remove();
+
+        if (domain.status == 'drained') {
+            $.drainDomain(owner, domain.id);
+        }
+
+        domainContainer.prepend(cardFrame);
+
+        if (resources[card.faction]) {
+            resources[card.faction] += 1;
+        } else {
+            resources[card.faction] = 1;
+        }
+
+        domainContainer.data('resources', resources);
+
+        //TODO
+        //display domain resource marker
+    };
+
+    $.playerResourceCard = function (event, ui) {
+        var card = ui.draggable;
+        var domain = $(event.target);
+        var domainId = domain.data('id');
+
+        domain.find('.card-highlight').remove();
 
         if (!$.isAllowed('resourceCard')) {
             return false;
         }
 
-        if (gameInfo.phase == 'setup' && target.children('.card-resource').length == 1) {
+        if (gameInfo.phase == 'setup' && domain.children('.card-resource').length == 1) {
             return false;
         }
 
+        var resources = domain.data('resources') || {};
+        if (resources[card.data('faction')]) {
+            resources[card.data('faction')] += 1;
+        } else {
+            resources[card.data('faction')] = 1;
+        }
+        domain.data('resources', resources);
+
+        //TODO
+        //display domain resource marker
+
         card.removeClass('card-active').addClass('card-resource');
-        card.clone().attr('style', '').prependTo(target);
+        card.clone().attr('style', '').prependTo(domain);
         card.remove();
 
         socket.emit('resourceCard', {
@@ -34,42 +77,29 @@ $(function () {
         });
     };
 
-    $(document).on('click', '.player.row-domain .domain', function () {
-        if (!$.isAllowed('playCard') || ($(this).hasClass('domain-drained') && !$(this).hasClass('domain-active'))) {
-            return false;
-        }
-
-        if ($(this).hasClass('target')) {
-            $(this).removeClass('target');
-            $(this).find('.icon-target').remove();
-        } else {
-            var domains = $('.player.row-domain .domain');
-            var iconTarget = $('<div>').addClass('icon icon-target').append($('<img>').attr('src', '/images/target.jpg'));
-
-            domains.removeClass('target');
-            domains.find('.icon-target').remove();
-            $(this).addClass('target');
-            $(this).append(iconTarget);
-        }
-    });
-
     $.playCard = function (event, ui) {
         var domain = $('.domain.target');
+        var domainId = domain.data('id');
         var card = ui.draggable;
         var target = $(event.target);
 
         target.find('.card-highlight').remove();
 
+        //TODO
+        //card cost check
+
         if (!$.isAllowed('playCard') || !domain.length) {
             return false;
         }
+
+        $.drainDomain('player', domainId);
 
         card.clone().attr('style', '').prependTo(target);
         card.remove();
 
         socket.emit('playCard', {
             cardId: card.data('id'),
-            domainId: domain.data('id')
+            domainId: domainId
         });
     };
 
@@ -111,35 +141,32 @@ $(function () {
         }).disableSelection();
     };
 
-    $.player = function (game) {
-        var p = false;
-
-        $.each(game.players, function (index, player) {
-            if (player.id === userId) {
-                p = player;
-            }
-        });
-
-        return p;
-    };
-
-    $.opponent = function (game) {
-        var p = false;
-
-        $.each(game.players, function (index, player) {
-            if (player.id !== userId) {
-                p = player;
-            }
-        });
-
-        return p;
-    };
-
     $.isAllowed = function (action) {
         if ($.inArray(action, gameInfo.actions) != -1 && (gameInfo.activePlayer == userId || gameInfo.activePlayer === 0)) {
             return true;
         }
 
         return false;
+    };
+
+    $.refreshDomain = function (owner, domainId) {
+        var domainContainer;
+
+        if (domainId === 0) {
+            domainContainer = $('.' + owner + '.row-domain .domain');
+        } else {
+            domainContainer = $('.' + owner + '.row-domain .domain-' + domainId);
+        }
+
+        domainContainer.find('.icon').remove();
+    };
+
+    $.drainDomain = function (owner, domainId) {
+        var domainContainer = $('.' + owner + '.row-domain .domain-' + domainId);
+        var iconDrained = $('<div>').addClass('icon icon-drained').append($('<img>').attr('src', '/images/drained.jpg'));
+
+        domainContainer.removeClass('target').removeClass('domain-active').addClass('domain-drained');
+        domainContainer.find('.icon').remove();
+        domainContainer.append(iconDrained);
     };
 });

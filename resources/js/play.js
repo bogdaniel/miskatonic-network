@@ -7,6 +7,8 @@ $(function () {
         socket.emit('leave');
     });
 
+    //drawnCard
+
     $(document).on('click', '.row-player .draw-deck', function () {
         if ($.isAllowed('drawCard')) {
             socket.emit('drawCard');
@@ -24,15 +26,52 @@ $(function () {
         $('.row-opponent .draw-deck .count').text(count);
     });
 
+    //domain
+
+    $(document).on('click', '.player.row-domain .domain', function () {
+        if (!$.isAllowed('playCard') || ($(this).hasClass('domain-drained') && !$(this).hasClass('domain-active'))) {
+            return false;
+        }
+
+        if ($(this).hasClass('target')) {
+            $(this).removeClass('target');
+            $(this).find('.icon-target').remove();
+        } else {
+            var domains = $('.player.row-domain .domain');
+            var iconTarget = $('<div>').addClass('icon icon-target').append($('<img>').attr('src', '/images/target.jpg'));
+
+            domains.removeClass('target');
+            domains.find('.icon-target').remove();
+            $(this).addClass('target');
+            $(this).append(iconTarget);
+        }
+    });
+
+    //resourcedCard
+
     socket.on('opponentResourcedCard', function (data) {
         var domainId = data.domainId;
+        var domain = $('.opponent.row-domain .domain-' + domainId);
         var card = data.card;
         var cardFrame = $.renderCard(card);
         var handCount = $('.row-opponent .hand-deck .count');
 
         handCount.text(parseInt(handCount.text()) - 1);
-        $('.opponent.row-domain .domain-' + domainId).prepend(cardFrame);
+        domain.prepend(cardFrame);
+
+        var resources = domain.data('resources') || {};
+        if (resources[card.faction]) {
+            resources[card.faction] += 1;
+        } else {
+            resources[card.faction] = 1;
+        }
+        domain.data('resources', resources);
+
+        //TODO
+        //display domain resource marker
     });
+
+    //refreshPhase
 
     $(document).on('click', '#restore-insane', function () {
         //TODO
@@ -58,8 +97,7 @@ $(function () {
     });
 
     socket.on('playerRefreshedAll', function () {
-        //TODO
-        //remove domain drain markers
+        $.refreshDomain('player', 0);
 
         $('.player.row-played .card-exhausted').each(function () {
             $(this).removeClass('card-exhausted').addClass('card-active');
@@ -67,13 +105,14 @@ $(function () {
     });
 
     socket.on('opponentRefreshedAll', function () {
-        //TODO
-        //remove domain drain markers
+        $.refreshDomain('opponent', 0);
 
         $('.opponent.row-played .card-exhausted').each(function () {
             $(this).removeClass('card-exhausted').addClass('card-active');
         });
     });
+
+    //
 
     socket.on('opponentPlayedCard', function (card) {
         var cardFrame = $.renderCard(card);
@@ -84,7 +123,7 @@ $(function () {
     });
 
     socket.on('opponentDrainedDomain', function (domainId) {
-        //TODO
+        $.drainDomain('opponent', domainId);
     });
 
     $(document).on('click', '#end-phase', function () {
