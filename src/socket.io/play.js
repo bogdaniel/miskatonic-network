@@ -39,7 +39,7 @@ exports.displayTable = function (socket) {
             }).then(function () {
                 if (player.id === socket.userId) {
                     game.storyCards.forEach(function (storyCard) {
-                        committed.all(game.id, player.id, storyCard.cid).then(function (cards) {
+                        committed.all(game.id, player.id, storyCard.id).then(function (cards) {
                             socket.emit('playerCommittedCards', {
                                 storyCard: storyCard,
                                 cards: cards
@@ -48,7 +48,7 @@ exports.displayTable = function (socket) {
                     });
                 } else {
                     game.storyCards.forEach(function (storyCard) {
-                        committed.all(game.id, player.id, storyCard.cid).then(function (cards) {
+                        committed.all(game.id, player.id, storyCard.id).then(function (cards) {
                             socket.emit('opponentCommittedCards', {
                                 storyCard: storyCard,
                                 cards: cards

@@ -20,5 +20,5 @@ exports.all = function (gameId, playerId, storyId) {
 };
 
 exports.add = function (gameId, playerId, storyId, card) {
-    return redis.zadd('committedCards:' + gameId + ':' + playerId + ':' + storyId, card.cid, JSON.stringify(card));
+    return redis.zadd('committedCards:' + gameId + ':' + playerId + ':' + storyId, card.id, JSON.stringify(card));
 };

@@ -70,7 +70,7 @@ exports.leave = function (gameId, playerId) {
 
         if (game.storyCards) {
             game.storyCards.forEach(function (storyCard) {
-                redis.del('committedCards:' + gameId + ':' + playerId + ':' + storyCard.cid);
+                redis.del('committedCards:' + gameId + ':' + playerId + ':' + storyCard.id);
             });
         }
 

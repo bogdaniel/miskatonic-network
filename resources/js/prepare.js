@@ -65,8 +65,8 @@ $(function () {
         var storyCard = data.storyCard;
         var cards = data.cards;
 
-        $('.' + owner + '.row-committed .col-committed.committed-story-' + storyCard.cid).remove();
-        var colCommitted = $('<div>').addClass('col-committed').addClass('committed-story-' + storyCard.cid).attr('data-id', storyCard.cid);
+        $('.' + owner + '.row-committed .col-committed.committed-story-' + storyCard.id).remove();
+        var colCommitted = $('<div>').addClass('col-committed').addClass('committed-story-' + storyCard.id).attr('data-id', storyCard.id);
 
         $.each(cards, function (index, card) {
             var cardFrame = $.renderCard(card);

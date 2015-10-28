@@ -137,7 +137,7 @@ $(function () {
         var card = data.card;
         var cardFrame = $.renderCard(card);
 
-        $('.opponent.row-played .card-frame[data-id=' + card.cid + ']').remove();
+        $('.opponent.row-played .card-frame[data-id=' + card.id + ']').remove();
         $('.opponent.row-committed .committed-story-' + storyId).append(cardFrame);
     });
 

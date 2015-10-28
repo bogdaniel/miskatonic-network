@@ -3,7 +3,7 @@ $(function () {
 
     $.renderCard = function (card) {
         var cardImage = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + card.image);
-        var cardFrame = $('<div>').addClass('card-frame').addClass('card-' + card.status).attr('data-id', card.cid);
+        var cardFrame = $('<div>').addClass('card-frame').addClass('card-' + card.status).attr('data-id', card.id);
 
         if (card.type != 'Story') {
             cardFrame.attr('data-cost', card.cost)

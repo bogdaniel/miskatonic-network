@@ -35,7 +35,7 @@ exports.count = function (gameId, playerId) {
 };
 
 exports.add = function (gameId, playerId, card) {
-    return redis.zadd('playedCards:' + gameId + ':' + playerId, card.cid, JSON.stringify(card));
+    return redis.zadd('playedCards:' + gameId + ':' + playerId, card.id, JSON.stringify(card));
 };
 
 exports.update = function (gameId, playerId, card) {
@@ -49,7 +49,7 @@ exports.update = function (gameId, playerId, card) {
 };
 
 exports.remove = function (gameId, playerId, card) {
-    return redis.zremrangebyscore('playedCards:' + gameId + ':' + playerId, card.cid, card.cid);
+    return redis.zremrangebyscore('playedCards:' + gameId + ':' + playerId, card.id, card.id);
 };
 
 exports.commit = function (gameId, playerId, storyId, cardId) {
