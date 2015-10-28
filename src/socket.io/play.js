@@ -57,19 +57,19 @@ exports.displayTable = function (socket) {
                 }
             }).then(function () {
                 if (player.id === socket.userId) {
-                    player.resources.forEach(function (resourceId) {
-                        resourced.all(game.id, player.id, resourceId).then(function (cards) {
+                    player.resources.forEach(function (resource) {
+                        resourced.all(game.id, player.id, resource.id).then(function (cards) {
                             socket.emit('playerResourcedCards', {
-                                resourceId: resourceId,
+                                resourceId: resource.id,
                                 cards: cards
                             });
                         });
                     });
                 } else {
-                    player.resources.forEach(function (resourceId) {
-                        resourced.all(game.id, player.id, resourceId).then(function (cards) {
+                    player.resources.forEach(function (resource) {
+                        resourced.all(game.id, player.id, resource.id).then(function (cards) {
                             socket.emit('opponentResourcedCards', {
-                                resourceId: resourceId,
+                                resourceId: resource.id,
                                 cards: cards
                             });
                         });
@@ -138,21 +138,6 @@ exports.drawCard = function (socket) {
     });
 };
 
-exports.playCard = function (socket, cardId) {
-    hand.play(socket.gameId, socket.userId, cardId).then(function (card) {
-        socket.broadcast.emit('opponentPlayedCard', card);
-    });
-};
-
-exports.commitCard = function (socket, data) {
-    played.commit(socket.gameId, socket.userId, data.storyId, data.cardId).then(function (card) {
-        socket.broadcast.emit('opponentCommittedCard', {
-            storyId: data.storyId,
-            card: card
-        });
-    });
-};
-
 exports.resourceCard = function (socket, data) {
     var game;
     var player;
@@ -200,10 +185,10 @@ exports.resourceCard = function (socket, data) {
                             if (count.playerCount == 3 && count.opponentCount == 3) {
                                 game.turn = 1;
                                 game.activePlayer = game.host;
-                                game.phase = 'draw';
+                                game.phase = 'refresh';
 
                                 game.players.forEach(function (p, i) {
-                                    game.players[i].actions = ['drawCard'];
+                                    game.players[i].actions = ['restoreInsane', 'refreshAll'];
                                 });
 
                                 Game.update(game);
@@ -215,6 +200,41 @@ exports.resourceCard = function (socket, data) {
                     }
                 });
             }
+        });
+    });
+};
+
+exports.refreshAll = function (socket) {
+    var game;
+    var player;
+
+    return Promise.try(function () {
+        return Game.current(socket.userId);
+    }).then(function (result) {
+        game = result;
+        player = gameHelper.player(game, socket.userId);
+
+        if (!gameHelper.isAllowed(player, 'refreshAll')) {
+            return false;
+        }
+
+        Promise.try(function () {
+            //
+        });
+    });
+};
+
+exports.playCard = function (socket, cardId) {
+    hand.play(socket.gameId, socket.userId, cardId).then(function (card) {
+        socket.broadcast.emit('opponentPlayedCard', card);
+    });
+};
+
+exports.commitCard = function (socket, data) {
+    played.commit(socket.gameId, socket.userId, data.storyId, data.cardId).then(function (card) {
+        socket.broadcast.emit('opponentCommittedCard', {
+            storyId: data.storyId,
+            card: card
         });
     });
 };

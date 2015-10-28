@@ -32,7 +32,7 @@ exports.create = function (socket, data) {
         players: [{
             id: socket.userId,
             username: socket.username,
-            resources: [1, 2, 3],
+            resources: [{id: 1, status: 'active'}, {id: 2, status: 'active'}, {id: 3, status: 'active'}],
             actions: ['drawCard']
         }],
         host: socket.userId,
@@ -41,7 +41,6 @@ exports.create = function (socket, data) {
     };
 
     socket.gameId = newGame.id;
-
     Game.create(newGame, socket.userId);
 
     socket.server.of('/lobby').emit('created', {
@@ -85,12 +84,11 @@ exports.join = function (socket, data) {
         game.players.push({
             id: socket.userId,
             username: socket.username,
-            resources: [1, 2, 3],
+            resources: [{id: 1, status: 'active'}, {id: 2, status: 'active'}, {id: 3, status: 'active'}],
             actions: ['drawCard']
         });
 
         socket.gameId = game.id;
-
         Game.update(game);
 
         socket.server.of('/lobby').emit('joined', {

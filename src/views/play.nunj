@@ -90,7 +90,7 @@
         <div class="vbox col-fourth">
             <div class="highlight"></div>
             <div class="panel panel-default control"></div>
-            <div class="chat">chat</div>
+            <div class="panel panel-default chat">chat</div>
         </div>
     </div>
 {% endblock %}
