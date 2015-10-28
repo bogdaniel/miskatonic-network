@@ -70,9 +70,6 @@ $(function () {
             resources[card.faction] = 1;
         }
         domain.data('resources', resources);
-
-        //TODO
-        //display domain resource marker
     });
 
     //refreshPhase

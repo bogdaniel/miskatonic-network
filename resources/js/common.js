@@ -45,9 +45,6 @@ $(function () {
         domainContainer.data('resources', resources);
         domainContainer.addClass('domain-' + domain.status);
         domainContainer.prepend(cardFrame);
-
-        //TODO
-        //display domain resource marker
     };
 
     $.playerResourceCard = function (event, ui) {
@@ -73,9 +70,6 @@ $(function () {
         }
         domain.data('resources', resources);
 
-        //TODO
-        //display domain resource marker
-
         card.removeClass('card-active').addClass('card-resource');
         card.clone().removeAttr('style').prependTo(domain);
         card.remove();
@@ -99,12 +93,12 @@ $(function () {
         }
 
         /*var cardCost = card.data('cost');
-        var cardFaction = card.data('faction');
-        var resources = domain.data('resources');
+         var cardFaction = card.data('faction');
+         var resources = domain.data('resources');
 
-        if (!(resources[cardFaction] && $.domainResourceCount(resources) >= cardCost)) {
-            return false;
-        }*/
+         if (!(resources[cardFaction] && $.domainResourceCount(resources) >= cardCost)) {
+         return false;
+         }*/
 
         $.drainDomain('player', domainId);
 

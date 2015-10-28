@@ -333,7 +333,43 @@ exports.playCard = function (socket, data) {
 };
 
 exports.endPhase = function (socket) {
-    //
+    var game;
+    var player;
+    var opponent;
+
+    return Promise.try(function () {
+        return Game.current(socket.userId);
+    }).then(function (result) {
+        game = result;
+        player = gameHelper.player(game, socket.userId);
+        opponent = gameHelper.opponent(game, socket.userId);
+
+        if (!gameHelper.isAllowed(player, 'endPhase')) {
+            return false;
+        }
+
+        var phases = ['refresh', 'draw', 'resource', 'operations', 'story'];
+        var index = phases.indexOf(game.phase);
+
+        if (index == 4) {
+            index = 0;
+        } else {
+            index += 1;
+        }
+
+        game.phase = phases[index];
+
+        if (phases[index] == 'story') {
+            game.step = 'playerCommit';
+            player.actions = ['commitCard', 'endPhase'];
+        }
+
+        game = gameHelper.updatePlayer(game, player);
+        Game.update(game);
+
+        socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
+        socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
+    });
 };
 
 exports.commitCard = function (socket, data) {

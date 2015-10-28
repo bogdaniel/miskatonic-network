@@ -302,6 +302,10 @@ body {
     margin-bottom: 10px;
 }
 
+.domain-drained :not(.icon) img {
+    opacity: 0.4;
+}
+
 .icon-target, .icon-drained {
     position: absolute;
     top: 0;

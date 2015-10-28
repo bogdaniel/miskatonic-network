@@ -101,6 +101,8 @@ $(function () {
     //resourcedCards
 
     function resourcedCards(owner, data) {
+        $('.' + owner + '.row-domain .domain-' + data.domain.id + ' .card-resource').remove();
+
         $.each(data.cards, function (i, card) {
             $.resourceCard(owner, data.domain, card);
         });
