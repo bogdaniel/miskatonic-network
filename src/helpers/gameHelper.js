@@ -59,3 +59,15 @@ exports.updateDomain = function (game, domain, playerId) {
 
     return this.updatePlayer(game, player);
 };
+
+exports.resourceMatch = function (resources, card) {
+    var match = false;
+
+    resources.forEach(function (resource) {
+        if (resource.faction == card.faction) {
+            match = true;
+        }
+    });
+
+    return match;
+};

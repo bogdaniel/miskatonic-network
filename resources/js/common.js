@@ -1,6 +1,18 @@
 $(function () {
     "use strict";
 
+    $.domainResourceCount = function (resources) {
+        var count = 0;
+
+        for (var resource in resources) {
+            if (resources.hasOwnProperty(resource)) {
+                count += parseInt(resources[resource]);
+            }
+        }
+
+        return count;
+    };
+
     $.renderCard = function (card) {
         var cardImage = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + card.image);
         var cardFrame = $('<div>').addClass('card-frame').addClass('card-' + card.status).attr('data-id', card.id);
@@ -82,12 +94,17 @@ $(function () {
 
         target.find('.card-highlight').remove();
 
-        //TODO
-        //card cost check
-
         if (!$.isAllowed('playCard') || !domain.length) {
             return false;
         }
+
+        /*var cardCost = card.data('cost');
+        var cardFaction = card.data('faction');
+        var resources = domain.data('resources');
+
+        if (!(resources[cardFaction] && $.domainResourceCount(resources) >= cardCost)) {
+            return false;
+        }*/
 
         $.drainDomain('player', domainId);
 

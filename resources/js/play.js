@@ -47,6 +47,10 @@ $(function () {
         }
     });
 
+    socket.on('opponentDrainedDomain', function (domainId) {
+        $.drainDomain('opponent', domainId);
+    });
+
     //resourcedCard
 
     socket.on('opponentResourcedCard', function (data) {
@@ -112,7 +116,7 @@ $(function () {
         });
     });
 
-    //
+    //playedCard
 
     socket.on('opponentPlayedCard', function (card) {
         var cardFrame = $.renderCard(card);
@@ -122,15 +126,7 @@ $(function () {
         $('.opponent.row-played').append(cardFrame);
     });
 
-    socket.on('opponentDrainedDomain', function (domainId) {
-        $.drainDomain('opponent', domainId);
-    });
-
-    $(document).on('click', '#end-phase', function () {
-        if ($.isAllowed('endPhase')) {
-            socket.emit('endPhase');
-        }
-    });
+    //committedCard
 
     socket.on('opponentCommittedCard', function (data) {
         var storyId = data.storyId;
@@ -139,6 +135,14 @@ $(function () {
 
         $('.opponent.row-played .card-frame[data-id=' + card.id + ']').remove();
         $('.opponent.row-committed .committed-story-' + storyId).append(cardFrame);
+    });
+
+    //endPhase
+
+    $(document).on('click', '#end-phase', function () {
+        if ($.isAllowed('endPhase')) {
+            socket.emit('endPhase');
+        }
     });
 
     socket.on('gameInfo', function (data) {

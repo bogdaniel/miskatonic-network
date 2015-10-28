@@ -307,13 +307,14 @@ exports.playCard = function (socket, data) {
 
         return Promise.props({
             card: hand.get(game.id, player.id, cardId),
-            count: resourced.count(game.id, player.id, domainId)
+            resources: resourced.all(game.id, player.id, domainId)
         }).then(function (result) {
             var card = result.card;
-            var availableResources = result.count;
+            var resources = result.resources;
             var domain = gameHelper.domain(game, player.id, domainId);
+            var resourceMath = gameHelper.resourceMatch(resources, card);
 
-            if (domain.status != 'active' || card.cost > availableResources) {
+            if (domain.status != 'active' || card.cost > resources.length || !resourceMath) {
                 return false;
             }
 
