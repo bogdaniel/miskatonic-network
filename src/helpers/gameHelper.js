@@ -24,6 +24,14 @@ exports.player = function (game, playerId) {
     return _.findWhere(game.players, {id: playerId});
 };
 
+exports.opponent = function (game, playerId) {
+    return _.find(game.players, function (player) {
+        if (player.id != playerId) {
+            return player;
+        }
+    });
+};
+
 exports.updatePlayer = function (game, player) {
     game.players.forEach(function (p, i) {
         if (p.id == player.id) {

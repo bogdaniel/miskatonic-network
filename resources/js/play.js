@@ -24,6 +24,40 @@ $(function () {
         $('.row-opponent .draw-deck .count').text(count);
     });
 
+    socket.on('opponentResourcedCard', function (data) {
+        var resourceId = data.resourceId;
+        var card = data.card;
+        var cardFrame = $.renderCard(card);
+        var handCount = $('.row-opponent .hand-deck .count');
+
+        handCount.text(parseInt(handCount.text()) - 1);
+        $('.opponent.row-domain .domain-' + resourceId).prepend(cardFrame);
+    });
+
+    $(document).on('click', '#refresh-all', function () {
+        if ($.isAllowed('refreshAll')) {
+            socket.emit('refreshAll');
+        }
+    });
+
+    socket.on('playerRefreshedAll', function () {
+        //TODO
+        //remove domain drain markers
+
+        $('.player.row-played .card-exhausted').each(function () {
+            $(this).removeClass('card-exhausted').addClass('card-active');
+        });
+    });
+
+    socket.on('opponentRefreshedAll', function () {
+        //TODO
+        //remove domain drain markers
+
+        $('.opponent.row-played .card-exhausted').each(function () {
+            $(this).removeClass('card-exhausted').addClass('card-active');
+        });
+    });
+
     socket.on('opponentPlayedCard', function (card) {
         var cardFrame = $.renderCard(card);
         var handCount = $('.row-opponent .hand-deck .count');
@@ -41,30 +75,29 @@ $(function () {
         $('.opponent.row-committed .committed-story-' + storyId).append(cardFrame);
     });
 
-    socket.on('opponentResourcedCard', function (data) {
-        var resourceId = data.resourceId;
-        var card = data.card;
-        var cardFrame = $.renderCard(card);
-        var handCount = $('.row-opponent .hand-deck .count');
-
-        handCount.text(parseInt(handCount.text()) - 1);
-        $('.opponent.row-domain .domain-' + resourceId).prepend(cardFrame);
-    });
-
     socket.on('gameInfo', function (data) {
+        var content = '';
         var activePlayer = 'Opponent';
+
         if (data.activePlayer === 0) {
             activePlayer = 'Both';
         } else if (data.activePlayer == userId) {
             activePlayer = 'You';
         }
 
-        var content = '';
         content += 'Turn: ' + data.turn + '<br/>';
         content += 'Active player: ' + activePlayer + '<br/>';
         content += 'Phase: ' + data.phase + '<br/>';
         content += 'Step: ' + data.step + '<br/>';
         content += 'Actions: ' + data.actions.join(', ');
+
+        if (data.activePlayer == userId) {
+            if (data.phase == 'refresh') {
+                content += '<hr/>';
+                content += '<button id="refresh-all" type="button">RefreshAll</button>'
+            }
+        }
+
         $('.control').html(content);
 
         gameInfo = data;

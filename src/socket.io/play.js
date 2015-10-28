@@ -105,12 +105,14 @@ exports.displayTable = function (socket) {
 exports.drawCard = function (socket) {
     var game;
     var player;
+    var opponent;
 
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
         game = result;
         player = gameHelper.player(game, socket.userId);
+        opponent = gameHelper.opponent(game, socket.userId);
 
         if (!gameHelper.isAllowed(player, 'drawCard')) {
             return false;
@@ -133,6 +135,16 @@ exports.drawCard = function (socket) {
                 Game.update(game);
 
                 socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
+            } else if (game.phase == 'draw') {
+                player.actions = ['resourceCard'];
+
+                game = gameHelper.updatePlayer(game, player);
+                game.phase = 'resource';
+
+                Game.update(game);
+
+                socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
+                socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
             }
         });
     });
@@ -141,12 +153,14 @@ exports.drawCard = function (socket) {
 exports.resourceCard = function (socket, data) {
     var game;
     var player;
+    var opponent;
 
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
         game = result;
         player = gameHelper.player(game, socket.userId);
+        opponent = gameHelper.opponent(game, socket.userId);
 
         if (!gameHelper.isAllowed(player, 'resourceCard')) {
             return false;
@@ -171,15 +185,10 @@ exports.resourceCard = function (socket, data) {
                     });
                 }).then(function () {
                     if (game.phase == 'setup') {
-                        var opponentId;
-
                         return Promise.try(function () {
-                            return Game.opponentId(player.id);
-                        }).then(function (id) {
-                            opponentId = id;
                             return Promise.props({
                                 playerCount: resourced.countAll(game.id, player.id),
-                                opponentCount: resourced.countAll(game.id, opponentId)
+                                opponentCount: resourced.countAll(game.id, opponent.id)
                             });
                         }).then(function (count) {
                             if (count.playerCount == 3 && count.opponentCount == 3) {
@@ -194,9 +203,19 @@ exports.resourceCard = function (socket, data) {
                                 Game.update(game);
 
                                 socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
-                                socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponentId));
+                                socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
                             }
                         });
+                    } else if (game.phase == 'resource') {
+                        player.actions = ['playCard'];
+
+                        game = gameHelper.updatePlayer(game, player);
+                        game.phase = 'operations';
+
+                        Game.update(game);
+
+                        socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
+                        socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
                     }
                 });
             }
@@ -207,19 +226,43 @@ exports.resourceCard = function (socket, data) {
 exports.refreshAll = function (socket) {
     var game;
     var player;
+    var opponent;
 
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
         game = result;
         player = gameHelper.player(game, socket.userId);
+        opponent = gameHelper.opponent(game, socket.userId);
 
         if (!gameHelper.isAllowed(player, 'refreshAll')) {
             return false;
         }
 
-        Promise.try(function () {
-            //
+        player.resources.forEach(function (resource) {
+            resource.status = 'active';
+        });
+        player.actions = ['drawCard'];
+
+        game = gameHelper.updatePlayer(game, player);
+        game.phase = 'draw';
+
+        Game.update(game);
+
+        return Promise.try(function () {
+            return played.all(game.id, player.id)
+        }).then(function (cards) {
+            if (cards.length) {
+                cards.forEach(function (card) {
+                    played.update(game.id, player.id, card);
+                });
+            }
+        }).then(function () {
+            socket.emit('playerRefreshedAll');
+            socket.broadcast.emit('opponentRefreshedAll');
+
+            socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
+            socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
         });
     });
 };

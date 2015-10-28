@@ -38,6 +38,16 @@ exports.add = function (gameId, playerId, card) {
     return redis.zadd('playedCards:' + gameId + ':' + playerId, card.cid, JSON.stringify(card));
 };
 
+exports.update = function (gameId, playerId, card) {
+    var self = this;
+
+    return Promise.try(function () {
+        self.remove(gameId, playerId, card);
+    }).then(function () {
+        self.add(gameId, playerId, card);
+    });
+};
+
 exports.remove = function (gameId, playerId, card) {
     return redis.zremrangebyscore('playedCards:' + gameId + ':' + playerId, card.cid, card.cid);
 };
