@@ -363,10 +363,21 @@ exports.endPhase = function (socket) {
 
             player.actions = ['playCard', 'endPhase'];
         } else if (game.phase == 'operations') {
-            nextPhase = 'story';
-            nextStep = 'playerCommit';
+            if (game.turn == 1 && game.activePlayer == game.firstPlayer) {
+                nextPhase = 'refresh';
+                nextStep = null;
 
-            player.actions = ['commitCard', 'endPhase'];
+                player.actions = [];
+                opponent.actions = ['restoreInsane', 'refreshAll'];
+
+                game.temp.storyCommits = {};
+                game.activePlayer = opponent.id;
+            } else {
+                nextPhase = 'story';
+                nextStep = 'playerCommit';
+
+                player.actions = ['commitCard', 'endPhase'];
+            }
         } else if (game.phase == 'story' && game.step == 'playerCommit') {
             if (Object.keys(game.temp.storyCommits).length) {
                 nextPhase = 'story';
@@ -383,19 +394,19 @@ exports.endPhase = function (socket) {
                 player.actions = [];
                 opponent.actions = ['restoreInsane', 'refreshAll'];
 
-                game.temp.storyCommits = {};
-                game.activePlayer = opponent.id;
-
-                if (player.id != game.host) {
+                if (game.activePlayer != game.firstPlayer) {
                     game.turn += 1;
                 }
+
+                game.temp.storyCommits = {};
+                game.activePlayer = opponent.id;
             }
         } else if (game.phase == 'story' && game.step == 'opponentCommit') {
             nextPhase = 'story';
             nextStep = 'resolveStories';
 
             player.actions = [];
-            opponent.actions = ['resolveStory', 'endPhase'];
+            opponent.actions = ['resolveStory'];
 
             game.activePlayer = opponent.id;
         } else if (game.phase == 'story' && game.step == 'resolveStories') {
@@ -412,12 +423,12 @@ exports.endPhase = function (socket) {
                 }
             }
 
-            game.temp.storyCommits = {};
-            game.activePlayer = opponent.id;
-
-            if (player.id != game.host) {
+            if (game.activePlayer != game.firstPlayer) {
                 game.turn += 1;
             }
+
+            game.temp.storyCommits = {};
+            game.activePlayer = opponent.id;
 
             socket.broadcast.emit('endTurn');
         }

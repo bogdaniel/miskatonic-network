@@ -185,6 +185,10 @@ $(function () {
             if ($.inArray('endPhase', data.actions) != -1) {
                 content += '<button id="end-phase" type="button">EndPhase</button>';
             }
+
+            if ($.inArray('resolveStory', data.actions) != -1) {
+                content += '<button id="resolve-story" type="button">ResolveStory</button>';
+            }
         }
 
         $('.control').html(content);
