@@ -20,13 +20,26 @@ $(function () {
             image = 'back/card-back.jpg';
         }
 
+        var cardWrapper = $('<div>').addClass('card-wrapper').addClass('card-' + card.status);
+        //var cardAttachments = $('<div>').addClass('card-attachments');
+        var cardFrame = $('<div>').addClass('card-frame').attr('data-id', card.id).data('image', card.image);
         var cardImage = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + image);
-        var cardFrame = $('<div>').addClass('card-frame').addClass('card-' + card.status).attr('data-id', card.id).data('image', card.image);
 
         if (card.type != 'Story') {
             cardFrame.attr('data-cost', card.cost)
                 .attr('data-faction', card.faction);
         }
+
+        cardFrame.append(cardImage);
+        //cardWrapper.append(cardAttachments);
+        cardWrapper.append(cardFrame);
+
+        return cardWrapper;
+    };
+
+    $.renderAttachedCard = function (owner, hostId, card) {
+        var cardFrame = $('<div>').addClass('card-frame').attr('data-id', card.id).data('image', card.image);
+        var cardImage = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + card.image);
 
         cardFrame.append(cardImage);
 
@@ -54,7 +67,8 @@ $(function () {
     };
 
     $.playerResourceCard = function (event, ui) {
-        var card = ui.draggable;
+        var cardWrapper = ui.draggable;
+        var card = cardWrapper.children('.card-frame');
         var domain = $(event.target);
         var domainId = domain.data('id');
 
@@ -76,9 +90,9 @@ $(function () {
         }
         domain.data('resources', resources);
 
-        card.removeClass('card-active').addClass('card-resource');
-        card.clone().removeAttr('style').prependTo(domain);
-        card.remove();
+        cardWrapper.removeClass('card-active').addClass('card-resource');
+        cardWrapper.clone().removeAttr('style').prependTo(domain);
+        cardWrapper.remove();
 
         socket.emit('resourceCard', {
             domainId: domainId,
@@ -89,7 +103,8 @@ $(function () {
     $.playCard = function (event, ui) {
         var domain = $('.domain.target');
         var domainId = domain.data('id');
-        var card = ui.draggable;
+        var cardWrapper = ui.draggable;
+        var card = cardWrapper.children('.card-frame');
         var target = $(event.target);
 
         target.find('.card-highlight').remove();
@@ -108,8 +123,8 @@ $(function () {
 
         $.drainDomain('player', domainId);
 
-        card.clone().attr('style', '').prependTo(target);
-        card.remove();
+        cardWrapper.clone().removeAttr('style').prependTo(target);
+        cardWrapper.remove();
 
         socket.emit('playCard', {
             cardId: card.data('id'),
@@ -118,31 +133,32 @@ $(function () {
     };
 
     $.commitCard = function (event, ui) {
-        var card = ui.draggable;
+        var cardWrapper = ui.draggable;
+        var card = cardWrapper.children('.card-frame');
         var target = $(event.target);
 
         target.find('.card-highlight').remove();
 
-        if (!$.isAllowed('commitCard') || !card.hasClass('card-active')) {
+        if (!$.isAllowed('commitCard') || !cardWrapper.hasClass('card-active')) {
             return false;
         }
 
-        card.removeClass('card-active').addClass('card-exhausted');
-        card.clone().attr('style', '').prependTo(target);
-        card.remove();
+        cardWrapper.removeClass('card-active').addClass('card-exhausted');
+        cardWrapper.clone().removeAttr('style').prependTo(target);
+        cardWrapper.remove();
 
         socket.emit('commitCard', {
-            storyId: $(event.target).data('id'),
+            storyId: target.data('id'),
             cardId: card.data('id')
         });
     };
 
     $.uncommitAll = function () {
-        $('.player.row-committed .col-committed .card-frame').each(function () {
+        $('.player.row-committed .col-committed .card-wrapper').each(function () {
             $.uncommitCard('player', $(this));
         });
 
-        $('.opponent.row-committed .col-committed .card-frame').each(function () {
+        $('.opponent.row-committed .col-committed .card-wrapper').each(function () {
             $.uncommitCard('opponent', $(this));
         });
     };

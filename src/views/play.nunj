@@ -54,9 +54,11 @@
         </div>
         <div class="vbox col-third">
             <div class="row-opponent">
-                <div class="card-frame draw-deck card-back">
-                    <span class="header">Draw (<span class="count"></span>)</span>
-                    <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
+                <div class="card-wrapper">
+                    <div class="card-frame draw-deck">
+                        <span class="header">Draw (<span class="count"></span>)</span>
+                        <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
+                    </div>
                 </div>
                 {#
                 {% if enemyDiscardTop.length %}
@@ -66,16 +68,20 @@
                     </div>
                 {% endif %}
                 #}
-                <div class="card-frame hand-deck card-back">
-                    <span class="header">Hand (<span class="count"></span>)</span>
-                    <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
+                <div class="card-wrapper">
+                    <div class="card-frame hand-deck">
+                        <span class="header">Hand (<span class="count"></span>)</span>
+                        <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
+                    </div>
                 </div>
             </div>
             <div class="row-hand"></div>
             <div class="row-player">
-                <div class="card-frame draw-deck card-back">
-                    <span class="header">Draw (<span class="count"></span>)</span>
-                    <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
+                <div class="card-wrapper">
+                    <div class="card-frame draw-deck">
+                        <span class="header">Draw (<span class="count"></span>)</span>
+                        <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
+                    </div>
                 </div>
                 {#
                 {% if playerDiscardTop.length %}

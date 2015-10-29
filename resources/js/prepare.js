@@ -34,7 +34,7 @@ $(function () {
     $.setSortable('.player.row-played');
 
     $('.player.row-played').droppable({
-        accept: '.row-hand .card-frame',
+        accept: '.row-hand .card-wrapper',
         drop: $.playCard,
         over: $.droppableOver,
         out: $.droppableOut
@@ -82,7 +82,7 @@ $(function () {
         $.setSortable('.player.row-committed .col-committed');
 
         $('.player.row-committed .col-committed').droppable({
-            accept: '.player.row-played .card-frame',
+            accept: '.player.row-played .card-wrapper',
             drop: $.commitCard,
             over: $.droppableOver,
             out: $.droppableOut
@@ -112,7 +112,7 @@ $(function () {
         resourcedCards('player', data);
 
         $('.player.row-domain .domain-' + data.domain.id).droppable({
-            accept: '.row-hand .card-frame',
+            accept: '.row-hand .card-wrapper',
             drop: $.playerResourceCard,
             over: $.droppableOver,
             out: $.droppableOut

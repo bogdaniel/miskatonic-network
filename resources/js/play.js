@@ -130,7 +130,10 @@ $(function () {
         var card = data.card;
         var cardFrame = $.renderCard(card);
 
-        $('.opponent.row-played .card-frame[data-id=' + card.id + ']').remove();
+        //TODO
+        //cut and move instead of remove and append
+
+        $('.opponent.row-played > .card-wrapper > .card-frame[data-id=' + card.id + ']').remove();
         $('.opponent.row-committed .committed-story-' + storyId).append(cardFrame);
     });
 
@@ -164,7 +167,9 @@ $(function () {
             return false;
         }
 
-        var storyId = $(this).data('id');
+        var storyCard = $(this).children('.card-frame');
+
+        var storyId = storyCard.data('id');
         var playerCommits = $('.player.row-committed .col-committed.committed-story-' + storyId).children().length;
         var opponentCommits = $('.opponent.row-committed .col-committed.committed-story-' + storyId).children().length;
 
@@ -172,17 +177,17 @@ $(function () {
             return false;
         }
 
-        if ($(this).hasClass('target')) {
-            $(this).removeClass('target');
-            $(this).find('.icon-target').remove();
+        if (storyCard.hasClass('target')) {
+            storyCard.removeClass('target');
+            storyCard.find('.icon-target').remove();
         } else {
-            var stories = $('.row-story .card-story');
+            var stories = $('.row-story .card-story .card-frame');
             var iconTarget = $('<div>').addClass('icon icon-target').append($('<img>').attr('src', '/images/target.jpg'));
 
             stories.removeClass('target');
             stories.find('.icon-target').remove();
-            $(this).addClass('target');
-            $(this).append(iconTarget);
+            storyCard.addClass('target');
+            storyCard.append(iconTarget);
         }
     });
 

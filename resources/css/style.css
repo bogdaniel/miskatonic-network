@@ -180,9 +180,23 @@ body {
     width: 250px;
 }
 
+.card-wrapper {
+    display: inline-block;
+    margin: 0 10px 10px 0;
+}
+
+.card-wrapper > .card-frame {
+    float: left;
+}
+
+.card-wrapper > .card-attachments + .card-frame {
+    margin-left: -60px;
+}
+
 .card-frame {
     position: relative;
-    color: #ffffff;
+    width: 100%;
+    height: 100%;
 }
 
 .card-frame .header {
@@ -194,6 +208,7 @@ body {
     background: rgba(0, 0, 0, 0.6);
     font-size: 10px;
     padding: 2px;
+    color: #ffffff;
 }
 
 .card-frame img {
@@ -203,41 +218,48 @@ body {
     z-index: 1;
 }
 
-.card-active {
+.draw-deck, .hand-deck, .card-active .card-frame, .card-exhausted .card-frame {
     width: 70px;
     height: 100px;
-    margin: 0 10px 10px 0;
 }
 
-.card-deck {
-    width: 70px;
-    height: 100px;
-    margin: 0 10px 10px 0;
+.card-domain, .card-story, .card-exhausted {
+    width: 100px;
+    height: 70px;
 }
 
-.card-back {
-    width: 70px;
-    height: 100px;
-    margin: 0 10px 10px 0;
+.card-story {
+    margin: 10px 15px;
 }
 
-.card-exhausted, .card-insane {
+.card-attachments {
+    float: left;
+}
+
+.card-attachments .card-frame:not(:last-child) {
+    margin-right: -60px;
+}
+
+.card-attachments .card-frame {
     width: 70px;
     height: 100px;
-    margin: -15px 25px -5px 15px;
+    float: left;
+}
 
+.card-exhausted {
     -webkit-transform: rotate(-90deg);
     -moz-transform: rotate(-90deg);
     -ms-transform: rotate(-90deg);
     -o-transform: rotate(-90deg);
     transform: rotate(-90deg);
-}
 
-.card-domain {
-    position: relative;
-    width: 100px;
-    height: 70px;
-    z-index: 1;
+    -webkit-transform-origin: 50% 50%;
+    -moz-transform-origin: 50% 50%;
+    -ms-transform-origin: 50% 50%;
+    -o-transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
+
+    margin: -15px 0 0 -15px;
 }
 
 .card-resource {
@@ -252,12 +274,6 @@ body {
     -ms-transform: rotate(-90deg);
     -o-transform: rotate(-90deg);
     transform: rotate(-90deg);
-}
-
-.card-story {
-    width: 100px;
-    height: 70px;
-    margin: 10px 15px;
 }
 
 .player.row-played .card-highlight, .row-hand .card-highlight {

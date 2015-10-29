@@ -28,7 +28,7 @@ $(function () {
     var fadeHighlight;
     $(document).on('mouseenter', '.card-active, .card-exhausted, .card-story, .card-resource', function () {
         clearTimeout(fadeHighlight);
-        var src = $(this).find('img').attr('src');
+        var src = $(this).find('.card-frame > img').attr('src');
         var img = $('<img>').addClass('img-responsive').attr('src', src);
         $('.highlight').html(img);
     }).on('mouseout', '.card-active, .card-exhausted, .card-story, .card-resource', function () {
