@@ -6,3 +6,8 @@ exports.slugify = function (text) {
         .replace(/[^\w\-]+/g, '')
         .replace(/\-\-+/g, '-');
 };
+
+exports.removeDots = function (text) {
+    return text.toString().trim()
+        .replace(/\.+/g, '');
+};
