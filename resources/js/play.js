@@ -137,23 +137,72 @@ $(function () {
     //endPhase
 
     $(document).on('click', '#end-phase', function () {
-        if ($.isAllowed('endPhase')) {
-            if (gameInfo.phase == 'operations') {
-                $('.player.row-domain .domain.target .icon-target').remove();
-                $('.player.row-domain .domain.target').removeClass('target');
-            }
-
-            if (gameInfo.phase == 'story' && gameInfo.step == 'resolveStories') {
-                $.uncommitAll();
-            }
-
-            socket.emit('endPhase');
+        if (!$.isAllowed('endPhase')) {
+            return false;
         }
+
+        if (gameInfo.phase == 'operations') {
+            $('.player.row-domain .domain.target .icon-target').remove();
+            $('.player.row-domain .domain.target').removeClass('target');
+        }
+
+        if (gameInfo.phase == 'story' && gameInfo.step == 'resolveStories') {
+            $.uncommitAll();
+        }
+
+        socket.emit('endPhase');
     });
 
     socket.on('endTurn', function () {
         $.uncommitAll();
     });
+
+    //resolveStory
+
+    $(document).on('click', '.row-story .card-story', function () {
+        if (!$.isAllowed('resolveStory')) {
+            return false;
+        }
+
+        var storyId = $(this).data('id');
+        var playerCommits = $('.player.row-committed .col-committed.committed-story-' + storyId).children().length;
+        var opponentCommits = $('.opponent.row-committed .col-committed.committed-story-' + storyId).children().length;
+
+        if (!playerCommits && !opponentCommits) {
+            return false;
+        }
+
+        if ($(this).hasClass('target')) {
+            $(this).removeClass('target');
+            $(this).find('.icon-target').remove();
+        } else {
+            var stories = $('.row-story .card-story');
+            var iconTarget = $('<div>').addClass('icon icon-target').append($('<img>').attr('src', '/images/target.jpg'));
+
+            stories.removeClass('target');
+            stories.find('.icon-target').remove();
+            $(this).addClass('target');
+            $(this).append(iconTarget);
+        }
+    });
+
+    $(document).on('click', '#resolve-story', function () {
+        var story = $('.row-story .card-story.target');
+
+        if (!$.isAllowed('resolveStory') || !story.length) {
+            return false;
+        }
+
+        socket.emit('resolveStory', {
+            storyId: story.data('id')
+        });
+    });
+
+    socket.on('storyResolved', function () {
+        //TODO
+    });
+
+    //gameInfo
 
     socket.on('gameInfo', function (data) {
         var content = '';

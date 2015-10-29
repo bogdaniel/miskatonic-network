@@ -145,6 +145,10 @@ io.of('/play').on('connection', function (socket) {
     socket.on('commitCard', function (data) {
         playSocket.commitCard(socket, data);
     });
+
+    socket.on('resolveStory', function (data) {
+        playSocket.resolveStory(socket.data);
+    })
 });
 
 io.of('/chat').on('connection', function (socket) {

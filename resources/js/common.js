@@ -14,8 +14,14 @@ $(function () {
     };
 
     $.renderCard = function (card) {
-        var cardImage = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + card.image);
-        var cardFrame = $('<div>').addClass('card-frame').addClass('card-' + card.status).attr('data-id', card.id);
+        var image = card.image;
+
+        if (card.status == 'insane') {
+            image = 'back/card-back.jpg';
+        }
+
+        var cardImage = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + image);
+        var cardFrame = $('<div>').addClass('card-frame').addClass('card-' + card.status).attr('data-id', card.id).data('image', card.image);
 
         if (card.type != 'Story') {
             cardFrame.attr('data-cost', card.cost)

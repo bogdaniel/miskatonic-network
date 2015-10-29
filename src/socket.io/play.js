@@ -483,3 +483,29 @@ exports.commitCard = function (socket, data) {
         });
     });
 };
+
+exports.resolveStory = function (socket, data) {
+    var storyId = data.storyId;
+
+    if (!storyId) {
+        return false;
+    }
+
+    var game;
+    var player;
+    var opponent;
+
+    return Promise.try(function () {
+        return Game.current(socket.userId);
+    }).then(function (result) {
+        game = result;
+        player = gameHelper.player(game, socket.userId);
+        opponent = gameHelper.opponent(game, socket.userId);
+
+        if (!gameHelper.isAllowed(player, 'resolveStory')) {
+            return false;
+        }
+
+        //
+    });
+};
