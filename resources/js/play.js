@@ -128,13 +128,10 @@ $(function () {
     socket.on('opponentCommittedCard', function (data) {
         var storyId = data.storyId;
         var card = data.card;
-        var cardFrame = $.renderCard(card);
+        var cardWrapper = $('.opponent.row-played > .card-wrapper > .card-frame[data-id=' + card.id + ']').closest('.card-wrapper');
 
-        //TODO
-        //cut and move instead of remove and append
-
-        $('.opponent.row-played > .card-wrapper > .card-frame[data-id=' + card.id + ']').remove();
-        $('.opponent.row-committed .committed-story-' + storyId).append(cardFrame);
+        cardWrapper.removeClass('card-active').addClass('card-exhausted');
+        cardWrapper.appendTo('.opponent.row-committed .committed-story-' + storyId);
     });
 
     //endPhase
@@ -156,7 +153,7 @@ $(function () {
         socket.emit('endPhase');
     });
 
-    socket.on('endTurn', function () {
+    socket.on('turnEnded', function () {
         $.uncommitAll();
     });
 
@@ -229,6 +226,9 @@ $(function () {
         if (!$.isAllowed('determineSuccess')) {
             return false;
         }
+
+        //TODO
+        //remove target icon from story card
 
         socket.emit('determineSuccess');
     });
