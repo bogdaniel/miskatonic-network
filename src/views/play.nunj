@@ -54,7 +54,7 @@
         </div>
         <div class="vbox col-third">
             <div class="row-opponent">
-                <div class="card-wrapper">
+                <div class="card-wrapper card-back">
                     <div class="card-frame draw-deck">
                         <span class="header">Draw (<span class="count"></span>)</span>
                         <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
@@ -68,7 +68,7 @@
                     </div>
                 {% endif %}
                 #}
-                <div class="card-wrapper">
+                <div class="card-wrapper card-back">
                     <div class="card-frame hand-deck">
                         <span class="header">Hand (<span class="count"></span>)</span>
                         <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
@@ -77,7 +77,7 @@
             </div>
             <div class="row-hand"></div>
             <div class="row-player">
-                <div class="card-wrapper">
+                <div class="card-wrapper card-back">
                     <div class="card-frame draw-deck">
                         <span class="header">Draw (<span class="count"></span>)</span>
                         <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>

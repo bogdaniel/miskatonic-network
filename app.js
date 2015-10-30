@@ -147,8 +147,20 @@ io.of('/play').on('connection', function (socket) {
     });
 
     socket.on('resolveStory', function (data) {
-        playSocket.resolveStory(socket.data);
-    })
+        playSocket.resolveStory(socket, data);
+    });
+
+    socket.on('resolveIconStruggle', function (data) {
+        playSocket.resolveIconStruggle(socket, data);
+    });
+
+    socket.on('determineSuccess', function () {
+        playSocket.determineSuccess(socket);
+    });
+
+    socket.on('endTurn', function () {
+        playSocket.endTurn(socket);
+    });
 });
 
 io.of('/chat').on('connection', function (socket) {

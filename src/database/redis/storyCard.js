@@ -19,6 +19,16 @@ exports.all = function (gameId) {
     });
 };
 
+exports.get = function (gameId, cardId) {
+    return redis.zrangebyscoreAsync('storyCards:' + gameId, cardId, cardId).then(function (card) {
+        if (!card.length) {
+            return false;
+        }
+
+        return JSON.parse(card);
+    });
+};
+
 exports.add = function (gameId, card) {
     return redis.zadd('storyCards:' + gameId, card.id, JSON.stringify(card));
 };

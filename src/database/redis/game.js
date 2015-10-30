@@ -67,6 +67,7 @@ exports.leave = function (gameId, playerId) {
         redis.del('hand:' + gameId + ':' + playerId);
         redis.del('discardPile:' + gameId + ':' + playerId);
         redis.del('playedCards:' + gameId + ':' + playerId);
+        redis.del('attachedCards:' + gameId + ':' + playerId);
 
         if (game.storyCards) {
             game.storyCards.forEach(function (storyCard) {

@@ -33,12 +33,14 @@ exports.create = function (socket, data) {
             id: socket.userId,
             username: socket.username,
             domains: [{id: 1, status: 'active'}, {id: 2, status: 'active'}, {id: 3, status: 'active'}],
-            actions: ['drawCard']
+            actions: ['drawCard'],
+            successTokens: {}
         }],
         host: socket.userId,
         temp: {
             drawnCards: 0,
-            storyCommits: {}
+            storyCommits: [],
+            storyStruggle: 0
         },
         allow_spectators: false,
         created_at: moment().format('YYYY-MM-DD HH:mm:ss')
@@ -89,7 +91,8 @@ exports.join = function (socket, data) {
             id: socket.userId,
             username: socket.username,
             domains: [{id: 1, status: 'active'}, {id: 2, status: 'active'}, {id: 3, status: 'active'}],
-            actions: ['drawCard']
+            actions: ['drawCard'],
+            successTokens: {}
         });
 
         socket.gameId = game.id;

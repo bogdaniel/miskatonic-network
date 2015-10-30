@@ -71,7 +71,7 @@ body {
     min-height: 120px;
     background: rgba(0, 0, 0, 0.4);
     border-radius: 5px;
-    padding: 10px 0 0 10px;
+    padding: 5px;
     margin-bottom: 5px;
 }
 
@@ -92,7 +92,8 @@ body {
     min-height: 90px;
     background: rgba(0, 0, 0, 0.4);
     border-radius: 5px;
-    padding: 10px 10px 0 10px;
+    padding: 5px;
+    text-align: center;
 }
 
 .row-story {
@@ -119,7 +120,7 @@ body {
     margin-right: 10px;
 }
 
-.row-opponent {
+.row-opponent, .row-player {
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
@@ -130,21 +131,7 @@ body {
 
     background: rgba(0, 0, 0, 0.4);
     border-radius: 5px;
-    padding: 10px 0 0 10px;
-}
-
-.row-player {
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-
-    -webkit-justify-content: space-between;
-    -ms-flex-pack: justify;
-    justify-content: space-between;
-
-    background: rgba(0, 0, 0, 0.4);
-    border-radius: 5px;
-    padding: 10px 0 0 10px;
+    padding: 5px;
 }
 
 .row-hand {
@@ -164,7 +151,7 @@ body {
     min-height: 120px;
     background: rgba(0, 0, 0, 0.4);
     border-radius: 5px;
-    padding: 10px 0 0 10px;
+    padding: 5px;
     margin: 10px 0;
 }
 
@@ -181,12 +168,15 @@ body {
 }
 
 .card-wrapper {
+    position: relative;
     display: inline-block;
-    margin: 0 10px 10px 0;
+    margin: 5px;
 }
 
 .card-wrapper > .card-frame {
-    float: left;
+    position: absolute;
+    right: 0;
+    top: 0;
 }
 
 .card-wrapper > .card-attachments + .card-frame {
@@ -233,7 +223,8 @@ body {
 }
 
 .card-attachments {
-    float: left;
+    float: right;
+    margin-right: 10px;
 }
 
 .card-attachments .card-frame:not(:last-child) {
@@ -241,9 +232,14 @@ body {
 }
 
 .card-attachments .card-frame {
+    float: left;
     width: 70px;
     height: 100px;
-    float: left;
+}
+
+.card-active, .card-back {
+    min-width: 70px;
+    height: 100px;
 }
 
 .card-exhausted {
@@ -259,8 +255,7 @@ body {
     -o-transform-origin: 50% 50%;
     transform-origin: 50% 50%;
 
-    width: 70px;
-    margin: 0 10px 5px 0;
+    height: 100px;
 }
 
 .card-resource {

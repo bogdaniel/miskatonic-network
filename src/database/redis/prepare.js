@@ -16,7 +16,7 @@ exports.storyCards = function (gameId, cards) {
     var _storyDeck = cards;
 
     for (i = 0; i < _storyDeck.length; i++) {
-        _storyDeck[i].id = i;
+        _storyDeck[i].id = i + 1;
         _storyDeck[i].status = 'story';
 
         delete _storyDeck[i].data;
@@ -43,7 +43,7 @@ exports.playerDeck = function (gameId, playerId, cards) {
     var playerDeck = cards;
 
     for (i = 0; i < playerDeck.length; i++) {
-        playerDeck[i].id = i;
+        playerDeck[i].id = i + 1;
         playerDeck[i].status = 'active';
         playerDeck[i].type = stringHelper.slugify(playerDeck[i].type);
         playerDeck[i].faction = stringHelper.slugify(playerDeck[i].faction);

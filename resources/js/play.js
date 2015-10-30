@@ -192,7 +192,7 @@ $(function () {
     });
 
     $(document).on('click', '#resolve-story', function () {
-        var story = $('.row-story .card-story.target');
+        var story = $('.row-story .card-story .card-frame.target');
 
         if (!$.isAllowed('resolveStory') || !story.length) {
             return false;
@@ -204,6 +204,50 @@ $(function () {
     });
 
     socket.on('storyResolved', function () {
+        //TODO
+    });
+
+    $(document).on('click', '#resolve-struggle', function () {
+        var struggle = $(this).data('type');
+
+        if (!$.isAllowed('resolve' + struggle + 'Struggle')) {
+            return false;
+        }
+
+        socket.emit('resolveIconStruggle', {
+            struggle: struggle
+        });
+    });
+
+    socket.on('iconStruggleResolved', function (data) {
+        //TODO
+
+        console.log(data);
+    });
+
+    $(document).on('click', '#determine-success', function () {
+        if (!$.isAllowed('determineSuccess')) {
+            return false;
+        }
+
+        socket.emit('determineSuccess');
+    });
+
+    socket.on('successDetermined', function (data) {
+        //TODO
+
+        console.log(data);
+    });
+
+    $(document).on('click', '#end-turn', function () {
+        if (!$.isAllowed('endTurn')) {
+            return false;
+        }
+
+        socket.emit('endTurn');
+    });
+
+    socket.on('turnEnded', function () {
         //TODO
     });
 
@@ -242,6 +286,30 @@ $(function () {
 
             if ($.inArray('resolveStory', data.actions) != -1) {
                 content += '<button id="resolve-story" type="button">ResolveStory</button>';
+            }
+
+            if ($.inArray('resolveTerrorStruggle', data.actions) != -1) {
+                content += '<button id="resolve-struggle" data-type="Terror" type="button">ResolveTerrorStruggle</button>';
+            }
+
+            if ($.inArray('resolveCombatStruggle', data.actions) != -1) {
+                content += '<button id="resolve-struggle" data-type="Combat" type="button">ResolveCombatStruggle</button>';
+            }
+
+            if ($.inArray('resolveArcaneStruggle', data.actions) != -1) {
+                content += '<button id="resolve-struggle" data-type="Arcane" type="button">ResolveArcaneStruggle</button>';
+            }
+
+            if ($.inArray('resolveInvestigationStruggle', data.actions) != -1) {
+                content += '<button id="resolve-struggle" data-type="Investigation" type="button">ResolveInvestigationStruggle</button>';
+            }
+
+            if ($.inArray('determineSuccess', data.actions) != -1) {
+                content += '<button id="determine-success" type="button">DetermineSuccess</button>';
+            }
+
+            if ($.inArray('endTurn', data.actions) != -1) {
+                content += '<button id="end-turn" type="button">EndTurn</button>';
             }
         }
 
