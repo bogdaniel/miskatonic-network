@@ -17,101 +17,90 @@ var resourced = require('../database/redis/resourced');
 
 exports.displayTable = function (socket) {
     var game;
+    var player;
+    var opponent;
+    var data = {};
 
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
         game = result;
+        player = gameHelper.player(game, socket.userId);
+        opponent = gameHelper.opponent(game, socket.userId);
 
-        return Promise.all([
-            storyDeck.count(game.id),
-            storyCard.all(game.id)
-        ]);
-    }).then(function (result) {
-        socket.emit('storyDeckCount', result[0]);
-        socket.emit('activeStoryCards', result[1]);
-    }).then(function () {
-        game.players.forEach(function (player) {
-            deck.count(game.id, player.id).then(function (count) {
-                if (player.id === socket.userId) {
-                    socket.emit('playerDeckCount', count);
-                } else {
-                    socket.emit('opponentDeckCount', count);
-                }
-            }).then(function () {
-                if (player.id === socket.userId) {
-                    game.storyCards.forEach(function (storyCard) {
-                        committed.all(game.id, player.id, storyCard.id).then(function (cards) {
-                            socket.emit('playerCommittedCards', {
-                                storyCard: storyCard,
-                                cards: cards
-                            });
+        return Promise.props({
+            storyDeckCount: storyDeck.count(game.id),
+            storyCards: storyCard.all(game.id),
+            playerHand: hand.all(game.id, player.id),
+            attachedCards: attached.all(game.id),
+            playerDeckCount: deck.count(game.id, player.id),
+            opponentDeckCount: deck.count(game.id, opponent.id),
+            playerPlayedCards: played.all(game.id, player.id),
+            opponentPlayedCards: played.all(game.id, opponent.id),
+            opponentHandCount: hand.count(game.id, opponent.id)
+        }).then(function (result) {
+            return Object.assign(data, result);
+        }).then(function () {
+            data.playerCommittedCards = [];
+            data.opponentCommittedCards = [];
+
+            return Promise.map(game.storyCards, function (storyCard) {
+                return Promise.props({
+                    playerCommittedCards: committed.all(game.id, player.id, storyCard.id),
+                    opponentCommittedCards: committed.all(game.id, opponent.id, storyCard.id)
+                }).then(function (result) {
+                    data.playerCommittedCards.push({
+                        storyCard: storyCard,
+                        committedCards: result.playerCommittedCards
+                    });
+
+                    data.opponentCommittedCards.push({
+                        storyCard: storyCard,
+                        committedCards: result.opponentCommittedCards
+                    });
+
+                    return data;
+                });
+            });
+        }).then(function () {
+            data.playerResourcedCards = [];
+
+            return Promise.map(player.domains, function (domain) {
+                return Promise.props({
+                    playerResourcedCards: resourced.all(game.id, player.id, domain.id)
+                }).then(function (result) {
+                    if (result.playerResourcedCards) {
+                        data.playerResourcedCards.push({
+                            domain: domain,
+                            resourcedCards: result.playerResourcedCards
                         });
-                    });
-                } else {
-                    game.storyCards.forEach(function (storyCard) {
-                        committed.all(game.id, player.id, storyCard.id).then(function (cards) {
-                            socket.emit('opponentCommittedCards', {
-                                storyCard: storyCard,
-                                cards: cards
-                            });
+                    }
+
+                    return data;
+                });
+            });
+        }).then(function () {
+            data.opponentResourcedCards = [];
+
+            return Promise.map(opponent.domains, function (domain) {
+                return Promise.props({
+                    opponentResourcedCards: resourced.all(game.id, opponent.id, domain.id)
+                }).then(function (result) {
+                    if (result.opponentResourcedCards) {
+                        data.opponentResourcedCards.push({
+                            domain: domain,
+                            resourcedCards: result.opponentResourcedCards
                         });
-                    });
-                }
-            }).then(function () {
-                if (player.id === socket.userId) {
-                    player.domains.forEach(function (domain) {
-                        resourced.all(game.id, player.id, domain.id).then(function (cards) {
-                            socket.emit('playerResourcedCards', {
-                                domain: domain,
-                                cards: cards
-                            });
-                        });
-                    });
-                } else {
-                    player.domains.forEach(function (domain) {
-                        resourced.all(game.id, player.id, domain.id).then(function (cards) {
-                            socket.emit('opponentResourcedCards', {
-                                domain: domain,
-                                cards: cards
-                            });
-                        });
-                    });
-                }
-            }).then(function () {
-                if (player.id !== socket.userId) {
-                    hand.count(game.id, player.id).then(function (count) {
-                        socket.emit('opponentHandCount', count);
-                    });
-                }
-            }).then(function () {
-                if (player.id === socket.userId) {
-                    played.all(game.id, player.id).then(function (cards) {
-                        socket.emit('playerPlayedCards', cards);
-                    });
-                } else {
-                    played.all(game.id, player.id).then(function (cards) {
-                        socket.emit('opponentPlayedCards', cards);
-                    });
-                }
-            }).then(function () {
-                if (player.id === socket.userId) {
-                    attached.all(game.id, player.id).then(function (cards) {
-                        socket.emit('playerAttachedCards', cards);
-                    });
-                } else {
-                    attached.all(game.id, player.id).then(function (cards) {
-                        socket.emit('opponentAttachedCards', cards);
-                    });
-                }
+                    }
+
+                    return data;
+                });
             });
         });
     }).then(function () {
-        hand.all(game.id, socket.userId).then(function (cards) {
-            socket.emit('playerHand', cards);
-        });
-    }).then(function () {
-        socket.emit('gameInfo', gameHelper.gameInfo(game, socket.userId));
+        data.gameInfo = gameHelper.gameInfo(game, player.id);
+
+        socket.emit('gameData', data);
     });
 };
 
@@ -346,6 +335,79 @@ exports.playCard = function (socket, data) {
                 socket.broadcast.emit('opponentPlayedCard', card);
                 socket.broadcast.emit('opponentDrainedDomain', domainId);
             });
+        });
+    });
+};
+
+exports.attachCard = function (socket, data) {
+    var attachableId = data.attachableId;
+    var attachmentId = data.attachmentId;
+    var domainId = data.domainId;
+    var section = data.section;
+    var sectionId = data.sectionId;
+
+    if (!attachableId || !attachmentId || !domainId || !section) {
+        return false;
+    }
+
+    if ((section == 'playerCommitted' || section == 'opponentCommitted') && !sectionId) {
+        return false;
+    }
+
+    var game;
+    var player;
+    var opponent;
+
+    return Promise.try(function () {
+        return Game.current(socket.userId);
+    }).then(function (result) {
+        game = result;
+        player = gameHelper.player(game, socket.userId);
+        opponent = gameHelper.opponent(game, socket.userId);
+
+        if (!gameHelper.isAllowed(player, 'playCard')) {
+            return false;
+        }
+
+        var card;
+
+        if (section == 'playerPlayed') {
+            card = played.get(game.id, player.id, attachableId);
+        } else if (section == 'opponentPlayed') {
+            card = played.get(game.id, opponent.id, attachableId);
+        } else if (section == 'playerCommitted') {
+            card = committed.get(game.id, player.id, attachableId);
+        } else if (section == 'opponentCommitted') {
+            card = committed.get(game.id, opponent.id, attachableId);
+        } else if (section == 'storyCards') {
+            card = storyCard.get(game.id, attachableId);
+        }
+
+        return Promise.props({
+            attachableCard: card,
+            attachmentCard: hand.get(game.id, player.id, attachmentId),
+            resources: resourced.all(game.id, player.id, domainId)
+        }).then(function (result) {
+            var attachableCard = result.attachableCard;
+            var attachmentCard = result.attachmentCard;
+            var resources = result.resources;
+            var domain = gameHelper.domain(game, player.id, domainId);
+            var resourceMath = gameHelper.resourceMatch(resources, attachmentCard);
+
+            if (domain.status != 'active' || attachmentCard.cost > resources.length || !resourceMath) {
+                return false;
+            }
+
+            attachmentCard.attachableId = attachableId;
+            domain.status = 'drained';
+            game = gameHelper.updateDomain(game, domain, player.id);
+            Game.update(game);
+
+            hand.remove(game.id, player.id, result.attachmentCard);
+            attached.add(game.id, result.attachmentCard);
+
+            socket.broadcast.emit('opponentAttachedCard', result.attachmentCard);
+            socket.broadcast.emit('opponentDrainedDomain', domainId);
         });
     });
 };

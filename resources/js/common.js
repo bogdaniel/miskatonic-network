@@ -21,27 +21,35 @@ $(function () {
         }
 
         var cardWrapper = $('<div>').addClass('card-wrapper').addClass('card-' + card.status);
-        //var cardAttachments = $('<div>').addClass('card-attachments');
-        var cardFrame = $('<div>').addClass('card-frame').attr('data-id', card.id).data('image', card.image);
+        var cardFrame = $('<div>').addClass('card-frame').attr('data-id', card.id).data('image', card.image)
+            .data('type', card.type).data('subtype', card.subtype);
         var cardImage = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + image);
 
         if (card.type != 'Story') {
-            cardFrame.attr('data-cost', card.cost)
-                .attr('data-faction', card.faction);
+            cardFrame.attr('data-cost', card.cost).attr('data-faction', card.faction);
+        }
+
+        if ($.inArray('attachment', card.subtype) !== -1) {
+            cardFrame.data('attachable', ['character']);
         }
 
         cardFrame.append(cardImage);
-        //cardWrapper.append(cardAttachments);
         cardWrapper.append(cardFrame);
 
         return cardWrapper;
     };
 
-    $.renderAttachedCard = function (owner, hostId, card) {
-        var cardFrame = $('<div>').addClass('card-frame').attr('data-id', card.id).data('image', card.image);
-        var cardImage = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + card.image);
+    $.renderAttachedCard = function (card) {
+        var cardWrapper = $.renderCard(card);
+        var cardFrame = cardWrapper.children('.card-frame');
+        var attachableWrapper = $('[data-id=' + card.attachableId + ']').closest('.card-wrapper');
+        var attachments = attachableWrapper.children('card-attachments');
 
-        cardFrame.append(cardImage);
+        if (!attachments.length) {
+            attachments = $('<div>').addClass('card-attachments').prependTo(attachableWrapper);
+        }
+
+        attachments.append(cardFrame);
 
         return cardFrame;
     };
@@ -91,7 +99,7 @@ $(function () {
         domain.data('resources', resources);
 
         cardWrapper.removeClass('card-active').addClass('card-resource');
-        cardWrapper.clone().removeAttr('style').prependTo(domain);
+        cardWrapper.clone(true).off().removeAttr('style').prependTo(domain);
         cardWrapper.remove();
 
         socket.emit('resourceCard', {
@@ -109,7 +117,7 @@ $(function () {
 
         target.find('.card-highlight').remove();
 
-        if (!$.isAllowed('playCard') || !domain.length) {
+        if (!$.isAllowed('playCard') || !domain.length || $.inArray('attachment', card.data('subtype')) !== -1) {
             return false;
         }
 
@@ -123,13 +131,56 @@ $(function () {
 
         $.drainDomain('player', domainId);
 
-        cardWrapper.clone().removeAttr('style').prependTo(target);
+        cardWrapper.clone(true).off().removeAttr('style').setAttachable().prependTo(target);
         cardWrapper.remove();
 
         socket.emit('playCard', {
             cardId: card.data('id'),
             domainId: domainId
         });
+    };
+
+    $.attachCard = function (event, ui) {
+        var domain = $('.domain.target');
+        var domainId = domain.data('id');
+        var attachableWrapper = $(event.target);
+        var attachable = attachableWrapper.children('.card-frame');
+        var attachmentWrapper = ui.draggable;
+        var attachment = attachmentWrapper.children('.card-frame');
+
+        attachableWrapper.find('.card-highlight').remove();
+
+        if (!$.isAllowed('playCard') || !domain.length || $.inArray('attachment', attachment.data('subtype')) == -1 || $.inArray(attachable.data('type'), attachment.data('attachable')) == -1) {
+            return false;
+        }
+
+        var attachmentCost = attachment.data('cost');
+        var attachmentFaction = attachment.data('faction');
+        var resources = domain.data('resources');
+
+        if (!(resources[attachmentFaction] && $.domainResourceCount(resources) >= attachmentCost)) {
+            return false;
+        }
+
+        $.drainDomain('player', domainId);
+
+        var attachments = attachableWrapper.children('card-attachments');
+        if (!attachments.length) {
+            attachments = $('<div>').addClass('card-attachments').prependTo(attachableWrapper);
+        }
+
+        attachmentWrapper.clone(true).off().children('.card-frame').prependTo(attachments);
+        attachmentWrapper.remove();
+
+        attachableWrapper.setDimensions();
+
+        socket.emit('attachCard', {
+            section: attachable.closest('[data-section]').data('section'),
+            sectionId: attachable.closest('[data-section]').data('id'),
+            attachableId: attachable.data('id'),
+            attachmentId: attachment.data('id'),
+            domainId: domainId
+        })
     };
 
     $.commitCard = function (event, ui) {
@@ -143,8 +194,8 @@ $(function () {
             return false;
         }
 
-        cardWrapper.removeClass('card-active').addClass('card-exhausted');
-        cardWrapper.clone().removeAttr('style').prependTo(target);
+        cardWrapper.removeClass('card-active').addClass('card-exhausted').setDimensions();
+        cardWrapper.clone(true).off().removeAttr('style').prependTo(target);
         cardWrapper.remove();
 
         socket.emit('commitCard', {
@@ -165,24 +216,6 @@ $(function () {
 
     $.uncommitCard = function (owner, card) {
         card.appendTo('.' + owner + '.row-played');
-    };
-
-    $.droppableOver = function (event, ui) {
-        var highlight = $('<div>').addClass('card-highlight');
-        $(this).prepend(highlight);
-    };
-
-    $.droppableOut = function (event, ui) {
-        $(this).find('.card-highlight').remove();
-    };
-
-    $.setSortable = function (element) {
-        $(element).sortable({
-            items: '> div',
-            handle: 'img',
-            placeholder: 'card-highlight',
-            scroll: false
-        }).disableSelection();
     };
 
     $.isAllowed = function (action) {

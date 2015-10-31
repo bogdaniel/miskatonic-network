@@ -101,7 +101,7 @@ $(function () {
         $.refreshDomain('player', 0);
 
         $('.player.row-played .card-exhausted').each(function () {
-            $(this).removeClass('card-exhausted').addClass('card-active');
+            $(this).removeClass('card-exhausted').addClass('card-active').setDimensions();
         });
     });
 
@@ -109,7 +109,7 @@ $(function () {
         $.refreshDomain('opponent', 0);
 
         $('.opponent.row-played .card-exhausted').each(function () {
-            $(this).removeClass('card-exhausted').addClass('card-active');
+            $(this).removeClass('card-exhausted').addClass('card-active').setDimensions();
         });
     });
 
@@ -123,6 +123,12 @@ $(function () {
         $('.opponent.row-played').append(cardFrame);
     });
 
+    //attachedCard
+
+    socket.on('opponentAttachedCard', function (card) {
+        $.renderAttachedCard(card);
+    });
+
     //committedCard
 
     socket.on('opponentCommittedCard', function (data) {
@@ -130,7 +136,7 @@ $(function () {
         var card = data.card;
         var cardWrapper = $('.opponent.row-played > .card-wrapper > .card-frame[data-id=' + card.id + ']').closest('.card-wrapper');
 
-        cardWrapper.removeClass('card-active').addClass('card-exhausted');
+        cardWrapper.removeClass('card-active').addClass('card-exhausted').setDimensions();
         cardWrapper.appendTo('.opponent.row-committed .committed-story-' + storyId);
     });
 
@@ -250,73 +256,4 @@ $(function () {
     socket.on('turnEnded', function () {
         //TODO
     });
-
-    //gameInfo
-
-    socket.on('gameInfo', function (data) {
-        var content = '';
-        var activePlayer = 'Opponent';
-
-        if (data.activePlayer === 0) {
-            activePlayer = 'Both';
-        } else if (data.activePlayer == userId) {
-            activePlayer = 'You';
-        }
-
-        content += 'Turn: ' + data.turn + '<br/>';
-        content += 'Active player: ' + activePlayer + '<br/>';
-        content += 'Phase: ' + data.phase + '<br/>';
-        content += 'Step: ' + data.step + '<br/>';
-        content += 'Actions: ' + data.actions.join(', ');
-
-        if (data.activePlayer == userId) {
-            content += '<hr/>';
-
-            if ($.inArray('restoreInsane', data.actions) != -1) {
-                content += '<button id="restore-insane" type="button">RestoreInsane</button>';
-            }
-
-            if ($.inArray('refreshAll', data.actions) != -1) {
-                content += '<button id="refresh-all" type="button">RefreshAll</button>';
-            }
-
-            if ($.inArray('endPhase', data.actions) != -1) {
-                content += '<button id="end-phase" type="button">EndPhase</button>';
-            }
-
-            if ($.inArray('resolveStory', data.actions) != -1) {
-                content += '<button id="resolve-story" type="button">ResolveStory</button>';
-            }
-
-            if ($.inArray('resolveTerrorStruggle', data.actions) != -1) {
-                content += '<button id="resolve-struggle" data-type="Terror" type="button">ResolveTerrorStruggle</button>';
-            }
-
-            if ($.inArray('resolveCombatStruggle', data.actions) != -1) {
-                content += '<button id="resolve-struggle" data-type="Combat" type="button">ResolveCombatStruggle</button>';
-            }
-
-            if ($.inArray('resolveArcaneStruggle', data.actions) != -1) {
-                content += '<button id="resolve-struggle" data-type="Arcane" type="button">ResolveArcaneStruggle</button>';
-            }
-
-            if ($.inArray('resolveInvestigationStruggle', data.actions) != -1) {
-                content += '<button id="resolve-struggle" data-type="Investigation" type="button">ResolveInvestigationStruggle</button>';
-            }
-
-            if ($.inArray('determineSuccess', data.actions) != -1) {
-                content += '<button id="determine-success" type="button">DetermineSuccess</button>';
-            }
-
-            if ($.inArray('endTurn', data.actions) != -1) {
-                content += '<button id="end-turn" type="button">EndTurn</button>';
-            }
-        }
-
-        $('.control').html(content);
-
-        gameInfo = data;
-    });
 });
-
-var gameInfo;

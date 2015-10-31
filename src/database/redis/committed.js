@@ -20,6 +20,16 @@ exports.all = function (gameId, playerId, storyId) {
     });
 };
 
+exports.get = function (gameId, playerId, storyId) {
+    return redis.zrangebyscoreAsync('committedCards:' + gameId + ':' + playerId, storyId, storyId).then(function (card) {
+        if (!card.length) {
+            return false;
+        }
+
+        return JSON.parse(card);
+    });
+};
+
 exports.add = function (gameId, playerId, storyId, card) {
     return redis.zadd('committedCards:' + gameId + ':' + playerId + ':' + storyId, card.id, JSON.stringify(card));
 };

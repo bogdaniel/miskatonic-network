@@ -6,8 +6,8 @@ var committed = require('./committed');
 
 Promise.promisifyAll(redis);
 
-exports.all = function (gameId, playerId) {
-    return redis.zrangeAsync('attachedCards:' + gameId + ':' + playerId, 0, -1).then(function (cards) {
+exports.all = function (gameId) {
+    return redis.zrangeAsync('attachedCards:' + gameId, 0, -1).then(function (cards) {
         if (!cards.length) {
             return false;
         }
@@ -20,8 +20,8 @@ exports.all = function (gameId, playerId) {
     });
 };
 
-exports.get = function (gameId, playerId, cardId) {
-    return redis.zrangebyscoreAsync('attachedCards:' + gameId + ':' + playerId, cardId, cardId).then(function (card) {
+exports.get = function (gameId, cardId) {
+    return redis.zrangebyscoreAsync('attachedCards:' + gameId, cardId, cardId).then(function (card) {
         if (!card.length) {
             return false;
         }
@@ -30,24 +30,24 @@ exports.get = function (gameId, playerId, cardId) {
     });
 };
 
-exports.count = function (gameId, playerId) {
-    return redis.zcountAsync('attachedCards:' + gameId + ':' + playerId, '-inf', '+inf');
+exports.count = function (gameId) {
+    return redis.zcountAsync('attachedCards:' + gameId, '-inf', '+inf');
 };
 
-exports.add = function (gameId, playerId, card) {
-    return redis.zadd('attachedCards:' + gameId + ':' + playerId, card.id, JSON.stringify(card));
+exports.add = function (gameId, card) {
+    return redis.zadd('attachedCards:' + gameId, card.id, JSON.stringify(card));
 };
 
-exports.update = function (gameId, playerId, card) {
+exports.update = function (gameId, card) {
     var self = this;
 
     return Promise.try(function () {
-        self.remove(gameId, playerId, card);
+        self.remove(gameId, card);
     }).then(function () {
-        self.add(gameId, playerId, card);
+        self.add(gameId, card);
     });
 };
 
-exports.remove = function (gameId, playerId, card) {
-    return redis.zremrangebyscore('attachedCards:' + gameId + ':' + playerId, card.id, card.id);
+exports.remove = function (gameId, card) {
+    return redis.zremrangebyscore('attachedCards:' + gameId, card.id, card.id);
 };

@@ -1,6 +1,7 @@
 "use strict";
 
 var _ = require('underscore');
+var randomHelper = require('../../helpers/randomHelper');
 var stringHelper = require('../../helpers/stringHelper');
 var redis = require('../redis');
 var Promise = require('bluebird');
@@ -16,7 +17,7 @@ exports.storyCards = function (gameId, cards) {
     var _storyDeck = cards;
 
     for (i = 0; i < _storyDeck.length; i++) {
-        _storyDeck[i].id = i + 1;
+        _storyDeck[i].id = randomHelper.cardId();
         _storyDeck[i].status = 'story';
 
         delete _storyDeck[i].data;
@@ -43,7 +44,7 @@ exports.playerDeck = function (gameId, playerId, cards) {
     var playerDeck = cards;
 
     for (i = 0; i < playerDeck.length; i++) {
-        playerDeck[i].id = i + 1;
+        playerDeck[i].id = randomHelper.cardId();
         playerDeck[i].status = 'active';
         playerDeck[i].type = stringHelper.slugify(playerDeck[i].type);
         playerDeck[i].faction = stringHelper.slugify(playerDeck[i].faction);

@@ -55,6 +55,7 @@ exports.update = function (game) {
 };
 
 exports.delete = function (game) {
+    redis.del('attachedCards:' + game.id);
     redis.del('storyDeck:' + game.id);
     redis.del('storyCards:' + game.id);
     redis.zremrangebyscore('games', game.id, game.id);
@@ -67,7 +68,6 @@ exports.leave = function (gameId, playerId) {
         redis.del('hand:' + gameId + ':' + playerId);
         redis.del('discardPile:' + gameId + ':' + playerId);
         redis.del('playedCards:' + gameId + ':' + playerId);
-        redis.del('attachedCards:' + gameId + ':' + playerId);
 
         if (game.storyCards) {
             game.storyCards.forEach(function (storyCard) {
