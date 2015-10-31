@@ -10,17 +10,26 @@ $(function () {
             return false;
         }
 
-        var highlight = $('<div>').addClass('card-wrapper').addClass('card-highlight');
+        var highlight = $('<div>').addClass('card-frame').addClass('card-highlight');
         $(this).prepend(highlight);
     };
 
     $.droppableOut = function (event, ui) {
-        $(this).find('.card-highlight').remove();
+        $(event.target).find('.card-highlight').remove();
     };
 
     $.fn.setDimensions = function () {
         var self = $(this);
-        var attachedCount = self.find('.card-attachments > .card-frame').length;
+        var attachedCount = self.find('> .card-attachments > .card-frame').length;
+
+        //margin-bottom: -20px;
+
+        if (self.closest('[data-section]').hasClass('row-committed')) {
+            self.css('margin-bottom', '-20px');
+        }
+
+        console.log(self);
+        console.log(attachedCount);
 
         return self;
     };
@@ -33,7 +42,7 @@ $(function () {
             accept: '.row-hand .card-wrapper',
             drop: $.attachCard,
             over: function (event, ui) {
-                var highlight = $('<div>').addClass('card-wrapper').addClass('card-highlight');
+                var highlight = $('<div>').addClass('card-frame').addClass('card-highlight');
                 var attachableWrapper = $(event.target);
                 var attachable = attachableWrapper.children('.card-frame');
                 var attachmentWrapper = ui.draggable;
@@ -43,7 +52,12 @@ $(function () {
                     return false;
                 }
 
-                $(this).prepend(highlight);
+                var attachments = attachableWrapper.children('.card-attachments');
+                if (!attachments.length) {
+                    attachments = $('<div>').addClass('card-attachments').prependTo(attachableWrapper);
+                }
+
+                attachments.prepend(highlight);
             },
             out: $.droppableOut
         });

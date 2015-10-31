@@ -179,10 +179,6 @@ body {
     top: 0;
 }
 
-.card-wrapper > .card-attachments + .card-frame {
-    margin-left: -60px;
-}
-
 .card-frame {
     position: relative;
     width: 100%;
@@ -275,7 +271,6 @@ body {
 .row-played .card-highlight, .row-hand .card-highlight {
     width: 70px;
     height: 100px;
-    margin: 0 10px 0 0;
     background: green;
 }
 

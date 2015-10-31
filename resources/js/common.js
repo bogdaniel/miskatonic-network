@@ -43,13 +43,14 @@ $(function () {
         var cardWrapper = $.renderCard(card);
         var cardFrame = cardWrapper.children('.card-frame');
         var attachableWrapper = $('[data-id=' + card.attachableId + ']').closest('.card-wrapper');
-        var attachments = attachableWrapper.children('card-attachments');
+        var attachments = attachableWrapper.children('.card-attachments');
 
         if (!attachments.length) {
             attachments = $('<div>').addClass('card-attachments').prependTo(attachableWrapper);
         }
 
         attachments.append(cardFrame);
+        attachableWrapper.setDimensions();
 
         return cardFrame;
     };
@@ -164,7 +165,7 @@ $(function () {
 
         $.drainDomain('player', domainId);
 
-        var attachments = attachableWrapper.children('card-attachments');
+        var attachments = attachableWrapper.children('.card-attachments');
         if (!attachments.length) {
             attachments = $('<div>').addClass('card-attachments').prependTo(attachableWrapper);
         }
