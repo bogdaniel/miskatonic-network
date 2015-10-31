@@ -55,7 +55,21 @@ $(function () {
             greedy: true,
             accept: '.row-hand .card-wrapper',
             drop: $.playerResourceCard,
-            over: $.droppableOver,
+            over: function (event, ui) {
+                var domainContainer = $(event.target);
+                var resourceContainer = domainContainer.children('.card-resources');
+                var highlight = $('<div>').addClass('card-frame').addClass('card-highlight');
+
+                if (!$.isAllowed('resourceCard')) {
+                    return false;
+                }
+
+                if (!resourceContainer.length) {
+                    resourceContainer = $('<div>').addClass('card-resources').prependTo(domainContainer);
+                }
+
+                resourceContainer.prepend(highlight);
+            },
             out: $.droppableOut
         });
 
@@ -93,7 +107,7 @@ $(function () {
     }
 
     function renderAllResourced(owner, data) {
-        $('.' + owner + '.row-domain .domain .card-resource').remove();
+        $('.' + owner + '.row-domain .domain .card-resources').remove();
 
         $.each(data, function (i, resourcedSectionData) {
             $.each(resourcedSectionData.resourcedCards, function (j, card) {

@@ -54,22 +54,10 @@ $(function () {
     //resourcedCard
 
     socket.on('opponentResourcedCard', function (data) {
-        var domainId = data.domainId;
-        var domain = $('.opponent.row-domain .domain-' + domainId);
-        var card = data.card;
-        var cardFrame = $.renderCard(card);
-        var handCount = $('.row-opponent .hand-deck .count');
-
-        handCount.text(parseInt(handCount.text()) - 1);
-        domain.prepend(cardFrame);
-
-        var resources = domain.data('resources') || {};
-        if (resources[card.faction]) {
-            resources[card.faction] += 1;
-        } else {
-            resources[card.faction] = 1;
-        }
-        domain.data('resources', resources);
+        $.resourceCard('opponent', {
+            id: data.domainId,
+            status: 'active'
+        }, data.card);
     });
 
     //refreshPhase

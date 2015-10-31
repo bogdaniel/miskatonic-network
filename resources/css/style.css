@@ -174,15 +174,16 @@ body {
 }
 
 .card-wrapper > .card-frame {
-    position: absolute;
-    right: 0;
-    top: 0;
+    float: right;
 }
 
-.card-frame {
-    position: relative;
-    width: 100%;
-    height: 100%;
+.row-committed .card-active {
+    margin: 5px 0 0 0;
+}
+
+.row-committed .card-exhausted {
+    width: 70px;
+    margin: -10px 0 -15px 0;
 }
 
 .card-frame .header {
@@ -190,52 +191,59 @@ body {
     top: 0;
     right: 0;
     left: 0;
-    z-index: 2;
+    z-index: 10;
     background: rgba(0, 0, 0, 0.6);
     font-size: 10px;
     padding: 2px;
     color: #ffffff;
 }
 
-.card-frame img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-}
-
-.draw-deck, .hand-deck, .card-active .card-frame, .card-exhausted .card-frame {
-    width: 70px;
-    height: 100px;
-}
-
-.card-domain, .card-story, .card-exhausted {
+.card-domain > .card-frame, .card-story > .card-frame {
     width: 100px;
     height: 70px;
+}
+
+.card-back, .card-domain > div > .card-frame, .card-active .card-frame, .card-exhausted .card-frame {
+    width: 70px;
+    height: 100px;
 }
 
 .card-story {
     margin: 10px 15px;
 }
 
-.card-attachments {
-    float: right;
-    margin-right: 10px;
-}
-
-.card-attachments .card-frame:not(:last-child) {
+.card-attachments .card-frame {
     margin-right: -60px;
 }
 
-.card-attachments .card-frame {
-    float: left;
-    width: 70px;
-    height: 100px;
+.card-domain > .card-frame {
+    z-index: 2;
 }
 
-.card-active, .card-back {
-    min-width: 70px;
-    height: 100px;
+.card-domain > div > .card-frame {
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+
+    -webkit-transform-origin: 50% 50%;
+    -moz-transform-origin: 50% 50%;
+    -ms-transform-origin: 50% 50%;
+    -o-transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
+
+    margin: -15px -75px -15px 15px;
+}
+
+.card-resources {
+    display: flex;
+    flex-direction: row-reverse;
+
+    position: absolute;
+    top: 0;
+    left: 10px;
+    z-index: 1;
 }
 
 .card-exhausted {
@@ -250,28 +258,20 @@ body {
     -ms-transform-origin: 50% 50%;
     -o-transform-origin: 50% 50%;
     transform-origin: 50% 50%;
-
-    height: 100px;
 }
 
-.card-resource {
-    position: relative;
-    width: 70px;
-    height: 100px;
-    left: -15px;
-    margin: -15px 0 -20px -60px;
-
-    -webkit-transform: rotate(-90deg);
-    -moz-transform: rotate(-90deg);
-    -ms-transform: rotate(-90deg);
-    -o-transform: rotate(-90deg);
-    transform: rotate(-90deg);
+.card-resources .card-frame {
+    float: left;
 }
 
-.row-played .card-highlight, .row-hand .card-highlight {
+.row-domain .card-highlight, .row-played .card-highlight, .row-hand .card-highlight {
     width: 70px;
     height: 100px;
     background: green;
+}
+
+.row-played .card-highlight {
+    margin: 5px;
 }
 
 .row-committed .card-highlight {
@@ -280,31 +280,10 @@ body {
     background: green;
 }
 
-.player.row-domain .domain .card-highlight {
-    width: 100px;
-    height: 70px;
-    margin-left: -90px;
-    background: green;
-}
-
 .domain {
-    display: -ms-flexbox;
-    display: -webkit-flex;
     display: flex;
-
-    -webkit-flex-direction: row-reverse;
-    -ms-flex-direction: row-reverse;
-    flex-direction: row-reverse;
-
-    -webkit-flex-wrap: nowrap;
-    -ms-flex-wrap: nowrap;
-    flex-wrap: nowrap;
-
-    -webkit-justify-content: flex-end;
-    -ms-flex-pack: end;
-    justify-content: flex-end;
-
-    position: relative;
+    flex-flow: row-reverse nowrap;
+    margin-right: 10px;
     margin-bottom: 10px;
 }
 
@@ -316,7 +295,7 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 10;
+    z-index: 100;
 }
 
 .highlight {

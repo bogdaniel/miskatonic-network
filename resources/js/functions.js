@@ -5,12 +5,12 @@ $(function () {
         var target = $(event.target);
         var item = ui.draggable;
         var card = item.children('.card-frame');
+        var highlight = $('<div>').addClass('card-frame').addClass('card-highlight');
 
         if (target.hasClass('card-wrapper') || $.inArray('attachment', card.data('subtype')) !== -1) {
             return false;
         }
 
-        var highlight = $('<div>').addClass('card-frame').addClass('card-highlight');
         $(this).prepend(highlight);
     };
 
@@ -22,14 +22,15 @@ $(function () {
         var self = $(this);
         var attachedCount = self.find('> .card-attachments > .card-frame').length;
 
-        //margin-bottom: -20px;
+        if (self.closest('[data-section]').hasClass('row-committed') && self.hasClass('card-exhausted')) {
+            var width = 70 + attachedCount * 10;
+            var marginTop = -10 + attachedCount * 5;
+            var marginBottom = -15 + attachedCount * 5;
 
-        if (self.closest('[data-section]').hasClass('row-committed')) {
-            self.css('margin-bottom', '-20px');
+            self.css('width', width + 'px');
+            self.css('margin-top', marginTop + 'px');
+            self.css('margin-bottom', marginBottom + 'px');
         }
-
-        console.log(self);
-        console.log(attachedCount);
 
         return self;
     };

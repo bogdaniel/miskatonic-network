@@ -57,11 +57,16 @@ $(function () {
 
     $.resourceCard = function (owner, domain, card) {
         var domainContainer = $('.' + owner + '.row-domain .domain-' + domain.id);
+        var resourceContainer = domainContainer.children('.card-resources');
         var resources = domainContainer.data('resources') || {};
-        var cardFrame = $.renderCard(card);
+        var cardFrame = $.renderCard(card).find('.card-frame');
 
         if (domain.status == 'drained') {
             $.drainDomain(owner, domain.id);
+        }
+
+        if (!resourceContainer.length) {
+            resourceContainer = $('<div>').addClass('card-resources').prependTo(domainContainer);
         }
 
         if (resources[card.faction]) {
@@ -70,42 +75,45 @@ $(function () {
             resources[card.faction] = 1;
         }
 
+        resourceContainer.append(cardFrame);
+        domainContainer.prepend(resourceContainer);
         domainContainer.data('resources', resources);
         domainContainer.addClass('domain-' + domain.status);
-        domainContainer.prepend(cardFrame);
     };
 
     $.playerResourceCard = function (event, ui) {
-        var cardWrapper = ui.draggable;
-        var card = cardWrapper.children('.card-frame');
-        var domain = $(event.target);
-        var domainId = domain.data('id');
+        var domainContainer = $(event.target);
+        var resourceContainer = domainContainer.children('.card-resources');
+        var resources = domainContainer.data('resources') || {};
+        var cardFrame = ui.draggable.find('.card-frame');
 
-        domain.find('.card-highlight').remove();
+        domainContainer.find('.card-highlight').remove();
 
         if (!$.isAllowed('resourceCard')) {
             return false;
         }
 
-        if (gameInfo.phase == 'setup' && domain.children('.card-resource').length == 1) {
+        if (!resourceContainer.length) {
+            resourceContainer = $('<div>').addClass('card-resources').prependTo(domainContainer);
+        }
+
+        if (gameInfo.phase == 'setup' && resourceContainer.find('.card-frame').length == 1) {
             return false;
         }
 
-        var resources = domain.data('resources') || {};
-        if (resources[card.data('faction')]) {
-            resources[card.data('faction')] += 1;
+        if (resources[cardFrame.data('faction')]) {
+            resources[cardFrame.data('faction')] += 1;
         } else {
-            resources[card.data('faction')] = 1;
+            resources[cardFrame.data('faction')] = 1;
         }
-        domain.data('resources', resources);
+        domainContainer.data('resources', resources);
 
-        cardWrapper.removeClass('card-active').addClass('card-resource');
-        cardWrapper.clone(true).off().removeAttr('style').prependTo(domain);
-        cardWrapper.remove();
+        cardFrame.clone(true).off().removeAttr('style').prependTo(resourceContainer);
+        ui.draggable.remove();
 
         socket.emit('resourceCard', {
-            domainId: domainId,
-            cardId: card.data('id')
+            domainId: domainContainer.data('id'),
+            cardId: cardFrame.data('id')
         });
     };
 
