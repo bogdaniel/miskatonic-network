@@ -42,7 +42,7 @@
                     container.empty();
 
                     $.each(cards, function (key, card) {
-                        var image = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + card.image);
+                        var image = $('<img>').addClass('img-responsive').addClass('dblclick-fancybox').attr('src', '/images/cards/' + card.image);
                         var card_container = $('<div>').addClass('col-xs-2').append(image);
                         container.append(card_container);
 
@@ -69,7 +69,7 @@
                     dataType: 'json'
                 }).done(function (cards) {
                     $.each(cards, function (key, _card) {
-                        var image = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + _card.image);
+                        var image = $('<img>').addClass('img-responsive').addClass('dblclick-fancybox').attr('src', '/images/cards/' + _card.image);
                         var card_container = $('<div>').addClass('col-xs-2').append(image);
                         var container = $('.card-container');
                         container.append(card_container);
@@ -214,7 +214,7 @@
             <div class="col-xs-10 card-container">
                 {% for card in cards %}
                     <div class="col-xs-2">
-                        <img src="/images/cards/{{ card.image }}" class="img-responsive"/>
+                        <img src="/images/cards/{{ card.image }}" class="dblclick-fancybox img-responsive"/>
                     </div>
                     {% if loop.index % 6 == 0 %}
                         <div class="clearfix"></div>
