@@ -24,6 +24,13 @@
                 loadCards();
             });
 
+            $('#subtype').on('change', function () {
+                var value = $(this).val();
+                var url = replaceGet(window.location.href, 'subtype', value);
+                window.history.replaceState(null, null, url);
+                loadCards();
+            });
+
             function loadCards() {
                 var parsed = parseUri(window.location.href);
 
@@ -122,6 +129,84 @@
                             <option value="Event"{% if 'type=Event' in app.url %} selected="selected"{% endif %}>Event</option>
                             <option value="Story"{% if 'type=Story' in app.url %} selected="selected"{% endif %}>Story</option>
                             <option value="Support"{% if 'type=Support' in app.url %} selected="selected"{% endif %}>Support</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="subtype">Subtype</label>
+                        <select class="form-control" name="type" id="subtype">
+                            <option value="">All</option>
+                            <option value="Ancient+One">Ancient One</option>
+                            <option value="Artifact">Artifact</option>
+                            <option value="Artist">Artist</option>
+                            <option value="Attachment">Attachment</option>
+                            <option value="Avatar">Avatar</option>
+                            <option value="Blessing">Blessing</option>
+                            <option value="Chthonian">Chthonian</option>
+                            <option value="Condition">Condition</option>
+                            <option value="Conspirator">Conspirator</option>
+                            <option value="Conspirator,+Scientist">Conspirator, Scientist</option>
+                            <option value="Construct">Construct</option>
+                            <option value="Creature">Creature</option>
+                            <option value="Criminal">Criminal</option>
+                            <option value="Cthonian">Cthonian</option>
+                            <option value="Cultist">Cultist</option>
+                            <option value="Curse">Curse</option>
+                            <option value="Dark+Young">Dark Young</option>
+                            <option value="Deep+One">Deep One</option>
+                            <option value="Disaster">Disaster</option>
+                            <option value="Dreamer">Dreamer</option>
+                            <option value="Dreamlands">Dreamlands</option>
+                            <option value="Elixir">Elixir</option>
+                            <option value="Encounter">Encounter</option>
+                            <option value="Environment">Environment</option>
+                            <option value="Event">Event</option>
+                            <option value="Explorer">Explorer</option>
+                            <option value="Faculty">Faculty</option>
+                            <option value="Ghoul">Ghoul</option>
+                            <option value="Government">Government</option>
+                            <option value="Gug">Gug</option>
+                            <option value="High+Priest">High Priest</option>
+                            <option value="Hunter">Hunter</option>
+                            <option value="Independent">Independent</option>
+                            <option value="Initiate">Initiate</option>
+                            <option value="Investigator">Investigator</option>
+                            <option value="Item">Item</option>
+                            <option value="Library">Library</option>
+                            <option value="Location">Location</option>
+                            <option value="Lodge">Lodge</option>
+                            <option value="Lost+Civilization">Lost Civilization</option>
+                            <option value="Lunatic">Lunatic</option>
+                            <option value="Lunitic">Lunitic</option>
+                            <option value="Madness">Madness</option>
+                            <option value="Mask">Mask</option>
+                            <option value="Messenger">Messenger</option>
+                            <option value="Mi-Go">Mi-Go</option>
+                            <option value="Monster">Monster</option>
+                            <option value="Musician">Musician</option>
+                            <option value="Mutable">Mutable</option>
+                            <option value="Phantom">Phantom</option>
+                            <option value="Polar">Polar</option>
+                            <option value="Prophecy">Prophecy</option>
+                            <option value="Relic">Relic</option>
+                            <option value="Relic+Hunter">Relic Hunter</option>
+                            <option value="Research">Research</option>
+                            <option value="Ritual">Ritual</option>
+                            <option value="Scientist">Scientist</option>
+                            <option value="Serpent">Serpent</option>
+                            <option value="Servitor">Servitor</option>
+                            <option value="Society">Society</option>
+                            <option value="Sorcerer">Sorcerer</option>
+                            <option value="Sorceror">Sorceror</option>
+                            <option value="Spell">Spell</option>
+                            <option value="Student">Student</option>
+                            <option value="Tactic">Tactic</option>
+                            <option value="Tome">Tome</option>
+                            <option value="Undead">Undead</option>
+                            <option value="Vehicle">Vehicle</option>
+                            <option value="Weapon">Weapon</option>
+                            <option value="Yeti">Yeti</option>
+                            <option value="Yithian">Yithian</option>
+                            <option value="Zoog">Zoog</option>
                         </select>
                     </div>
                 </div>

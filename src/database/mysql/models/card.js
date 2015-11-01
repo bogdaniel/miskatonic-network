@@ -9,6 +9,7 @@ module.exports = mysql.Model.extend({
     filter: Promise.method(function (query) {
         var filter = [];
         var title = '';
+        var subtype = '';
         var page = 1;
 
         if (query.title) {
@@ -27,11 +28,15 @@ module.exports = mysql.Model.extend({
             filter.type = query.type;
         }
 
+        if (query.subtype) {
+            subtype = query.subtype;
+        }
+
         if (query.page) {
             page = query.page;
         }
 
-        return new this().where(filter).where('title', 'LIKE', '%' + title + '%').query(function (qb) {
+        return new this().where(filter).where('title', 'LIKE', '%' + title + '%').where('subtype', 'LIKE', '%' + subtype + '%').query(function (qb) {
             qb.orderBy('num', 'ASC').limit(24).offset(page * 24 - 24);
         }).fetchAll();
     }),
