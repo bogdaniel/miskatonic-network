@@ -75,12 +75,10 @@ $(function () {
                 var cardFrame = cardWrapper.children('.card-frame');
 
                 if ($.inArray('attachment', cardFrame.data('subtype')) == -1) {
-                    console.log('disable droppable');
                     $('.row-played .card-wrapper.ui-droppable').droppable('disable');
                 }
             },
-            stop: function(event, ui) {
-                console.log('END TURN BACK ON');
+            stop: function (event, ui) {
                 $('.row-played .card-wrapper.ui-droppable').droppable('enable');
             }
         });
