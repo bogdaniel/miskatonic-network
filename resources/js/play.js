@@ -124,8 +124,8 @@ $(function () {
         var card = data.card;
         var cardWrapper = $('.opponent.row-played > .card-wrapper > .card-frame[data-id=' + card.id + ']').closest('.card-wrapper');
 
-        cardWrapper.removeClass('card-active').addClass('card-exhausted').setDimensions();
-        cardWrapper.appendTo('.opponent.row-committed .committed-story-' + storyId);
+        cardWrapper.removeClass('card-active').addClass('card-exhausted');
+        cardWrapper.appendTo('.opponent.row-committed .committed-story-' + storyId).setDimensions();
     });
 
     //endPhase
@@ -145,10 +145,6 @@ $(function () {
         }
 
         socket.emit('endPhase');
-    });
-
-    socket.on('turnEnded', function () {
-        $.uncommitAll();
     });
 
     //resolveStory
@@ -242,6 +238,7 @@ $(function () {
     });
 
     socket.on('turnEnded', function () {
-        //TODO
+        $('.row-story .icon').remove();
+        $.uncommitAll();
     });
 });

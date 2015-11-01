@@ -60,6 +60,7 @@ $(function () {
         var resourceContainer = domainContainer.children('.card-resources');
         var resources = domainContainer.data('resources') || {};
         var cardFrame = $.renderCard(card).find('.card-frame');
+        var resourceCount = domainContainer.find('.card-frame').length;
 
         if (domain.status == 'drained') {
             $.drainDomain(owner, domain.id);
@@ -75,10 +76,10 @@ $(function () {
             resources[card.faction] = 1;
         }
 
-        resourceContainer.append(cardFrame);
+        resourceContainer.prepend(cardFrame);
         domainContainer.prepend(resourceContainer);
         domainContainer.data('resources', resources);
-        domainContainer.addClass('domain-' + domain.status);
+        domainContainer.addClass('domain-' + domain.status).css('width', (resourceCount * 10 + 100) + 'px');
     };
 
     $.playerResourceCard = function (event, ui) {
@@ -86,6 +87,7 @@ $(function () {
         var resourceContainer = domainContainer.children('.card-resources');
         var resources = domainContainer.data('resources') || {};
         var cardFrame = ui.draggable.find('.card-frame');
+        var resourceCount = domainContainer.find('.card-frame').length - 1;
 
         domainContainer.find('.card-highlight').remove();
 
@@ -106,7 +108,7 @@ $(function () {
         } else {
             resources[cardFrame.data('faction')] = 1;
         }
-        domainContainer.data('resources', resources);
+        domainContainer.data('resources', resources).css('width', (resourceCount * 10 + 100) + 'px');
 
         cardFrame.clone(true).off().removeAttr('style').prependTo(resourceContainer);
         ui.draggable.remove();
@@ -203,8 +205,8 @@ $(function () {
             return false;
         }
 
-        cardWrapper.removeClass('card-active').addClass('card-exhausted').setDimensions();
-        cardWrapper.clone(true).off().removeAttr('style').prependTo(target);
+        cardWrapper.removeClass('card-active').addClass('card-exhausted');
+        cardWrapper.clone(true).off().removeAttr('style').prependTo(target).setDimensions();
         cardWrapper.remove();
 
         socket.emit('commitCard', {
@@ -224,7 +226,7 @@ $(function () {
     };
 
     $.uncommitCard = function (owner, card) {
-        card.appendTo('.' + owner + '.row-played');
+        card.removeAttr('style').appendTo('.' + owner + '.row-played');
     };
 
     $.isAllowed = function (action) {

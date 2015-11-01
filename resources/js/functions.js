@@ -69,7 +69,20 @@ $(function () {
             items: '> div',
             handle: 'img',
             placeholder: 'card-wrapper card-highlight',
-            scroll: false
+            scroll: false,
+            start: function (event, ui) {
+                var cardWrapper = ui.item;
+                var cardFrame = cardWrapper.children('.card-frame');
+
+                if ($.inArray('attachment', cardFrame.data('subtype')) == -1) {
+                    console.log('disable droppable');
+                    $('.row-played .card-wrapper.ui-droppable').droppable('disable');
+                }
+            },
+            stop: function(event, ui) {
+                console.log('END TURN BACK ON');
+                $('.row-played .card-wrapper.ui-droppable').droppable('enable');
+            }
         });
     };
 

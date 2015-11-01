@@ -52,7 +52,7 @@ body {
     -ms-flex-pack: justify;
     justify-content: space-between;
 
-    margin-right: 10px;
+    margin-right: 5px;
 }
 
 .col-second {
@@ -174,7 +174,11 @@ body {
 }
 
 .card-wrapper > .card-frame {
-    float: right;
+    float: left;
+}
+
+.row-played .card-exhausted {
+    width: 100px;
 }
 
 .row-committed .card-active {
@@ -212,11 +216,19 @@ body {
     margin: 10px 15px;
 }
 
+.card-attachments {
+    display: flex;
+    float: left;
+}
+
 .card-attachments .card-frame {
-    margin-right: -60px;
+    margin: 0 -60px 0 0;
 }
 
 .card-domain > .card-frame {
+    position: absolute;
+    top: 0;
+    left: 0;
     z-index: 2;
 }
 
@@ -270,7 +282,7 @@ body {
     background: green;
 }
 
-.row-played .card-highlight {
+.row-played > .card-highlight {
     margin: 5px;
 }
 
@@ -278,12 +290,14 @@ body {
     width: 100px;
     height: 70px;
     background: green;
+    margin: 5px;
 }
 
 .domain {
     display: flex;
     flex-flow: row-reverse nowrap;
-    margin-right: 10px;
+    width: 100px;
+    height: 70px;
     margin-bottom: 10px;
 }
 
