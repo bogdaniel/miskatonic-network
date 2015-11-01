@@ -28,6 +28,13 @@
                 }
             });
 
+            $('#title').on('change', function () {
+                var value = $(this).val();
+                var url = replaceGet(window.location.href, 'title', value);
+                window.history.replaceState(null, null, url);
+                loadCards();
+            });
+
             $('#set').on('change', function () {
                 var value = $(this).val();
                 var url = replaceGet(window.location.href, 'set', value);
@@ -119,7 +126,7 @@
             <div class="col-xs-2">
                 <div class="filter">
                     <div class="form-group">
-                        <input class="form-control" type="text" placeholder="Search card title"/>
+                        <input class="form-control" id="title" type="text" placeholder="Search card title"/>
                     </div>
                     <div class="form-group">
                         <label for="set">Set</label>
