@@ -21,7 +21,12 @@ $(function () {
             nextEasing: 'none',
             prevEasing: 'none',
             openOpacity: false,
-            closeOpacity: false
+            closeOpacity: false,
+            helpers: {
+                overlay: {
+                    locked: false
+                }
+            }
         });
     }
 
@@ -37,7 +42,7 @@ $(function () {
                 $('.highlight').empty();
             });
         }, 10000);
-    }).on('dblclick', '.dblclick-fancybox, .card-active, .card-exhausted, .card-story, .card-resource', function (e) {
+    }).on('dblclick', '.card-active, .card-exhausted, .card-story, .card-resource', function (e) {
         fancyBox(e);
     }).on('click', '.highlight', function (e) {
         fancyBox(e);

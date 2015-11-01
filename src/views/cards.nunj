@@ -3,6 +3,31 @@
 {% block js %}
     <script type="text/javascript">
         $(function () {
+            $('.fancybox').fancybox({
+                scrolling: 'no',
+                closeBtn: false,
+                type: 'image',
+                openEffect: 'none',
+                closeEffect: 'none',
+                nextEffect: 'none',
+                prevEffect: 'none',
+                openSpeed: 1,
+                closeSpeed: 1,
+                nextSpeed: 1,
+                prevSpeed: 1,
+                openEasing: 'none',
+                closeEasing: 'none',
+                nextEasing: 'none',
+                prevEasing: 'none',
+                openOpacity: false,
+                closeOpacity: false,
+                helpers: {
+                    overlay: {
+                        locked: false
+                    }
+                }
+            });
+
             $('#set').on('change', function () {
                 var value = $(this).val();
                 var url = replaceGet(window.location.href, 'set', value);
@@ -42,8 +67,8 @@
                     container.empty();
 
                     $.each(cards, function (key, card) {
-                        var image = $('<img>').addClass('img-responsive').addClass('dblclick-fancybox').attr('src', '/images/cards/' + card.image);
-                        var card_container = $('<div>').addClass('col-xs-2').append(image);
+                        var image = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + card.image);
+                        var card_container = $('<a>').attr('href', image.attr('src')).addClass('col-xs-2').addClass('fancybox').attr('rel', 'group').append(image);
                         container.append(card_container);
 
                         if ((key + 1) % 6 == 0) {
@@ -69,8 +94,8 @@
                     dataType: 'json'
                 }).done(function (cards) {
                     $.each(cards, function (key, _card) {
-                        var image = $('<img>').addClass('img-responsive').addClass('dblclick-fancybox').attr('src', '/images/cards/' + _card.image);
-                        var card_container = $('<div>').addClass('col-xs-2').append(image);
+                        var image = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + _card.image);
+                        var card_container = $('<a>').attr('href', image.attr('src')).addClass('col-xs-2').addClass('fancybox').attr('rel', 'group').append(image);
                         var container = $('.card-container');
                         container.append(card_container);
 
@@ -213,9 +238,9 @@
             </div>
             <div class="col-xs-10 card-container">
                 {% for card in cards %}
-                    <div class="col-xs-2">
-                        <img src="/images/cards/{{ card.image }}" class="dblclick-fancybox img-responsive"/>
-                    </div>
+                    <a href="/images/cards/{{ card.image }}" class="fancybox col-xs-2" rel="group">
+                        <img src="/images/cards/{{ card.image }}" class="img-responsive"/>
+                    </a>
                     {% if loop.index % 6 == 0 %}
                         <div class="clearfix"></div>
                     {% endif %}
