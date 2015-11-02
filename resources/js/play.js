@@ -104,7 +104,7 @@ $(function () {
     //playedCard
 
     socket.on('opponentPlayedCard', function (card) {
-        var cardFrame = $.renderCard(card);
+        var cardFrame = $.renderCard(card).setAttachable();
         var handCount = $('.row-opponent .hand-deck .count');
 
         handCount.text(parseInt(handCount.text()) - 1);

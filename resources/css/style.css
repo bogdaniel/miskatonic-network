@@ -168,12 +168,16 @@ body {
 }
 
 .card-wrapper {
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-
     position: relative;
     margin: 5px;
+}
+
+.row-played .card-wrapper {
+    display: inline-flex;
+}
+
+.row-committed .card-wrapper {
+    display: inline-block;
 }
 
 .card-wrapper > .card-frame {
