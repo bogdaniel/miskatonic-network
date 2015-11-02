@@ -173,6 +173,8 @@ body {
 }
 
 .row-played .card-wrapper {
+    display: -ms-inline-flexbox;
+    display: -webkit-inline-flex;
     display: inline-flex;
 }
 
@@ -305,7 +307,7 @@ body {
     width: 100px;
     height: 70px;
     background: green;
-    margin: 5px 5px 0 5px;
+    margin: 5px;
 }
 
 .domain {
