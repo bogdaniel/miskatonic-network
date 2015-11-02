@@ -168,8 +168,11 @@ body {
 }
 
 .card-wrapper {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+
     position: relative;
-    display: inline-block;
     margin: 5px;
 }
 
@@ -217,7 +220,10 @@ body {
 }
 
 .card-attachments {
+    display: -ms-flexbox;
+    display: -webkit-flex;
     display: flex;
+
     float: left;
 }
 
@@ -249,7 +255,12 @@ body {
 }
 
 .card-resources {
+    display: -ms-flexbox;
+    display: -webkit-flex;
     display: flex;
+
+    -webkit-flex-direction: row-reverse;
+    -ms-flex-direction: row-reverse;
     flex-direction: row-reverse;
 
     position: absolute;
@@ -294,8 +305,18 @@ body {
 }
 
 .domain {
+    display: -ms-flexbox;
+    display: -webkit-flex;
     display: flex;
-    flex-flow: row-reverse nowrap;
+
+    -webkit-flex-direction: row-reverse;
+    -ms-flex-direction: row-reverse;
+    flex-direction: row-reverse;
+
+    -webkit-flex-wrap: nowrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+
     width: 100px;
     height: 70px;
     margin-bottom: 10px;
