@@ -31,12 +31,11 @@ $(function () {
     }
 
     var fadeHighlight;
-    $(document).on('mouseenter', '.card-active .card-frame, .card-exhausted .card-frame, .card-story .card-frame, .card-resources .card-frame, .card-attachments .card-frame', function () {
+    $(document).on('mouseenter', '.card-active .card-frame, .card-exhausted .card-frame, .card-insane .card-frame, .card-story .card-frame, .card-resources .card-frame, .card-attachments .card-frame', function () {
         clearTimeout(fadeHighlight);
-        var src = $(this).find('img').attr('src');
-        var img = $('<img>').addClass('img-responsive').attr('src', src);
+        var img = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + $(this).data('image'));
         $('.highlight').html(img);
-    }).on('mouseout', '.card-active .card-frame, .card-exhausted .card-frame, .card-story .card-frame, .card-resources .card-frame, .card-attachments .card-frame', function () {
+    }).on('mouseout', '.card-active .card-frame, .card-exhausted .card-frame, .card-insane .card-frame, .card-story .card-frame, .card-resources .card-frame, .card-attachments .card-frame', function () {
         fadeHighlight = setTimeout(function () {
             $('.highlight img').fadeOut(400, function () {
                 $('.highlight').empty();
