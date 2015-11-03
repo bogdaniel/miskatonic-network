@@ -304,7 +304,7 @@ body {
 }
 
 .row-played > .card-highlight {
-    margin: 5px;
+    margin: 5px 5px 0 5px;
 }
 
 .row-committed .card-insane {
