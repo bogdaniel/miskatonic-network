@@ -68,6 +68,10 @@ body {
     display: -webkit-flex;
     display: flex;
 
+    -webkit-align-items: baseline;
+    -ms-flex-align: baseline;
+    align-items: baseline;
+
     min-height: 120px;
     background: rgba(0, 0, 0, 0.4);
     border-radius: 5px;
@@ -211,7 +215,7 @@ body {
     color: #ffffff;
 }
 
-.card-domain > .card-frame, .card-story > .card-frame {
+.card-insane, .card-domain > .card-frame, .card-story > .card-frame {
     width: 100px;
     height: 70px;
 }
@@ -311,7 +315,7 @@ body {
     width: 100px;
     height: 70px;
     background: green;
-    margin: 5px 5px 0 5px;
+    margin: 5px;
 }
 
 .domain {

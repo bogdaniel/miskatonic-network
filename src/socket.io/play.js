@@ -320,9 +320,9 @@ exports.playCard = function (socket, data) {
             var card = result.card;
             var resources = result.resources;
             var domain = gameHelper.domain(game, player.id, domainId);
-            var resourceMath = gameHelper.resourceMatch(resources, card);
+            var resourceMatch = gameHelper.resourceMatch(resources, card);
 
-            if (domain.status != 'active' || card.cost > resources.length || !resourceMath) {
+            if (domain.status != 'active' || card.cost > resources.length || !resourceMatch) {
                 return false;
             }
 
@@ -393,9 +393,9 @@ exports.attachCard = function (socket, data) {
             var attachmentCard = result.attachmentCard;
             var resources = result.resources;
             var domain = gameHelper.domain(game, player.id, domainId);
-            var resourceMath = gameHelper.resourceMatch(resources, attachmentCard);
+            var resourceMatch = gameHelper.resourceMatch(resources, attachmentCard);
 
-            if (domain.status != 'active' || attachmentCard.cost > resources.length || !resourceMath) {
+            if (domain.status != 'active' || attachmentCard.cost > resources.length || !resourceMatch) {
                 return false;
             }
 
@@ -429,70 +429,41 @@ exports.endPhase = function (socket) {
             return false;
         }
 
-        var nextPhase;
-        var nextStep;
-
         if (game.phase == 'resource') {
-            nextPhase = 'operations';
-            nextStep = null;
+            game.phase = 'operations';
+            game.step = null;
 
             player.actions = ['playCard', 'endPhase'];
         } else if (game.phase == 'operations') {
             if (game.turn == 1 && game.activePlayer == game.firstPlayer) {
-                nextPhase = 'refresh';
-                nextStep = null;
-
-                player.actions = [];
-                opponent.actions = ['restoreInsane', 'refreshAll'];
-
-                game.temp.storyCommits = {};
-                game.activePlayer = opponent.id;
-                game.turnPlayer = game.activePlayer;
+                game = endTurn(player.id, game);
             } else {
-                nextPhase = 'story';
-                nextStep = 'playerCommit';
+                game.phase = 'story';
+                game.step = 'playerCommit';
 
                 player.actions = ['commitCard', 'endPhase'];
             }
         } else if (game.phase == 'story' && game.step == 'playerCommit') {
             if (Object.keys(game.temp.storyCommits).length) {
-                nextPhase = 'story';
-                nextStep = 'opponentCommit';
+                game.phase = 'story';
+                game.step = 'opponentCommit';
 
                 player.actions = [];
                 opponent.actions = ['commitCard', 'endPhase'];
 
                 game.activePlayer = opponent.id;
             } else {
-                nextPhase = 'refresh';
-                nextStep = null;
-
-                player.actions = [];
-                opponent.actions = ['restoreInsane', 'refreshAll'];
-
-                if (game.activePlayer != game.firstPlayer) {
-                    game.turn += 1;
-                }
-
-                game.temp.storyCommits = {};
-                game.activePlayer = opponent.id;
-                game.turnPlayer = game.activePlayer;
+                game = endTurn(player.id, game);
             }
         } else if (game.phase == 'story' && game.step == 'opponentCommit') {
-            nextPhase = 'story';
-            nextStep = 'resolveStories';
+            game.phase = 'story';
+            game.step = 'resolveStories';
 
             player.actions = [];
             opponent.actions = ['resolveStory'];
 
             game.activePlayer = opponent.id;
         } else if (game.phase == 'story' && game.step == 'resolveStories') {
-            nextPhase = 'refresh';
-            nextStep = null;
-
-            player.actions = [];
-            opponent.actions = ['restoreInsane', 'refreshAll'];
-
             for (var storyId in game.temp.storyCommits) {
                 if (game.temp.storyCommits.hasOwnProperty(storyId)) {
                     committed.removeAll(game.id, player.id, storyId);
@@ -500,21 +471,9 @@ exports.endPhase = function (socket) {
                 }
             }
 
-            if (game.activePlayer != game.firstPlayer) {
-                game.turn += 1;
-            }
-
-            game.temp.storyCommits = {};
-            game.temp.storyStruggle = 0;
-            game.activePlayer = opponent.id;
-            game.turnPlayer = game.activePlayer;
-
-            socket.emit('turnEnded');
-            socket.broadcast.emit('turnEnded');
+            game = endTurn(player.id, game);
         }
 
-        game.phase = nextPhase;
-        game.step = nextStep;
         game = gameHelper.updatePlayer(game, player);
         game = gameHelper.updatePlayer(game, opponent);
 
@@ -649,6 +608,7 @@ exports.resolveIconStruggle = function (socket, data) {
                     player.actions = ['goInsane'];
                 } else {
                     nextStep = 'resolveCombatStruggle';
+                    player.actions = ['resolveCombatStruggle'];
                 }
             } else if (struggle == 'Combat') {
                 nextStep = 'takeWound';
@@ -661,6 +621,7 @@ exports.resolveIconStruggle = function (socket, data) {
                     player.actions = ['takeWound'];
                 } else {
                     nextStep = 'resolveArcaneStruggle';
+                    player.actions = ['resolveArcaneStruggle'];
                 }
             } else if (struggle == 'Arcane') {
                 nextStep = 'goReady';
@@ -673,6 +634,7 @@ exports.resolveIconStruggle = function (socket, data) {
                     player.actions = ['goReady'];
                 } else {
                     nextStep = 'resolveInvestigationStruggle';
+                    player.actions = ['resolveInvestigationStruggle'];
                 }
             } else if (struggle == 'Investigation') {
                 if (struggleResult == 'player') {
@@ -684,6 +646,7 @@ exports.resolveIconStruggle = function (socket, data) {
                 }
 
                 nextStep = 'determineSuccess';
+                player.actions = ['determineSuccess'];
             }
 
             game = gameHelper.updatePlayer(game, player);
@@ -846,30 +809,40 @@ exports.endTurn = function (socket) {
             return false;
         }
 
-        var nextPhase = 'refresh';
-        var nextStep = null;
-
-        player.actions = [];
-        opponent.actions = ['restoreInsane', 'refreshAll'];
-
-        if (game.activePlayer != game.firstPlayer) {
-            game.turn += 1;
-        }
-
-        game.activePlayer = opponent.id;
-        game.turnPlayer = game.activePlayer;
-
-        socket.emit('turnEnded');
-        socket.broadcast.emit('turnEnded');
-
-        game.phase = nextPhase;
-        game.step = nextStep;
-        game = gameHelper.updatePlayer(game, player);
-        game = gameHelper.updatePlayer(game, opponent);
-
+        game = endTurn(player.id, game);
         Game.update(game);
 
         socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
         socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
     });
 };
+
+function endTurn(playerId, game) {
+    var player = gameHelper.player(game, playerId);
+    var opponent = gameHelper.opponent(game, playerId);
+
+    if (game.activePlayer != game.firstPlayer) {
+        game.turn += 1;
+    }
+
+    if (game.activePlayer == player.id) {
+        player.actions = [];
+        opponent.actions = ['restoreInsane', 'refreshAll'];
+
+        game.activePlayer = opponent.id;
+    } else {
+        player.actions = ['restoreInsane', 'refreshAll'];
+        opponent.actions = [];
+
+        game.activePlayer = player.id;
+    }
+
+    game.temp.storyCommits = {};
+    game.turnPlayer = game.activePlayer;
+    game.phase = 'refresh';
+    game.step = null;
+    game = gameHelper.updatePlayer(game, player);
+    game = gameHelper.updatePlayer(game, opponent);
+
+    return game;
+}
