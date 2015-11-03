@@ -119,6 +119,7 @@ $(function () {
     function handleGameInfo(data) {
         var content = '';
         var activePlayer = 'Opponent';
+        var turnPlayer = '-';
 
         if (data.activePlayer === 0) {
             activePlayer = 'Both';
@@ -126,7 +127,16 @@ $(function () {
             activePlayer = 'You';
         }
 
+        if (data.phase != 'setup') {
+            if (data.turnPlayer == userId) {
+                turnPlayer = 'You';
+            } else {
+                turnPlayer = 'Opponent';
+            }
+        }
+
         content += 'Turn: ' + data.turn + '<br/>';
+        content += 'Turn player: ' + turnPlayer + '<br/>';
         content += 'Active player: ' + activePlayer + '<br/>';
         content += 'Phase: ' + data.phase + '<br/>';
         content += 'Step: ' + data.step + '<br/>';
@@ -155,12 +165,24 @@ $(function () {
                 content += '<button id="resolve-struggle" data-type="Terror" type="button">ResolveTerrorStruggle</button>';
             }
 
+            if ($.inArray('goInsane', data.actions) != -1) {
+                content += '<button id="response-struggle" data-type="goInsane" type="button">GoInsane</button>';
+            }
+
             if ($.inArray('resolveCombatStruggle', data.actions) != -1) {
                 content += '<button id="resolve-struggle" data-type="Combat" type="button">ResolveCombatStruggle</button>';
             }
 
+            if ($.inArray('takeWound', data.actions) != -1) {
+                content += '<button id="response-struggle" data-type="takeWound" type="button">TakeWound</button>';
+            }
+
             if ($.inArray('resolveArcaneStruggle', data.actions) != -1) {
                 content += '<button id="resolve-struggle" data-type="Arcane" type="button">ResolveArcaneStruggle</button>';
+            }
+
+            if ($.inArray('goReady', data.actions) != -1) {
+                content += '<button id="response-struggle" data-type="goReady" type="button">GoReady</button>';
             }
 
             if ($.inArray('resolveInvestigationStruggle', data.actions) != -1) {

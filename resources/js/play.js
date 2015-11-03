@@ -206,6 +206,41 @@ $(function () {
         });
     });
 
+    $(document).on('click', '.player.row-committed .card-exhausted', function () {
+        if (!$.isAllowed('goInsane') && $.isAllowed('takeWound') && $.isAllowed('goReady')) {
+            return false;
+        }
+
+        var cardFrame = $(this).children('.card-frame');
+
+        if (cardFrame.hasClass('target')) {
+            cardFrame.removeClass('target');
+            cardFrame.find('.icon-target').remove();
+        } else {
+            var cards = $('.player.row-committed .card-exhausted .card-frame');
+            var iconTarget = $('<div>').addClass('icon icon-target').append($('<img>').attr('src', '/images/target.jpg'));
+
+            cards.removeClass('target');
+            cards.find('.icon-target').remove();
+            cardFrame.addClass('target');
+            cardFrame.append(iconTarget);
+        }
+    });
+
+    $(document).on('click', '#response-struggle', function () {
+        var resolveType = $(this).data('type');
+        var card = $('.player.row-committed .card-exhausted .card-frame.target');
+
+        if ((!$.isAllowed('goInsane') && $.isAllowed('takeWound') && $.isAllowed('goReady')) || !card.length) {
+            return false;
+        }
+
+        socket.emit('responseStruggle', {
+            cardId: card.data('id'),
+            resolveType: resolveType
+        });
+    });
+
     socket.on('iconStruggleResolved', function (data) {
         //TODO
 

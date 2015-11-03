@@ -5,6 +5,7 @@ var _ = require('underscore');
 exports.gameInfo = function (game, playerId) {
     return {
         turn: game.turn,
+        turnPlayer: game.turnPlayer,
         activePlayer: game.activePlayer,
         phase: game.phase,
         step: game.step,

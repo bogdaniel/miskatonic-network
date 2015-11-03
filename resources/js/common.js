@@ -17,7 +17,7 @@ $(function () {
         var image = card.image;
 
         if (card.status == 'insane') {
-            image = 'back/card-back.jpg';
+            image = 'back/card-insane.jpg';
         }
 
         var cardWrapper = $('<div>').addClass('card-wrapper').addClass('card-' + card.status);

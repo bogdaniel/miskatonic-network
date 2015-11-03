@@ -205,6 +205,7 @@ exports.resourceCard = function (socket, data) {
                             if (count.playerCount == 3 && count.opponentCount == 3) {
                                 game.turn = 1;
                                 game.activePlayer = game.players[randomHelper.getRandomIntInclusive(0, 1)].id;
+                                game.turnPlayer = game.activePlayer;
                                 game.firstPlayer = game.activePlayer;
                                 game.phase = 'refresh';
 
@@ -376,9 +377,9 @@ exports.attachCard = function (socket, data) {
         } else if (section == 'opponentPlayed') {
             card = played.get(game.id, opponent.id, attachableId);
         } else if (section == 'playerCommitted') {
-            card = committed.get(game.id, player.id, attachableId);
+            card = committed.get(game.id, player.id, sectionId, attachableId);
         } else if (section == 'opponentCommitted') {
-            card = committed.get(game.id, opponent.id, attachableId);
+            card = committed.get(game.id, opponent.id, sectionId, attachableId);
         } else if (section == 'storyCards') {
             card = storyCard.get(game.id, attachableId);
         }
@@ -446,6 +447,7 @@ exports.endPhase = function (socket) {
 
                 game.temp.storyCommits = {};
                 game.activePlayer = opponent.id;
+                game.turnPlayer = game.activePlayer;
             } else {
                 nextPhase = 'story';
                 nextStep = 'playerCommit';
@@ -474,6 +476,7 @@ exports.endPhase = function (socket) {
 
                 game.temp.storyCommits = {};
                 game.activePlayer = opponent.id;
+                game.turnPlayer = game.activePlayer;
             }
         } else if (game.phase == 'story' && game.step == 'opponentCommit') {
             nextPhase = 'story';
@@ -504,6 +507,7 @@ exports.endPhase = function (socket) {
             game.temp.storyCommits = {};
             game.temp.storyStruggle = 0;
             game.activePlayer = opponent.id;
+            game.turnPlayer = game.activePlayer;
 
             socket.emit('turnEnded');
             socket.broadcast.emit('turnEnded');
@@ -632,39 +636,135 @@ exports.resolveIconStruggle = function (socket, data) {
             opponentCommittedCards: committed.all(game.id, opponent.id, game.temp.storyStruggle)
         }).then(function (result) {
             var struggleResult = resolveStoryHelper.iconStruggle(struggle, result.playerCommittedCards, result.opponentCommittedCards);
-            var playerResult = struggleResult;
-            var opponentResult = struggleResult;
             var nextStep;
 
-            if (struggleResult == 'player') {
-                opponentResult = 'opponent';
-            } else if (struggleResult == 'opponent') {
-                opponentResult = 'player';
-            }
-
             if (struggle == 'Terror') {
-                nextStep = 'resolveCombatStruggle';
+                nextStep = 'goInsane';
+
+                if (struggleResult == 'player' && result.opponentCommittedCards.length) {
+                    player.actions = [];
+                    opponent.actions = ['goInsane'];
+                    game.activePlayer = opponent.id;
+                } else if (struggleResult == 'opponent' && result.playerCommittedCards.length) {
+                    player.actions = ['goInsane'];
+                } else {
+                    nextStep = 'resolveCombatStruggle';
+                }
             } else if (struggle == 'Combat') {
-                nextStep = 'resolveArcaneStruggle';
+                nextStep = 'takeWound';
+
+                if (struggleResult == 'player' && result.opponentCommittedCards.length) {
+                    player.actions = [];
+                    opponent.actions = ['takeWound'];
+                    game.activePlayer = opponent.id;
+                } else if (struggleResult == 'opponent' && result.playerCommittedCards.length) {
+                    player.actions = ['takeWound'];
+                } else {
+                    nextStep = 'resolveArcaneStruggle';
+                }
             } else if (struggle == 'Arcane') {
-                nextStep = 'resolveInvestigationStruggle';
+                nextStep = 'goReady';
+
+                if (struggleResult == 'player' && result.opponentCommittedCards.length) {
+                    player.actions = [];
+                    opponent.actions = ['goReady'];
+                    game.activePlayer = opponent.id;
+                } else if (struggleResult == 'opponent' && result.playerCommittedCards.length) {
+                    player.actions = ['goReady'];
+                } else {
+                    nextStep = 'resolveInvestigationStruggle';
+                }
             } else if (struggle == 'Investigation') {
+                if (struggleResult == 'player') {
+                    //TODO
+                    //add success tokens
+                } else if (struggleResult == 'opponent') {
+                    //TODO
+                    //add success tokens
+                }
+
                 nextStep = 'determineSuccess';
             }
 
-            player.actions = [nextStep];
             game = gameHelper.updatePlayer(game, player);
+            game = gameHelper.updatePlayer(game, opponent);
             game.step = nextStep;
 
             Game.update(game);
 
-            socket.emit('iconStruggleResolved', {
-                struggle: struggle,
-                struggleResult: playerResult
-            });
+            socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
+            socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
+        });
+    });
+};
+
+exports.responseStruggle = function (socket, data) {
+    var cardId = data.cardId;
+    var resolveType = data.resolveType;
+
+    if (!cardId || !resolveType) {
+        return false;
+    }
+
+    var game;
+    var player;
+    var opponent;
+
+    return Promise.try(function () {
+        return Game.current(socket.userId);
+    }).then(function (result) {
+        game = result;
+        player = gameHelper.player(game, socket.userId);
+        opponent = gameHelper.opponent(game, socket.userId);
+
+        if (!gameHelper.isAllowed(player, resolveType)) {
+            return false;
+        }
+
+        var storyId = game.temp.storyStruggle;
+
+        return Promise.try(function () {
+            return committed.get(game.id, player.id, storyId, cardId);
+        }).then(function (card) {
+            var struggle;
+            var nextStep;
+
+            if (resolveType == 'goInsane') {
+                nextStep = 'resolveCombatStruggle';
+                struggle = 'terror';
+                card.status = 'insane';
+
+                committed.update(game.id, player.id, storyId, card);
+            } else if (resolveType == 'takeWound') {
+                nextStep = 'resolveArcaneStruggle';
+                struggle = 'combat';
+
+                committed.remove(game.id, player.id, storyId, card);
+            } else if (resolveType == 'goReady') {
+                nextStep = 'resolveInvestigationStruggle';
+                struggle = 'arcane';
+                card.status = 'active';
+
+                committed.update(game.id, player.id, storyId, card);
+            }
+
+            if (game.turnPlayer == player.id) {
+                player.actions = [nextStep];
+                opponent.actions = [];
+            } else {
+                player.actions = [];
+                opponent.actions = [nextStep];
+            }
+
+            game = gameHelper.updatePlayer(game, player);
+            game = gameHelper.updatePlayer(game, opponent);
+            game.activePlayer = game.turnPlayer;
+            game.step = nextStep;
+            Game.update(game);
+
             socket.broadcast.emit('iconStruggleResolved', {
                 struggle: struggle,
-                struggleResult: opponentResult
+                cardId: card.id
             });
 
             socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
@@ -757,6 +857,7 @@ exports.endTurn = function (socket) {
         }
 
         game.activePlayer = opponent.id;
+        game.turnPlayer = game.activePlayer;
 
         socket.emit('turnEnded');
         socket.broadcast.emit('turnEnded');

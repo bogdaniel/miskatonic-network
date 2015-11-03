@@ -158,6 +158,10 @@ io.of('/play').on('connection', function (socket) {
         playSocket.resolveIconStruggle(socket, data);
     });
 
+    socket.on('responseStruggle', function (data) {
+        playSocket.responseStruggle(socket, data);
+    });
+
     socket.on('determineSuccess', function () {
         playSocket.determineSuccess(socket);
     });

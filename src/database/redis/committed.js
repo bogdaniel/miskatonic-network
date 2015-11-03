@@ -20,8 +20,8 @@ exports.all = function (gameId, playerId, storyId) {
     });
 };
 
-exports.get = function (gameId, playerId, storyId) {
-    return redis.zrangebyscoreAsync('committedCards:' + gameId + ':' + playerId, storyId, storyId).then(function (card) {
+exports.get = function (gameId, playerId, storyId, cardId) {
+    return redis.zrangebyscoreAsync('committedCards:' + gameId + ':' + playerId + ':' + storyId, cardId, cardId).then(function (card) {
         if (!card.length) {
             return false;
         }
@@ -30,8 +30,22 @@ exports.get = function (gameId, playerId, storyId) {
     });
 };
 
+exports.count = function (gameId, playerId, storyId) {
+    return redis.zcountAsync('committedCards:' + gameId + ':' + playerId + ':' + storyId, '-inf', '+inf');
+};
+
 exports.add = function (gameId, playerId, storyId, card) {
     return redis.zadd('committedCards:' + gameId + ':' + playerId + ':' + storyId, card.id, JSON.stringify(card));
+};
+
+exports.update = function (gameId, playerId, storyId, card) {
+    var self = this;
+
+    return Promise.try(function () {
+        self.remove(gameId, playerId, storyId, card);
+    }).then(function () {
+        self.add(gameId, playerId, storyId, card);
+    });
 };
 
 exports.remove = function (gameId, playerId, storyId, card) {

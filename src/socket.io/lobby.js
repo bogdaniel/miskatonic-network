@@ -141,6 +141,7 @@ exports.start = function (socket) {
         }).then(function () {
             game.status = 'in-game';
             game.turn = 0;
+            game.turnPlayer = 0;
             game.activePlayer = 0;
             game.phase = 'setup';
             game.step = null;

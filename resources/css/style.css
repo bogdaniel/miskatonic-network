@@ -303,11 +303,15 @@ body {
     margin: 5px;
 }
 
+.row-committed .card-insane {
+    margin: 5px 5px 0 5px;
+}
+
 .row-committed .card-highlight {
     width: 100px;
     height: 70px;
     background: green;
-    margin: 5px;
+    margin: 5px 5px 0 5px;
 }
 
 .domain {
