@@ -626,12 +626,12 @@ exports.resolveIconStruggle = function (socket, data) {
             } else if (struggle == 'Arcane') {
                 nextStep = 'goReady';
 
-                if (struggleResult == 'player' && result.opponentCommittedCards.length) {
+                if (struggleResult == 'player' && result.playerCommittedCards.length) {
+                    player.actions = ['goReady'];
+                } else if (struggleResult == 'opponent' && result.opponentCommittedCards.length) {
                     player.actions = [];
                     opponent.actions = ['goReady'];
                     game.activePlayer = opponent.id;
-                } else if (struggleResult == 'opponent' && result.playerCommittedCards.length) {
-                    player.actions = ['goReady'];
                 } else {
                     nextStep = 'resolveInvestigationStruggle';
                     player.actions = ['resolveInvestigationStruggle'];
