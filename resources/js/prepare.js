@@ -2,10 +2,6 @@ $(function () {
     "use strict";
 
     socket.on('gameData', function (data) {
-        console.log(data);
-
-        handleGameInfo(data.gameInfo);
-
         //storyCards
 
         $('.row-story').empty().attr('data-section', 'storyCards');
@@ -78,6 +74,10 @@ $(function () {
         $.each(data.attachedCards, function (index, card) {
             $.renderAttachedCard(card);
         });
+
+        console.log(data);
+
+        handleGameInfo(data.gameInfo);
     });
 
     function renderAllPlayed(section, cards) {
@@ -199,6 +199,17 @@ $(function () {
         }
 
         $('.control').html(content);
+
+        if (data.storyStruggle !== 0) {
+            var storyCard = $('.card-story .card-frame[data-id=' + data.storyStruggle + ']');
+            var stories = $('.row-story .card-story .card-frame');
+            var iconTarget = $('<div>').addClass('icon icon-target').append($('<img>').attr('src', '/images/target.jpg'));
+
+            stories.removeClass('target');
+            stories.find('.icon-target').remove();
+            storyCard.addClass('target');
+            storyCard.append(iconTarget);
+        }
 
         gameInfo = data;
     }

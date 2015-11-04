@@ -242,9 +242,14 @@ $(function () {
     });
 
     socket.on('iconStruggleResolved', function (data) {
-        //TODO
+        var newCard = $.renderCard(data.card);
+        var oldCard = $('.card-frame[data-id=' + data.card.id + ']').closest('.card-wrapper');
 
-        console.log(data);
+        if (data.struggle != 'combat') {
+            oldCard.replaceWith(newCard);
+        } else {
+            oldCard.remove();
+        }
     });
 
     $(document).on('click', '#determine-success', function () {
@@ -273,6 +278,7 @@ $(function () {
     });
 
     socket.on('turnEnded', function () {
+        $('.row-story .card-story .card-frame.target').removeClass('target');
         $('.row-story .icon').remove();
         $.uncommitAll();
     });

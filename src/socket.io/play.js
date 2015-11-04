@@ -702,6 +702,9 @@ exports.responseStruggle = function (socket, data) {
                 nextStep = 'resolveArcaneStruggle';
                 struggle = 'combat';
 
+                //TODO
+                //remove if died
+
                 committed.remove(game.id, player.id, storyId, card);
             } else if (resolveType == 'goReady') {
                 nextStep = 'resolveInvestigationStruggle';
@@ -725,9 +728,14 @@ exports.responseStruggle = function (socket, data) {
             game.step = nextStep;
             Game.update(game);
 
+            socket.emit('iconStruggleResolved', {
+                struggle: struggle,
+                card: card
+            });
+
             socket.broadcast.emit('iconStruggleResolved', {
                 struggle: struggle,
-                cardId: card.id
+                card: card
             });
 
             socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));

@@ -9,7 +9,8 @@ exports.gameInfo = function (game, playerId) {
         activePlayer: game.activePlayer,
         phase: game.phase,
         step: game.step,
-        actions: this.player(game, playerId).actions
+        actions: this.player(game, playerId).actions,
+        storyStruggle: game.temp.storyStruggle
     };
 };
 
