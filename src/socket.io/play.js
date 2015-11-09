@@ -436,7 +436,10 @@ exports.endPhase = function (socket) {
             player.actions = ['playCard', 'endPhase'];
         } else if (game.phase == 'operations') {
             if (game.turn == 1 && game.activePlayer == game.firstPlayer) {
-                game = endTurn(socket, game);
+                game = endTurn(player.id, game);
+
+                socket.emit('turnEnded');
+                socket.broadcast.emit('turnEnded');
             } else {
                 game.phase = 'story';
                 game.step = 'playerCommit';
@@ -453,7 +456,10 @@ exports.endPhase = function (socket) {
 
                 game.activePlayer = opponent.id;
             } else {
-                game = endTurn(socket, game);
+                game = endTurn(player.id, game);
+
+                socket.emit('turnEnded');
+                socket.broadcast.emit('turnEnded');
             }
         } else if (game.phase == 'story' && game.step == 'opponentCommit') {
             game.phase = 'story';
@@ -471,7 +477,10 @@ exports.endPhase = function (socket) {
                 }
             }
 
-            game = endTurn(socket, game);
+            game = endTurn(player.id, game);
+
+            socket.emit('turnEnded');
+            socket.broadcast.emit('turnEnded');
         }
 
         game = gameHelper.updatePlayer(game, player);
@@ -817,7 +826,11 @@ exports.endTurn = function (socket) {
             return false;
         }
 
-        game = endTurn(socket, game);
+        game = endTurn(player.id, game);
+
+        socket.emit('turnEnded');
+        socket.broadcast.emit('turnEnded');
+
         Game.update(game);
 
         socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
@@ -825,9 +838,9 @@ exports.endTurn = function (socket) {
     });
 };
 
-function endTurn(socket, game) {
-    var player = gameHelper.player(game, socket.userId);
-    var opponent = gameHelper.opponent(game, socket.userId);
+function endTurn(playerId, game) {
+    var player = gameHelper.player(game, playerId);
+    var opponent = gameHelper.opponent(game, playerId);
 
     if (game.activePlayer != game.firstPlayer) {
         game.turn += 1;
@@ -851,9 +864,6 @@ function endTurn(socket, game) {
     game.step = null;
     game = gameHelper.updatePlayer(game, player);
     game = gameHelper.updatePlayer(game, opponent);
-
-    socket.emit('turnEnded');
-    socket.broadcast.emit('turnEnded');
 
     return game;
 }
