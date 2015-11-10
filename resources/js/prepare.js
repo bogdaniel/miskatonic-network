@@ -118,13 +118,12 @@ $(function () {
 
     function handleGameInfo(data) {
         var content = '';
-        var activePlayer = 'Opponent';
+        var firstPlayer = 'Opponent';
         var turnPlayer = '-';
+        var activePlayer = 'Opponent';
 
-        if (data.activePlayer === 0) {
-            activePlayer = 'Both';
-        } else if (data.activePlayer == userId) {
-            activePlayer = 'You';
+        if (data.firstPlayer == userId) {
+            firstPlayer = 'You';
         }
 
         if (data.phase != 'setup') {
@@ -135,7 +134,14 @@ $(function () {
             }
         }
 
+        if (data.activePlayer === 0) {
+            activePlayer = 'Both';
+        } else if (data.activePlayer == userId) {
+            activePlayer = 'You';
+        }
+
         content += 'Turn: ' + data.turn + '<br/>';
+        content += 'First player: ' + firstPlayer + '<br/>';
         content += 'Turn player: ' + turnPlayer + '<br/>';
         content += 'Active player: ' + activePlayer + '<br/>';
         content += 'Phase: ' + data.phase + '<br/>';
@@ -153,8 +159,8 @@ $(function () {
                 content += '<button id="refresh-all" type="button">RefreshAll</button>';
             }
 
-            if ($.inArray('endPhase', data.actions) != -1) {
-                content += '<button id="end-phase" type="button">EndPhase</button>';
+            if ($.inArray('noAction', data.actions) != -1) {
+                content += '<button id="no-action" type="button">NoAction</button>';
             }
 
             if ($.inArray('resolveStory', data.actions) != -1) {

@@ -95,6 +95,8 @@ exports.join = function (socket, data) {
             successTokens: {}
         });
 
+        game.firstPlayer = game.players[0].id;
+
         socket.gameId = game.id;
         Game.update(game);
 

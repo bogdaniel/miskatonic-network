@@ -142,8 +142,8 @@ io.of('/play').on('connection', function (socket) {
         playSocket.attachCard(socket, data);
     });
 
-    socket.on('endPhase', function () {
-        playSocket.endPhase(socket);
+    socket.on('noAction', function () {
+        playSocket.noAction(socket);
     });
 
     socket.on('commitCard', function (data) {

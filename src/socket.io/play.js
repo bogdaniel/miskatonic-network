@@ -146,10 +146,10 @@ exports.drawCard = function (socket) {
                 game.temp.drawnCards += 1;
 
                 if (game.temp.drawnCards == 2 || (game.turn == 1 && game.firstPlayer == player.id && game.temp.drawnCards == 1)) {
-                    player.actions = ['resourceCard', 'endPhase'];
+                    player.actions = ['takeAction', 'noAction'];
                     game = gameHelper.updatePlayer(game, player);
                     game.temp.drawnCards = 0;
-                    game.phase = 'resource';
+                    game.step = 'takeAction';
                 }
 
                 Game.update(game);
@@ -204,14 +204,14 @@ exports.resourceCard = function (socket, data) {
                         }).then(function (count) {
                             if (count.playerCount == 3 && count.opponentCount == 3) {
                                 game.turn = 1;
-                                game.activePlayer = game.players[randomHelper.getRandomIntInclusive(0, 1)].id;
+                                game.activePlayer = game.firstPlayer;
                                 game.turnPlayer = game.activePlayer;
-                                game.firstPlayer = game.activePlayer;
                                 game.phase = 'refresh';
+                                game.step = 'refreshAll';
 
                                 game.players.forEach(function (p, i) {
                                     if (p.id == game.activePlayer) {
-                                        game.players[i].actions = ['restoreInsane', 'refreshAll'];
+                                        game.players[i].actions = ['refreshAll'];
                                     } else {
                                         game.players[i].actions = [];
                                     }
@@ -224,10 +224,10 @@ exports.resourceCard = function (socket, data) {
                             }
                         });
                     } else if (game.phase == 'resource') {
-                        player.actions = ['playCard', 'endPhase'];
+                        player.actions = ['takeAction', 'noAction'];
 
                         game = gameHelper.updatePlayer(game, player);
-                        game.phase = 'operations';
+                        game.step = 'takeAction';
 
                         Game.update(game);
 
@@ -263,10 +263,10 @@ exports.refreshAll = function (socket) {
         player.domains.forEach(function (domain) {
             domain.status = 'active';
         });
-        player.actions = ['drawCard'];
+        player.actions = ['takeAction', 'noAction'];
 
         game = gameHelper.updatePlayer(game, player);
-        game.phase = 'draw';
+        game.step = 'takeAction';
 
         Game.update(game);
 
@@ -410,86 +410,6 @@ exports.attachCard = function (socket, data) {
             socket.broadcast.emit('opponentAttachedCard', result.attachmentCard);
             socket.broadcast.emit('opponentDrainedDomain', domainId);
         });
-    });
-};
-
-exports.endPhase = function (socket) {
-    var game;
-    var player;
-    var opponent;
-
-    return Promise.try(function () {
-        return Game.current(socket.userId);
-    }).then(function (result) {
-        game = result;
-        player = gameHelper.player(game, socket.userId);
-        opponent = gameHelper.opponent(game, socket.userId);
-
-        if (!gameHelper.isAllowed(player, 'endPhase')) {
-            return false;
-        }
-
-        if (game.phase == 'resource') {
-            game.phase = 'operations';
-            game.step = null;
-
-            player.actions = ['playCard', 'endPhase'];
-        } else if (game.phase == 'operations') {
-            if (game.turn == 1 && game.activePlayer == game.firstPlayer) {
-                game = endTurn(player.id, game);
-
-                socket.emit('turnEnded');
-                socket.broadcast.emit('turnEnded');
-            } else {
-                game.phase = 'story';
-                game.step = 'playerCommit';
-
-                player.actions = ['commitCard', 'endPhase'];
-            }
-        } else if (game.phase == 'story' && game.step == 'playerCommit') {
-            if (Object.keys(game.temp.storyCommits).length) {
-                game.phase = 'story';
-                game.step = 'opponentCommit';
-
-                player.actions = [];
-                opponent.actions = ['commitCard', 'endPhase'];
-
-                game.activePlayer = opponent.id;
-            } else {
-                game = endTurn(player.id, game);
-
-                socket.emit('turnEnded');
-                socket.broadcast.emit('turnEnded');
-            }
-        } else if (game.phase == 'story' && game.step == 'opponentCommit') {
-            game.phase = 'story';
-            game.step = 'resolveStories';
-
-            player.actions = [];
-            opponent.actions = ['resolveStory'];
-
-            game.activePlayer = opponent.id;
-        } else if (game.phase == 'story' && game.step == 'resolveStories') {
-            for (var storyId in game.temp.storyCommits) {
-                if (game.temp.storyCommits.hasOwnProperty(storyId)) {
-                    committed.removeAll(game.id, player.id, storyId);
-                    committed.removeAll(game.id, opponent.id, storyId);
-                }
-            }
-
-            game = endTurn(player.id, game);
-
-            socket.emit('turnEnded');
-            socket.broadcast.emit('turnEnded');
-        }
-
-        game = gameHelper.updatePlayer(game, player);
-        game = gameHelper.updatePlayer(game, opponent);
-
-        Game.update(game);
-
-        socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
-        socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
     });
 };
 
@@ -842,28 +762,148 @@ function endTurn(playerId, game) {
     var player = gameHelper.player(game, playerId);
     var opponent = gameHelper.opponent(game, playerId);
 
-    if (game.activePlayer != game.firstPlayer) {
+    if (game.turnPlayer != game.firstPlayer) {
         game.turn += 1;
     }
 
-    if (game.activePlayer == player.id) {
-        player.actions = [];
-        opponent.actions = ['restoreInsane', 'refreshAll'];
+    game.phase = 'refresh';
+    game.step = 'refreshAll';
 
-        game.activePlayer = opponent.id;
+    game.players.forEach(function (player) {
+        played.all(game.id, opponent.id).then(function (cards) {
+            if (cards) {
+                cards.forEach(function (card) {
+                    if (card.status == 'insane') {
+                        game.step = 'restoreInsane';
+                    }
+                });
+            }
+        });
+    });
+
+    if (game.turnPlayer == player.id) {
+        player.actions = [];
+        opponent.actions = [game.step];
+
+        game.turnPlayer = opponent.id;
     } else {
-        player.actions = ['restoreInsane', 'refreshAll'];
+        player.actions = [game.step];
         opponent.actions = [];
 
-        game.activePlayer = player.id;
+        game.turnPlayer = player.id;
     }
 
     game.temp.storyCommits = {};
-    game.turnPlayer = game.activePlayer;
-    game.phase = 'refresh';
-    game.step = null;
+    game.activePlayer = game.turnPlayer;
+
     game = gameHelper.updatePlayer(game, player);
     game = gameHelper.updatePlayer(game, opponent);
 
     return game;
 }
+
+exports.noAction = function (socket) {
+    var game;
+    var player;
+    var opponent;
+
+    return Promise.try(function () {
+        return Game.current(socket.userId);
+    }).then(function (result) {
+        game = result;
+        player = gameHelper.player(game, socket.userId);
+        opponent = gameHelper.opponent(game, socket.userId);
+
+        if (!gameHelper.isAllowed(player, 'noAction')) {
+            return false;
+        }
+
+        player.actions = [];
+        opponent.actions = ['takeAction', 'noAction'];
+
+        if (player.id == game.turnPlayer) {
+            if (game.phase == 'resource' && game.step == 'resourceCard') {
+                game.step = 'takeAction';
+
+                player.actions = ['resourceCard', 'noAction'];
+                opponent.actions = [];
+            } else if (game.phase == 'story' && game.step == 'playerCommit') {
+                if (Object.keys(game.temp.storyCommits).length) {
+                    game.step = 'beforeOpponentCommitAction';
+
+                    player.actions = ['takeAction', 'noAction'];
+                    opponent.actions = [];
+                } else {
+                    game = endTurn(player.id, game);
+
+                    socket.emit('turnEnded');
+                    socket.broadcast.emit('turnEnded');
+                }
+            } else {
+                game.activePlayer = opponent.id;
+            }
+        } else {
+            var switchPlayer = true;
+
+            if (game.phase == 'refresh') {
+                game.phase = 'draw';
+                game.step = 'drawCard';
+
+                opponent.actions = ['drawCard'];
+            } else if (game.phase == 'draw') {
+                game.phase = 'resource';
+                game.step = 'resourceCard';
+
+                opponent.actions = ['resourceCard', 'noAction'];
+            } else if (game.phase == 'resource') {
+                game.phase = 'operations';
+                game.step = 'takeAction';
+
+                opponent.actions = ['playCard', 'noAction'];
+            } else if (game.phase == 'operations') {
+                if (game.turn == 1 && game.turnPlayer == game.firstPlayer) {
+                    switchPlayer = false;
+                    game = endTurn(player.id, game);
+
+                    socket.emit('turnEnded');
+                    socket.broadcast.emit('turnEnded');
+                } else {
+                    game.phase = 'story';
+                    game.step = 'beforePlayerCommitAction';
+                }
+            } else if (game.phase == 'story' && game.step == 'beforePlayerCommitAction') {
+                game.step = 'playerCommit';
+
+                opponent.actions = ['commitCard', 'noAction'];
+            } else if (game.phase == 'story' && game.step == 'beforeOpponentCommitAction') {
+                switchPlayer = false;
+                game.step = 'opponentCommit';
+
+                player.actions = ['commitCard', 'noAction'];
+                opponent.actions = [];
+            } else if (game.phase == 'story' && game.step == 'opponentCommit') {
+                game.step = 'beforeResolveStoryAction';
+            } else if (game.phase == 'story' && game.step == 'beforeResolveStoryAction') {
+                game.step = 'resolveStories';
+
+                opponent.actions = ['resolveStory'];
+            } else if (game.phase == 'story' && game.step == 'takeAction') {
+                game.step = 'endTurn';
+
+                opponent.actions = ['endTurn'];
+            }
+
+            if (switchPlayer) {
+                game.activePlayer = opponent.id;
+            }
+        }
+
+        game = gameHelper.updatePlayer(game, player);
+        game = gameHelper.updatePlayer(game, opponent);
+
+        Game.update(game);
+
+        socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
+        socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
+    });
+};

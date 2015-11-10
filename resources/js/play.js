@@ -128,23 +128,22 @@ $(function () {
         cardWrapper.appendTo('.opponent.row-committed .committed-story-' + storyId).setDimensions();
     });
 
-    //endPhase
+    //noAction
 
-    $(document).on('click', '#end-phase', function () {
-        if (!$.isAllowed('endPhase')) {
+    $(document).on('click', '#no-action', function () {
+        if (!$.isAllowed('noAction')) {
             return false;
         }
 
         if (gameInfo.phase == 'operations') {
+            //TODO
+            //remove all target icons
+
             $('.player.row-domain .domain.target .icon-target').remove();
             $('.player.row-domain .domain.target').removeClass('target');
         }
 
-        if (gameInfo.phase == 'story' && gameInfo.step == 'resolveStories') {
-            $.uncommitAll();
-        }
-
-        socket.emit('endPhase');
+        socket.emit('noAction');
     });
 
     //resolveStory
