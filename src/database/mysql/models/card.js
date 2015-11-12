@@ -36,9 +36,19 @@ module.exports = mysql.Model.extend({
             page = query.page;
         }
 
-        return new this().where(filter).where('title', 'LIKE', '%' + title + '%').where('subtype', 'LIKE', '%' + subtype + '%').query(function (qb) {
+        var cards = new this().where(filter).query(function (qb) {
             qb.orderBy('num', 'ASC').limit(24).offset(page * 24 - 24);
-        }).fetchAll();
+        });
+
+        if (title) {
+            cards.where('title', 'LIKE', '%' + title + '%');
+        }
+
+        if (subtype) {
+            cards.where('subtype', 'LIKE', '%' + subtype + '%');
+        }
+
+        return cards.fetchAll();
     }),
     findInOrder: Promise.method(function (array) {
         return new this().query('whereIn', 'id', array).query(function (qb) {
