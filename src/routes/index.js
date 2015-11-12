@@ -42,15 +42,29 @@ router.get('/', function (req, res) {
 });
 
 router.get('/cards', function (req, res) {
-    return Promise.all([
-        Set.query(function (qb) {
+    return Promise.props({
+        sets: Set.query(function (qb) {
             qb.orderBy('parent', 'ASC').orderBy('released_at', 'ASC');
         }).fetchAll(),
-        Card.filter(req.query)
-    ]).then(function (result) {
+        cards: Card.filter(req.query)
+    }).then(function (result) {
+        var sets = {};
+
+        result.sets.toJSON().forEach(function (_set) {
+            if (_set.parent) {
+                if (!sets.hasOwnProperty(_set.parent)) {
+                    sets[_set.parent] = [];
+                }
+
+                sets[_set.parent].push(_set);
+            } else {
+                sets[_set.title] = _set;
+            }
+        });
+
         res.render('cards.nunj', {
-            sets: result[0].toJSON(),
-            cards: result[1].toJSON()
+            sets: sets,
+            cards: result.cards.toJSON()
         });
     });
 });

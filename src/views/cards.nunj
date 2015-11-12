@@ -132,8 +132,16 @@
                         <label for="set">Set</label>
                         <select class="form-control" name="set" id="set">
                             <option value="">All</option>
-                            {% for set in sets %}
-                                <option value="{{ set.id }}"{% if 'set='~set.id in app.url %} selected="selected"{% endif %}>{{ set.title }}</option>
+                            {% for name, set in sets %}
+                                {% if set|length %}
+                                    <optgroup label="{{ name }}">
+                                        {% for subset in set %}
+                                            <option value="{{ subset.id }}">{{ subset.title }}</option>
+                                        {% endfor %}
+                                    </optgroup>
+                                {% else %}
+                                    <option value="{{ set.id }}"{% if 'set='~set.id in app.url %} selected="selected"{% endif %}>{{ set.title }}</option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                     </div>
