@@ -45,6 +45,7 @@ exports.playerDeck = function (gameId, playerId, cards) {
 
     for (i = 0; i < playerDeck.length; i++) {
         playerDeck[i].id = randomHelper.cardId();
+        playerDeck[i].ownerId = playerId;
         playerDeck[i].status = 'active';
         playerDeck[i].type = stringHelper.slugify(playerDeck[i].type);
         playerDeck[i].faction = stringHelper.slugify(playerDeck[i].faction);

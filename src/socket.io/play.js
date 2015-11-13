@@ -626,7 +626,9 @@ exports.responseStruggle = function (socket, data) {
                 struggle = 'terror';
                 card.status = 'insane';
 
-                committed.update(game.id, player.id, storyId, card);
+                attached.removeAll(game.id, card.id);
+                committed.remove(game.id, player.id, storyId, card);
+                played.add(game.id, player.id, card);
             } else if (resolveType == 'takeWound') {
                 nextStep = 'resolveArcaneStruggle';
                 struggle = 'combat';

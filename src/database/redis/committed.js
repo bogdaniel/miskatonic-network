@@ -3,6 +3,7 @@
 var redis = require('../redis');
 var Promise = require('bluebird');
 var played = require('./played');
+var discard = require('./discard');
 
 Promise.promisifyAll(redis);
 
@@ -49,7 +50,11 @@ exports.update = function (gameId, playerId, storyId, card) {
 };
 
 exports.remove = function (gameId, playerId, storyId, card) {
-    return redis.zremrangebyscore('committedCards:' + gameId + ':' + playerId + ':' + storyId, card.id, card.id);
+    return Promise.try(function () {
+        return discard.add(gameId, card.ownerId, card);
+    }).then(function () {
+        return redis.zremrangebyscore('committedCards:' + gameId + ':' + playerId + ':' + storyId, card.id, card.id);
+    });
 };
 
 exports.removeAll = function (gameId, playerId, storyId) {

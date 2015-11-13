@@ -244,10 +244,18 @@ $(function () {
         var newCard = $.renderCard(data.card);
         var oldCard = $('.card-frame[data-id=' + data.card.id + ']').closest('.card-wrapper');
 
-        if (data.struggle != 'combat') {
-            oldCard.replaceWith(newCard);
-        } else {
+        if (data.struggle == 'terror') {
+            if (oldCard.closest('.row-committed').hasClass('player')) {
+                $('.player.row-played').append(newCard);
+            } else {
+                $('.opponent.row-played').append(newCard);
+            }
+
             oldCard.remove();
+        } else if (data.struggle == 'combat') {
+            oldCard.remove();
+        } else {
+            oldCard.replaceWith(newCard);
         }
     });
 
