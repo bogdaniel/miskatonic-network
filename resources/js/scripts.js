@@ -6,7 +6,7 @@ $(function () {
         $('.highlight').html(img);
     }).on('mouseleave', '.card-active .card-frame, .card-exhausted .card-frame, .card-insane .card-frame, .card-story .card-frame, .card-resources .card-frame, .card-attachments .card-frame', function () {
         $('.highlight').empty();
-    }).on('dblclick', '.card-active, .card-exhausted, .card-story, .card-resource', function (e) {
+    }).on('dblclick', '.card-active, .card-exhausted, .card-story, .card-resources', function (e) {
         fancybox($(e.target));
     });
 });
