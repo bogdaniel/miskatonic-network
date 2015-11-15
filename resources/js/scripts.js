@@ -30,17 +30,11 @@ $(function () {
         });
     }
 
-    var fadeHighlight;
     $(document).on('mouseenter', '.card-active .card-frame, .card-exhausted .card-frame, .card-insane .card-frame, .card-story .card-frame, .card-resources .card-frame, .card-attachments .card-frame', function () {
-        clearTimeout(fadeHighlight);
         var img = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + $(this).data('image'));
         $('.highlight').html(img);
-    }).on('mouseout', '.card-active .card-frame, .card-exhausted .card-frame, .card-insane .card-frame, .card-story .card-frame, .card-resources .card-frame, .card-attachments .card-frame', function () {
-        fadeHighlight = setTimeout(function () {
-            $('.highlight img').fadeOut(400, function () {
-                $('.highlight').empty();
-            });
-        }, 10000);
+    }).on('mouseleave', '.card-active .card-frame, .card-exhausted .card-frame, .card-insane .card-frame, .card-story .card-frame, .card-resources .card-frame, .card-attachments .card-frame', function () {
+        $('.highlight').empty();
     }).on('dblclick', '.card-active, .card-exhausted, .card-story, .card-resource', function (e) {
         fancyBox(e);
     }).on('click', '.highlight', function (e) {
