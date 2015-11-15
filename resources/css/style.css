@@ -372,3 +372,15 @@ body {
 #panel-start-game {
     display: none;
 }
+
+.fancybox-nav span {
+    visibility: visible;
+}
+
+.fancybox-next span {
+    right: -40px;
+}
+
+.fancybox-prev span {
+    left: -40px;
+}

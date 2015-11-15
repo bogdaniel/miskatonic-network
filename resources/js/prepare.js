@@ -145,6 +145,7 @@ $(function () {
         var count = 0;
         var image = 'back/card-back.jpg';
         var _class = 'card-back';
+        var images = [];
 
         if (data.length) {
             count = data.length;
@@ -152,10 +153,15 @@ $(function () {
             _class = 'card-active';
         }
 
+        $.each(data, function (index, card) {
+            images.push(card.image);
+        });
+
         cardWrapper.removeClass('card-back').removeClass('card-active').addClass(_class);
         cardFrame.find('.count').text(count);
         cardFrame.find('img').attr('src', '/images/cards/' + image);
         cardFrame.data('image', image);
+        cardFrame.data('images', images);
     }
 
     function handleGameInfo(data) {

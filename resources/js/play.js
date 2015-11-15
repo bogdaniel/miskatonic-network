@@ -8,7 +8,13 @@ $(function () {
     });
 
     $(document).on('click', '.card-active .discard-pile', function () {
-        //TODO
+        var images = [];
+
+        $.each($(this).data('images'), function (index, image) {
+            images.push({href: '/images/cards/' + image});
+        });
+
+        fancybox($(this).children('img'), images);
     });
 
     //drawnCard
