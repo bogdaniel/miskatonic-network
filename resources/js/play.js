@@ -7,6 +7,10 @@ $(function () {
         socket.emit('leave');
     });
 
+    $(document).on('click', '.card-active .discard-pile', function () {
+        //TODO
+    });
+
     //drawnCard
 
     $(document).on('click', '.row-player .draw-deck', function () {

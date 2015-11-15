@@ -363,7 +363,7 @@ body {
     width: 100%;
 }
 
-.row-player .draw-deck {
+.row-player .draw-deck, .card-active .discard-pile {
     cursor: pointer;
 }
 

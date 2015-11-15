@@ -141,16 +141,21 @@ $(function () {
 
     function renderDiscardPile(owner, data) {
         var cardFrame = $('.row-' + owner + ' .discard-pile');
+        var cardWrapper = cardFrame.closest('.card-wrapper');
         var count = 0;
         var image = 'back/card-back.jpg';
+        var _class = 'card-back';
 
         if (data.length) {
             count = data.length;
             image = data[0].image;
+            _class = 'card-active';
         }
 
+        cardWrapper.removeClass('card-back').removeClass('card-active').addClass(_class);
         cardFrame.find('.count').text(count);
         cardFrame.find('img').attr('src', '/images/cards/' + image);
+        cardFrame.data('image', image);
     }
 
     function handleGameInfo(data) {
