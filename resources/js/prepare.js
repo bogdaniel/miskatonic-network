@@ -1,7 +1,7 @@
 $(function () {
     "use strict";
 
-    socket.on('gameData', function (data) {
+    socket.on('gameState', function (data) {
         //storyCards
 
         $('.row-story').empty().attr('data-section', 'storyCards');
@@ -12,8 +12,8 @@ $(function () {
 
         //deck
 
-        $('.row-opponent .draw-deck .count').text(data.playerDeckCount);
-        $('.row-player .draw-deck .count').text(data.opponentDeckCount);
+        $('.row-player .draw-deck .count').text(data.playerDeckCount);
+        $('.row-opponent .draw-deck .count').text(data.opponentDeckCount);
 
         //hand
 
@@ -42,6 +42,11 @@ $(function () {
             over: $.droppableOver,
             out: $.droppableOut
         });
+
+        //domains
+
+        renderAllDomains('player', data.playerDomains);
+        renderAllDomains('opponent', data.opponentDomains);
 
         //resourcedCards
 
@@ -106,9 +111,22 @@ $(function () {
         });
     }
 
-    function renderAllResourced(owner, data) {
-        $('.' + owner + '.row-domain .domain .card-resources').remove();
+    function renderAllDomains(owner, data) {
+        var container = $('.' + owner + '.row-domain');
+        container.empty();
 
+        $.each(data, function (index, domain) {
+            var domainWrapper = $('<div>').addClass('card-wrapper card-domain domain domain-' + domain.id).attr('data-id', domain.id);
+            var domainFrame = $('<div>').addClass('card-frame');
+            var domainImage = $('<img>').addClass('img-responsive').attr('src', '/images/cards/back/domain' + domain.id + '.jpg');
+
+            domainFrame.append(domainImage);
+            domainWrapper.append(domainFrame);
+            container.append(domainWrapper);
+        });
+    }
+
+    function renderAllResourced(owner, data) {
         $.each(data, function (i, resourcedSectionData) {
             $.each(resourcedSectionData.resourcedCards, function (j, card) {
                 $.resourceCard(owner, resourcedSectionData.domain, card);
@@ -219,10 +237,6 @@ $(function () {
 
         gameInfo = data;
     }
-
-    socket.on('gameInfo', function (data) {
-        handleGameInfo(data);
-    });
 });
 
 var gameInfo;

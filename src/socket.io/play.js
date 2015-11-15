@@ -16,91 +16,10 @@ var attached = require('../database/redis/attached');
 var resourced = require('../database/redis/resourced');
 
 exports.displayTable = function (socket) {
-    var game;
-    var player;
-    var opponent;
-    var data = {};
-
     return Promise.try(function () {
-        return Game.current(socket.userId);
-    }).then(function (result) {
-        game = result;
-        player = gameHelper.player(game, socket.userId);
-        opponent = gameHelper.opponent(game, socket.userId);
-
-        return Promise.props({
-            storyDeckCount: storyDeck.count(game.id),
-            storyCards: storyCard.all(game.id),
-            playerHand: hand.all(game.id, player.id),
-            attachedCards: attached.all(game.id),
-            playerDeckCount: deck.count(game.id, player.id),
-            opponentDeckCount: deck.count(game.id, opponent.id),
-            playerPlayedCards: played.all(game.id, player.id),
-            opponentPlayedCards: played.all(game.id, opponent.id),
-            opponentHandCount: hand.count(game.id, opponent.id)
-        }).then(function (result) {
-            return Object.assign(data, result);
-        }).then(function () {
-            data.playerCommittedCards = [];
-            data.opponentCommittedCards = [];
-
-            return Promise.map(game.storyCards, function (storyCard) {
-                return Promise.props({
-                    playerCommittedCards: committed.all(game.id, player.id, storyCard.id),
-                    opponentCommittedCards: committed.all(game.id, opponent.id, storyCard.id)
-                }).then(function (result) {
-                    data.playerCommittedCards.push({
-                        storyCard: storyCard,
-                        committedCards: result.playerCommittedCards
-                    });
-
-                    data.opponentCommittedCards.push({
-                        storyCard: storyCard,
-                        committedCards: result.opponentCommittedCards
-                    });
-
-                    return data;
-                });
-            });
-        }).then(function () {
-            data.playerResourcedCards = [];
-
-            return Promise.map(player.domains, function (domain) {
-                return Promise.props({
-                    playerResourcedCards: resourced.all(game.id, player.id, domain.id)
-                }).then(function (result) {
-                    if (result.playerResourcedCards) {
-                        data.playerResourcedCards.push({
-                            domain: domain,
-                            resourcedCards: result.playerResourcedCards
-                        });
-                    }
-
-                    return data;
-                });
-            });
-        }).then(function () {
-            data.opponentResourcedCards = [];
-
-            return Promise.map(opponent.domains, function (domain) {
-                return Promise.props({
-                    opponentResourcedCards: resourced.all(game.id, opponent.id, domain.id)
-                }).then(function (result) {
-                    if (result.opponentResourcedCards) {
-                        data.opponentResourcedCards.push({
-                            domain: domain,
-                            resourcedCards: result.opponentResourcedCards
-                        });
-                    }
-
-                    return data;
-                });
-            });
-        });
-    }).then(function () {
-        data.gameInfo = gameHelper.gameInfo(game, player.id);
-
-        socket.emit('gameData', data);
+        return Game.getState(socket.userId);
+    }).then(function (data) {
+        socket.emit('gameState', data);
     });
 };
 
@@ -123,25 +42,16 @@ exports.drawCard = function (socket) {
         return Promise.try(function () {
             return deck.draw(game.id, socket.userId);
         }).then(function (result) {
-            if (result) {
-                socket.emit('playerDrawnCard', result);
-                socket.broadcast.emit('opponenetDrawnCard', result.count);
-            } else {
+            if (!result) {
                 //TODO
                 //player lost the game
             }
         }).then(function () {
             return hand.count(game.id, socket.userId);
         }).then(function (count) {
-            socket.broadcast.emit('opponentHandCount', count);
-
             if (game.phase == 'setup' && count === 8) {
                 player.actions = ['resourceCard'];
                 game = gameHelper.updatePlayer(game, player);
-
-                Game.update(game);
-
-                socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
             } else if (game.phase == 'draw') {
                 game.temp.drawnCards += 1;
 
@@ -151,12 +61,16 @@ exports.drawCard = function (socket) {
                     game.temp.drawnCards = 0;
                     game.step = 'takeAction';
                 }
-
-                Game.update(game);
-
-                socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
-                socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
             }
+
+            Game.update(game);
+
+            Game.getState(player.id).then(function (data) {
+                socket.emit('gameState', data);
+            });
+            Game.getState(opponent.id).then(function (data) {
+                socket.broadcast.emit('gameState', data);
+            });
         });
     });
 };
@@ -177,7 +91,7 @@ exports.resourceCard = function (socket, data) {
             return false;
         }
 
-        Promise.try(function () {
+        return Promise.try(function () {
             if (game.phase == 'setup') {
                 return Promise.try(function () {
                     return resourced.count(game.id, player.id, data.domainId);
@@ -189,11 +103,6 @@ exports.resourceCard = function (socket, data) {
             } else {
                 return Promise.try(function () {
                     return hand.resource(game.id, player.id, data.domainId, data.cardId);
-                }).then(function (card) {
-                    socket.broadcast.emit('opponentResourcedCard', {
-                        domainId: data.domainId,
-                        card: card
-                    });
                 }).then(function () {
                     if (game.phase == 'setup') {
                         return Promise.try(function () {
@@ -218,10 +127,14 @@ exports.resourceCard = function (socket, data) {
                                 });
 
                                 Game.update(game);
-
-                                socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
-                                socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
                             }
+
+                            Game.getState(player.id).then(function (data) {
+                                socket.emit('gameState', data);
+                            });
+                            Game.getState(opponent.id).then(function (data) {
+                                socket.broadcast.emit('gameState', data);
+                            });
                         });
                     } else if (game.phase == 'resource') {
                         player.actions = ['takeAction', 'noAction'];
@@ -231,8 +144,12 @@ exports.resourceCard = function (socket, data) {
 
                         Game.update(game);
 
-                        socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
-                        socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
+                        Game.getState(player.id).then(function (data) {
+                            socket.emit('gameState', data);
+                        });
+                        Game.getState(opponent.id).then(function (data) {
+                            socket.broadcast.emit('gameState', data);
+                        });
                     }
                 });
             }
@@ -280,12 +197,13 @@ exports.refreshAll = function (socket) {
                     played.update(game.id, player.id, card);
                 });
             }
-        }).then(function () {
-            socket.emit('playerRefreshedAll');
-            socket.broadcast.emit('opponentRefreshedAll');
 
-            socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
-            socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
+            Game.getState(player.id).then(function (data) {
+                socket.emit('gameState', data);
+            });
+            Game.getState(opponent.id).then(function (data) {
+                socket.broadcast.emit('gameState', data);
+            });
         });
     });
 };
@@ -332,9 +250,13 @@ exports.playCard = function (socket, data) {
 
             return Promise.try(function () {
                 return hand.play(game.id, player.id, cardId);
-            }).then(function (card) {
-                socket.broadcast.emit('opponentPlayedCard', card);
-                socket.broadcast.emit('opponentDrainedDomain', domainId);
+            }).then(function () {
+                Game.getState(player.id).then(function (data) {
+                    socket.emit('gameState', data);
+                });
+                Game.getState(opponent.id).then(function (data) {
+                    socket.broadcast.emit('gameState', data);
+                });
             });
         });
     });
@@ -406,9 +328,13 @@ exports.attachCard = function (socket, data) {
 
             hand.remove(game.id, player.id, result.attachmentCard);
             attached.add(game.id, result.attachmentCard);
-
-            socket.broadcast.emit('opponentAttachedCard', result.attachmentCard);
-            socket.broadcast.emit('opponentDrainedDomain', domainId);
+        }).then(function () {
+            Game.getState(player.id).then(function (data) {
+                socket.emit('gameState', data);
+            });
+            Game.getState(opponent.id).then(function (data) {
+                socket.broadcast.emit('gameState', data);
+            });
         });
     });
 };
@@ -443,9 +369,11 @@ exports.commitCard = function (socket, data) {
 
                 Game.update(game);
 
-                socket.broadcast.emit('opponentCommittedCard', {
-                    storyId: data.storyId,
-                    card: card
+                Game.getState(player.id).then(function (data) {
+                    socket.emit('gameState', data);
+                });
+                Game.getState(opponent.id).then(function (data) {
+                    socket.broadcast.emit('gameState', data);
                 });
             });
         });
@@ -490,8 +418,12 @@ exports.resolveStory = function (socket, data) {
 
             Game.update(game);
 
-            socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
-            socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
+            Game.getState(player.id).then(function (data) {
+                socket.emit('gameState', data);
+            });
+            Game.getState(opponent.id).then(function (data) {
+                socket.broadcast.emit('gameState', data);
+            });
         });
     });
 };
@@ -584,8 +516,12 @@ exports.resolveIconStruggle = function (socket, data) {
 
             Game.update(game);
 
-            socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
-            socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
+            Game.getState(player.id).then(function (data) {
+                socket.emit('gameState', data);
+            });
+            Game.getState(opponent.id).then(function (data) {
+                socket.broadcast.emit('gameState', data);
+            });
         });
     });
 };
@@ -657,20 +593,15 @@ exports.responseStruggle = function (socket, data) {
             game = gameHelper.updatePlayer(game, opponent);
             game.activePlayer = game.turnPlayer;
             game.step = nextStep;
+
             Game.update(game);
 
-            socket.emit('iconStruggleResolved', {
-                struggle: struggle,
-                card: card
+            Game.getState(player.id).then(function (data) {
+                socket.emit('gameState', data);
             });
-
-            socket.broadcast.emit('iconStruggleResolved', {
-                struggle: struggle,
-                card: card
+            Game.getState(opponent.id).then(function (data) {
+                socket.broadcast.emit('gameState', data);
             });
-
-            socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
-            socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
         });
     });
 };
@@ -723,11 +654,12 @@ exports.determineSuccess = function (socket) {
 
             Game.update(game);
 
-            socket.emit('successDetermined', successResult);
-            socket.broadcast.emit('successDetermined', successResult);
-
-            socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
-            socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
+            Game.getState(player.id).then(function (data) {
+                socket.emit('gameState', data);
+            });
+            Game.getState(opponent.id).then(function (data) {
+                socket.broadcast.emit('gameState', data);
+            });
         });
     });
 };
@@ -749,14 +681,14 @@ exports.endTurn = function (socket) {
         }
 
         game = endTurn(player.id, game);
-
-        socket.emit('turnEnded');
-        socket.broadcast.emit('turnEnded');
-
         Game.update(game);
 
-        socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
-        socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
+        Game.getState(player.id).then(function (data) {
+            socket.emit('gameState', data);
+        });
+        Game.getState(opponent.id).then(function (data) {
+            socket.broadcast.emit('gameState', data);
+        });
     });
 };
 
@@ -837,9 +769,6 @@ exports.noAction = function (socket) {
                     opponent.actions = [];
                 } else {
                     game = endTurn(player.id, game);
-
-                    socket.emit('turnEnded');
-                    socket.broadcast.emit('turnEnded');
                 }
             } else {
                 game.activePlayer = opponent.id;
@@ -866,9 +795,6 @@ exports.noAction = function (socket) {
                 if (game.turn == 1 && game.turnPlayer == game.firstPlayer) {
                     switchPlayer = false;
                     game = endTurn(player.id, game);
-
-                    socket.emit('turnEnded');
-                    socket.broadcast.emit('turnEnded');
                 } else {
                     game.phase = 'story';
                     game.step = 'beforePlayerCommitAction';
@@ -902,10 +828,13 @@ exports.noAction = function (socket) {
 
         game = gameHelper.updatePlayer(game, player);
         game = gameHelper.updatePlayer(game, opponent);
-
         Game.update(game);
 
-        socket.emit('gameInfo', gameHelper.gameInfo(game, player.id));
-        socket.broadcast.emit('gameInfo', gameHelper.gameInfo(game, opponent.id));
+        Game.getState(player.id).then(function (data) {
+            socket.emit('gameState', data);
+        });
+        Game.getState(opponent.id).then(function (data) {
+            socket.broadcast.emit('gameState', data);
+        });
     });
 };

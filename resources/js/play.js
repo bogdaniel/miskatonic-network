@@ -15,17 +15,6 @@ $(function () {
         }
     });
 
-    socket.on('playerDrawnCard', function (data) {
-        $('.row-player .draw-deck .count').text(data.count);
-        var cardFrame = $.renderCard(data.card);
-
-        $('.row-hand').append(cardFrame);
-    });
-
-    socket.on('opponenetDrawnCard', function (count) {
-        $('.row-opponent .draw-deck .count').text(count);
-    });
-
     //domain
 
     $(document).on('click', '.player.row-domain .domain', function () {
@@ -47,19 +36,6 @@ $(function () {
         }
     });
 
-    socket.on('opponentDrainedDomain', function (domainId) {
-        $.drainDomain('opponent', domainId);
-    });
-
-    //resourcedCard
-
-    socket.on('opponentResourcedCard', function (data) {
-        $.resourceCard('opponent', {
-            id: data.domainId,
-            status: 'active'
-        }, data.card);
-    });
-
     //refreshPhase
 
     $(document).on('click', '#restore-insane', function () {
@@ -71,61 +47,10 @@ $(function () {
         }
     });
 
-    socket.on('playerRestoredInsane', function () {
-        //TODO
-    });
-
-    socket.on('opponentRestoredInsane', function () {
-        //TODO
-    });
-
     $(document).on('click', '#refresh-all', function () {
         if ($.isAllowed('refreshAll')) {
             socket.emit('refreshAll');
         }
-    });
-
-    socket.on('playerRefreshedAll', function () {
-        $.refreshDomain('player', 0);
-
-        $('.player.row-played .card-exhausted').each(function () {
-            $(this).removeClass('card-exhausted').addClass('card-active').setDimensions();
-        });
-    });
-
-    socket.on('opponentRefreshedAll', function () {
-        $.refreshDomain('opponent', 0);
-
-        $('.opponent.row-played .card-exhausted').each(function () {
-            $(this).removeClass('card-exhausted').addClass('card-active').setDimensions();
-        });
-    });
-
-    //playedCard
-
-    socket.on('opponentPlayedCard', function (card) {
-        var cardFrame = $.renderCard(card).setAttachable();
-        var handCount = $('.row-opponent .hand-deck .count');
-
-        handCount.text(parseInt(handCount.text()) - 1);
-        $('.opponent.row-played').append(cardFrame);
-    });
-
-    //attachedCard
-
-    socket.on('opponentAttachedCard', function (card) {
-        $.renderAttachedCard(card);
-    });
-
-    //committedCard
-
-    socket.on('opponentCommittedCard', function (data) {
-        var storyId = data.storyId;
-        var card = data.card;
-        var cardWrapper = $('.opponent.row-played > .card-wrapper > .card-frame[data-id=' + card.id + ']').closest('.card-wrapper');
-
-        cardWrapper.removeClass('card-active').addClass('card-exhausted');
-        cardWrapper.appendTo('.opponent.row-committed .committed-story-' + storyId).setDimensions();
     });
 
     //noAction
@@ -189,10 +114,6 @@ $(function () {
         });
     });
 
-    socket.on('storyResolved', function () {
-        //TODO
-    });
-
     $(document).on('click', '#resolve-struggle', function () {
         var struggle = $(this).data('type');
 
@@ -240,25 +161,6 @@ $(function () {
         });
     });
 
-    socket.on('iconStruggleResolved', function (data) {
-        var newCard = $.renderCard(data.card);
-        var oldCard = $('.card-frame[data-id=' + data.card.id + ']').closest('.card-wrapper');
-
-        if (data.struggle == 'terror') {
-            if (oldCard.closest('.row-committed').hasClass('player')) {
-                $('.player.row-played').append(newCard);
-            } else {
-                $('.opponent.row-played').append(newCard);
-            }
-
-            oldCard.remove();
-        } else if (data.struggle == 'combat') {
-            oldCard.remove();
-        } else {
-            oldCard.replaceWith(newCard);
-        }
-    });
-
     $(document).on('click', '#determine-success', function () {
         if (!$.isAllowed('determineSuccess')) {
             return false;
@@ -270,23 +172,11 @@ $(function () {
         socket.emit('determineSuccess');
     });
 
-    socket.on('successDetermined', function (data) {
-        //TODO
-
-        console.log(data);
-    });
-
     $(document).on('click', '#end-turn', function () {
         if (!$.isAllowed('endTurn')) {
             return false;
         }
 
         socket.emit('endTurn');
-    });
-
-    socket.on('turnEnded', function () {
-        $('.row-story .card-story .card-frame.target').removeClass('target');
-        $('.row-story .icon').remove();
-        $.uncommitAll();
     });
 });
