@@ -74,6 +74,11 @@ $(function () {
             out: $.droppableOut
         });
 
+        //discardPile
+
+        renderDiscardPile('player', data.playerDiscardPile);
+        renderDiscardPile('opponent', data.opponentDiscardPile);
+
         //attachedCards
 
         $.each(data.attachedCards, function (index, card) {
@@ -132,6 +137,20 @@ $(function () {
                 $.resourceCard(owner, resourcedSectionData.domain, card);
             });
         });
+    }
+
+    function renderDiscardPile(owner, data) {
+        var cardFrame = $('.row-' + owner + ' .discard-pile');
+        var count = 0;
+        var image = 'back/card-back.jpg';
+
+        if (data.length) {
+            count = data.length;
+            image = data[0].image;
+        }
+
+        cardFrame.find('.count').text(count);
+        cardFrame.find('img').attr('src', '/images/cards/' + image);
     }
 
     function handleGameInfo(data) {

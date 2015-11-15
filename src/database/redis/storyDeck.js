@@ -7,11 +7,7 @@ var storyCard = require('./storyCard');
 Promise.promisifyAll(redis);
 
 exports.all = function (gameId) {
-    return redis.smembersAsync('storyDeck:' + gameId).then(function (cards) {
-        if (!cards.length) {
-            return false;
-        }
-
+    return redis.lrangeAsync('storyDeck:' + gameId, 0, -1).then(function (cards) {
         cards.forEach(function (card, index) {
             cards[index] = JSON.parse(card);
         });
@@ -21,25 +17,17 @@ exports.all = function (gameId) {
 };
 
 exports.count = function (gameId) {
-    return redis.scardAsync('storyDeck:' + gameId);
+    return redis.llenAsync('storyDeck:' + gameId);
 };
 
 exports.add = function (gameId, card) {
-    return redis.sadd('storyDeck:' + gameId, JSON.stringify(card));
+    return redis.rpushAsync('storyDeck:' + gameId, JSON.stringify(card));
 };
 
 exports.draw = function (gameId) {
-    var data = {};
-
-    return redis.spopAsync('storyDeck:' + gameId).then(function (card) {
-        storyCard.add(gameId, card);
-
-        data.card = JSON.parse(card);
-    }).then(function () {
-        return this.count(gameId);
-    }).then(function (count) {
-        data.count = count;
-
-        return data;
+    return Promise.try(function () {
+        return redis.rpopAsync('storyDeck:' + gameId);
+    }).then(function (card) {
+        return storyCard.add(gameId, card);
     });
 };

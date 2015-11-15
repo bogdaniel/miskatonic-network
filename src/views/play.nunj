@@ -28,14 +28,12 @@
                         <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
                     </div>
                 </div>
-                {#
-                {% if enemyDiscardTop.length %}
-                    <div class="card-frame discard-pile card-deck">
+                <div class="card-wrapper card-back">
+                    <div class="card-frame discard-pile">
                         <span class="header">Discard (<span class="count"></span>)</span>
-                        <img src="/images/cards/{{ enemyDiscardTop.image }}" class="img-responsive"/>
+                        <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
                     </div>
-                {% endif %}
-                #}
+                </div>
                 <div class="card-wrapper card-back">
                     <div class="card-frame hand-deck">
                         <span class="header">Hand (<span class="count"></span>)</span>
@@ -51,14 +49,12 @@
                         <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
                     </div>
                 </div>
-                {#
-                {% if playerDiscardTop.length %}
-                    <div class="card-frame discard-pile card-deck">
+                <div class="card-wrapper card-back">
+                    <div class="card-frame discard-pile">
                         <span class="header">Discard (<span class="count"></span>)</span>
-                        <img src="/images/cards/{{ playerDiscardTop.image }}" class="img-responsive"/>
+                        <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
                     </div>
-                {% endif %}
-                #}
+                </div>
             </div>
         </div>
         <div class="vbox col-fourth">

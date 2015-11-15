@@ -2,7 +2,6 @@
 
 var _ = require('underscore');
 var gameHelper = require('../helpers/gameHelper');
-var randomHelper = require('../helpers/randomHelper');
 var resolveStoryHelper = require('../helpers/resolveStoryHelper');
 var Promise = require('bluebird');
 var Game = require('../database/redis/game');
@@ -40,7 +39,7 @@ exports.drawCard = function (socket) {
         }
 
         return Promise.try(function () {
-            return deck.draw(game.id, socket.userId);
+            return deck.drawToHand(game.id, socket.userId);
         }).then(function (result) {
             if (!result) {
                 //TODO
@@ -554,31 +553,25 @@ exports.responseStruggle = function (socket, data) {
         return Promise.try(function () {
             return committed.get(game.id, player.id, storyId, cardId);
         }).then(function (card) {
-            var struggle;
             var nextStep;
+            var promise;
 
             if (resolveType == 'goInsane') {
                 nextStep = 'resolveCombatStruggle';
-                struggle = 'terror';
-                card.status = 'insane';
 
-                attached.removeAll(game.id, card.id);
-                committed.remove(game.id, player.id, storyId, card);
-                played.add(game.id, player.id, card);
+                promise = committed.goInsane(game.id, player.id, storyId, card.id);
             } else if (resolveType == 'takeWound') {
                 nextStep = 'resolveArcaneStruggle';
-                struggle = 'combat';
 
                 //TODO
-                //remove if died
+                //take wound if survived
 
-                committed.remove(game.id, player.id, storyId, card);
+                promise = committed.discard(game.id, player.id, storyId, card.id);
             } else if (resolveType == 'goReady') {
                 nextStep = 'resolveInvestigationStruggle';
-                struggle = 'arcane';
                 card.status = 'active';
 
-                committed.update(game.id, player.id, storyId, card);
+                promise = committed.update(game.id, player.id, storyId, card);
             }
 
             if (game.turnPlayer == player.id) {
@@ -596,6 +589,8 @@ exports.responseStruggle = function (socket, data) {
 
             Game.update(game);
 
+            return promise;
+        }).then(function () {
             Game.getState(player.id).then(function (data) {
                 socket.emit('gameState', data);
             });
@@ -631,8 +626,8 @@ exports.determineSuccess = function (socket) {
 
             for (var storyId in game.temp.storyCommits) {
                 if (game.temp.storyCommits.hasOwnProperty(storyId)) {
-                    committed.removeAll(game.id, player.id, storyId);
-                    committed.removeAll(game.id, opponent.id, storyId);
+                    committed.uncommitAll(game.id, player.id, storyId);
+                    committed.uncommitAll(game.id, opponent.id, storyId);
                 }
             }
 

@@ -8,6 +8,7 @@ var storyDeck = require('./storyDeck');
 var deck = require('./deck');
 var hand = require('./hand');
 var played = require('./played');
+var discard = require('./discard');
 var committed = require('./committed');
 var attached = require('./attached');
 var resourced = require('./resourced');
@@ -115,6 +116,8 @@ exports.getState = function (playerId) {
             opponentDeckCount: deck.count(game.id, opponent.id),
             playerPlayedCards: played.all(game.id, player.id),
             opponentPlayedCards: played.all(game.id, opponent.id),
+            playerDiscardPile: discard.all(game.id, player.id),
+            opponentDiscardPile: discard.all(game.id, opponent.id),
             opponentHandCount: hand.count(game.id, opponent.id)
         }).then(function (result) {
             return Object.assign(data, result);

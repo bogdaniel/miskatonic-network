@@ -8,10 +8,6 @@ Promise.promisifyAll(redis);
 
 exports.all = function (gameId, playerId) {
     return redis.zrangeAsync('playedCards:' + gameId + ':' + playerId, 0, -1).then(function (cards) {
-        if (!cards.length) {
-            return false;
-        }
-
         cards.forEach(function (card, index) {
             cards[index] = JSON.parse(card);
         });
@@ -22,11 +18,11 @@ exports.all = function (gameId, playerId) {
 
 exports.get = function (gameId, playerId, cardId) {
     return redis.zrangebyscoreAsync('playedCards:' + gameId + ':' + playerId, cardId, cardId).then(function (card) {
-        if (!card.length) {
-            return false;
+        if (card.length != 1) {
+            throw new Error('No result');
         }
 
-        return JSON.parse(card);
+        return JSON.parse(card[0]);
     });
 };
 
@@ -41,11 +37,10 @@ exports.add = function (gameId, playerId, card) {
 exports.update = function (gameId, playerId, card) {
     var self = this;
 
-    return Promise.try(function () {
-        self.remove(gameId, playerId, card);
-    }).then(function () {
-        self.add(gameId, playerId, card);
-    });
+    return Promise.all([
+        self.remove(gameId, playerId, card),
+        self.add(gameId, playerId, card)
+    ]);
 };
 
 exports.remove = function (gameId, playerId, card) {
@@ -58,9 +53,9 @@ exports.commit = function (gameId, playerId, storyId, cardId) {
     return self.get(gameId, playerId, cardId).then(function (card) {
         card.status = 'exhausted';
 
-        self.remove(gameId, playerId, card);
-        committed.add(gameId, playerId, storyId, card);
-
-        return card;
+        return Promise.all([
+            self.remove(gameId, playerId, card),
+            committed.add(gameId, playerId, storyId, card)
+        ]);
     });
 };

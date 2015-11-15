@@ -7,10 +7,6 @@ Promise.promisifyAll(redis);
 
 exports.all = function (gameId) {
     return redis.zrangeAsync('storyCards:' + gameId, 0, -1).then(function (cards) {
-        if (!cards.length) {
-            return false;
-        }
-
         cards.forEach(function (card, index) {
             cards[index] = JSON.parse(card);
         });
@@ -21,11 +17,11 @@ exports.all = function (gameId) {
 
 exports.get = function (gameId, cardId) {
     return redis.zrangebyscoreAsync('storyCards:' + gameId, cardId, cardId).then(function (card) {
-        if (!card.length) {
-            return false;
+        if (card.length != 1) {
+            throw new Error('No result');
         }
 
-        return JSON.parse(card);
+        return JSON.parse(card[0]);
     });
 };
 

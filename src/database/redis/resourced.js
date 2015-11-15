@@ -9,10 +9,6 @@ Promise.promisifyAll(redis);
 
 exports.all = function (gameId, playerId, domainId) {
     return redis.zrangeAsync('resourcedCards:' + gameId + ':' + playerId + ':' + domainId, 0, -1).then(function (cards) {
-        if (!cards.length) {
-            return false;
-        }
-
         cards.forEach(function (card, index) {
             cards[index] = JSON.parse(card);
         });
