@@ -75,5 +75,9 @@ exports.resourceMatch = function (resources, card) {
         }
     });
 
+    if (card.faction == 'neutral') {
+        match = true;
+    }
+
     return match;
 };

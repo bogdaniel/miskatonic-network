@@ -13,6 +13,18 @@ $(function () {
         return count;
     };
 
+    $.resourceMatch = function (resources, card) {
+        if (card.faction == 'neutral') {
+            return true;
+        }
+
+        if (resources[card.faction]) {
+            return true;
+        }
+
+        return false;
+    };
+
     $.renderCard = function (card) {
         var image = card.image;
 
@@ -120,27 +132,49 @@ $(function () {
     };
 
     $.playCard = function (event, ui) {
-        var domain = $('.domain.target');
-        var domainId = domain.data('id');
+        var domainId = 0;
         var cardWrapper = ui.draggable;
         var card = cardWrapper.children('.card-frame');
-        var target = $(event.target);
-
-        target.find('.card-highlight').remove();
-
-        if (!$.isAllowed('playCard') || !domain.length || $.inArray('attachment', card.data('subtype')) !== -1) {
-            return false;
-        }
-
         var cardCost = card.data('cost');
         var cardFaction = card.data('faction');
-        var resources = domain.data('resources');
+        var target = $(event.target);
+        target.find('.card-highlight').remove();
 
-        if (!(resources[cardFaction] && $.domainResourceCount(resources) >= cardCost)) {
+        if (!$.isAllowed('playCard') || $.inArray('attachment', card.data('subtype')) !== -1) {
             return false;
         }
 
-        $.drainDomain('player', domainId);
+        if (cardCost > 0) {
+            var domain = $('.domain.target');
+
+            if (!domain.length) {
+                return false;
+            }
+
+            domainId = domain.data('id');
+            var resources = domain.data('resources');
+
+            if ($.domainResourceCount(resources) < cardCost) {
+                return false;
+            }
+
+            var data = {
+                faction: cardFaction,
+                cost: cardCost
+            };
+
+            if (!$.resourceMatch(resources, data)) {
+                return false;
+            }
+
+            $.drainDomain('player', domainId);
+        }
+
+        if (card.data('type') == 'conspiracy') {
+            //TODO
+
+            return false;
+        }
 
         cardWrapper.clone(true).off().removeAttr('style').setAttachable().prependTo(target);
         cardWrapper.remove();
@@ -152,28 +186,44 @@ $(function () {
     };
 
     $.attachCard = function (event, ui) {
-        var domain = $('.domain.target');
-        var domainId = domain.data('id');
-        var attachableWrapper = $(event.target);
-        var attachable = attachableWrapper.children('.card-frame');
+        var domainId = 0;
         var attachmentWrapper = ui.draggable;
         var attachment = attachmentWrapper.children('.card-frame');
-
-        attachableWrapper.find('.card-highlight').remove();
-
-        if (!$.isAllowed('playCard') || !domain.length || $.inArray('attachment', attachment.data('subtype')) == -1 || $.inArray(attachable.data('type'), attachment.data('attachable')) == -1) {
-            return false;
-        }
-
         var attachmentCost = attachment.data('cost');
         var attachmentFaction = attachment.data('faction');
-        var resources = domain.data('resources');
+        var attachableWrapper = $(event.target);
+        var attachable = attachableWrapper.children('.card-frame');
+        attachableWrapper.find('.card-highlight').remove();
 
-        if (!(resources[attachmentFaction] && $.domainResourceCount(resources) >= attachmentCost)) {
+        if (!$.isAllowed('playCard') || $.inArray('attachment', attachment.data('subtype')) == -1 || $.inArray(attachable.data('type'), attachment.data('attachable')) == -1) {
             return false;
         }
 
-        $.drainDomain('player', domainId);
+        if (attachmentCost > 0) {
+            var domain = $('.domain.target');
+
+            if (!domain.length) {
+                return false;
+            }
+
+            domainId = domain.data('id');
+            var resources = domain.data('resources');
+
+            if ($.domainResourceCount(resources) < attachmentCost) {
+                return false;
+            }
+
+            var data = {
+                faction: attachmentFaction,
+                cost: attachmentCost
+            };
+
+            if (!$.resourceMatch(resources, data)) {
+                return false;
+            }
+
+            $.drainDomain('player', domainId);
+        }
 
         var attachments = attachableWrapper.children('.card-attachments');
         if (!attachments.length) {
@@ -182,7 +232,6 @@ $(function () {
 
         attachmentWrapper.clone(true).off().children('.card-frame').prependTo(attachments);
         attachmentWrapper.remove();
-
         attachableWrapper.setDimensions();
 
         socket.emit('attachCard', {
