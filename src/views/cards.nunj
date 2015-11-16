@@ -25,7 +25,8 @@
                     overlay: {
                         locked: false
                     }
-                }
+                },
+                padding: 0
             });
 
             $('#title').on('change', function () {
