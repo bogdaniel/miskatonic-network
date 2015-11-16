@@ -132,7 +132,7 @@ exports.start = function (socket) {
                 this.where('faction', '=', 'The Agency').orWhere('faction', '=', 'Miskatonic University');
             }).query('orWhere', 'id', '>=', 148).where('id', '<=', 153).query('orWhere', 'id', '=', 158).fetchAll().then(cards => cards.toJSON())
         }).then(function (result) {
-            game.storyCards = prepare.storyCards(game.id, result.storyCards);
+            game.storyCards = prepare.storyCards(game, result.storyCards);
             prepare.playerDeck(game.id, game.players[0].id, result.playerDeck);
             prepare.playerDeck(game.id, game.players[1].id, result.opponentDeck);
         }).then(function () {

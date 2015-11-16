@@ -6,18 +6,35 @@ $(function () {
 
         $('.row-story').empty().attr('data-section', 'storyCards');
         $.each(data.storyCards, function (index, card) {
-            var cardFrame = $.renderCard(card);
-            $('.row-story').append(cardFrame);
+            var cardWrapper = $.renderCard(card);
+            var cardFrame = cardWrapper.children('.card-frame');
+            var playerSuccessTokens = card.successTokens['player' + userId];
+            var opponentSuccessTokens = card.successTokens['player' + data.gameInfo.opponentId];
+            var header = $('<div class="header"><div class="successTokens">Tokens (<span class="count"></span>)</div></div>');
+            var footer = $('<div class="footer"><div class="successTokens">Tokens (<span class="count"></span>)</div></div>');
+
+            footer.find('.successTokens .count').text(playerSuccessTokens);
+            header.find('.successTokens .count').text(opponentSuccessTokens);
+
+            if (playerSuccessTokens > 0) {
+                cardFrame.append(footer);
+            }
+
+            if (opponentSuccessTokens > 0) {
+                cardFrame.append(header);
+            }
+
+            $('.row-story').append(cardWrapper);
         });
 
         //deck
 
-        $('.row-player .draw-deck .count').text(data.playerDeckCount);
-        $('.row-opponent .draw-deck .count').text(data.opponentDeckCount);
+        $('.row-player .draw-deck .header .cards .count').text(data.playerDeckCount);
+        $('.row-opponent .draw-deck .header .cards .count').text(data.opponentDeckCount);
 
         //hand
 
-        $('.row-opponent .hand-deck .count').text(data.opponentHandCount);
+        $('.row-opponent .hand-deck .header .cards .count').text(data.opponentHandCount);
         $('.row-hand').empty().setSortable();
         $.each(data.playerHand, function (index, card) {
             var cardFrame = $.renderCard(card);
@@ -158,7 +175,7 @@ $(function () {
         });
 
         cardWrapper.removeClass('card-back').removeClass('card-active').addClass(_class);
-        cardFrame.find('.count').text(count);
+        cardFrame.find('.header .cards .count').text(count);
         cardFrame.find('img').attr('src', '/images/cards/' + image);
         cardFrame.data('image', image);
         cardFrame.data('images', images);

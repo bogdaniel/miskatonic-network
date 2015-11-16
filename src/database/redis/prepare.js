@@ -11,29 +11,33 @@ var deck = require('./deck');
 
 Promise.promisifyAll(redis);
 
-exports.storyCards = function (gameId, cards) {
-    var i;
+exports.storyCards = function (game, cards) {
     var _storyCards = [];
     var _storyDeck = _.shuffle(cards);
+    var successTokens = {};
 
-    for (i = 0; i < _storyDeck.length; i++) {
+    successTokens['player' + game.players[0].id] = 0;
+    successTokens['player' + game.players[1].id] = 0;
+
+    _storyDeck.forEach(function (card, i) {
         _storyDeck[i].id = randomHelper.cardId();
         _storyDeck[i].status = 'story';
+        _storyDeck[i].successTokens = successTokens;
 
         delete _storyDeck[i].data;
-    }
+    });
 
-    for (i = 0; i < 3; i++) {
+    for (var i = 0; i < 3; i++) {
         _storyCards.push(_storyDeck[i]);
         _storyDeck.splice(i, 1);
     }
 
     _storyDeck.forEach(function (card) {
-        storyDeck.add(gameId, card);
+        storyDeck.add(game.id, card);
     });
 
     _storyCards.forEach(function (card) {
-        storyCard.add(gameId, card);
+        storyCard.add(game.id, card);
     });
 
     return _.sortBy(_storyCards, 'id');

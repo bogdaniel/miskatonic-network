@@ -3,7 +3,10 @@
 var _ = require('underscore');
 
 exports.gameInfo = function (game, playerId) {
+    var opponentId = this.opponent(game, playerId).id;
+
     return {
+        opponentId: opponentId,
         turn: game.turn,
         firstPlayer: game.firstPlayer,
         turnPlayer: game.turnPlayer,

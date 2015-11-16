@@ -24,19 +24,25 @@
             <div class="row-opponent">
                 <div class="card-wrapper card-back">
                     <div class="card-frame draw-deck">
-                        <span class="header">Draw (<span class="count"></span>)</span>
+                        <div class="header">
+                            <div class="cards">Draw (<span class="count"></span>)</div>
+                        </div>
                         <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
                     </div>
                 </div>
                 <div class="card-wrapper card-back">
                     <div class="card-frame discard-pile">
-                        <span class="header">Discard (<span class="count"></span>)</span>
+                        <div class="header">
+                            <div class="cards">Discard (<span class="count"></span>)</div>
+                        </div>
                         <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
                     </div>
                 </div>
                 <div class="card-wrapper card-back">
                     <div class="card-frame hand-deck">
-                        <span class="header">Hand (<span class="count"></span>)</span>
+                        <div class="header">
+                            <div class="cards">Hand (<span class="count"></span>)</div>
+                        </div>
                         <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
                     </div>
                 </div>
@@ -45,13 +51,17 @@
             <div class="row-player">
                 <div class="card-wrapper card-back">
                     <div class="card-frame draw-deck">
-                        <span class="header">Draw (<span class="count"></span>)</span>
+                        <div class="header">
+                            <div class="cards">Draw (<span class="count"></span>)</div>
+                        </div>
                         <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
                     </div>
                 </div>
                 <div class="card-wrapper card-back">
                     <div class="card-frame discard-pile">
-                        <span class="header">Discard (<span class="count"></span>)</span>
+                        <div class="header">
+                            <div class="cards">Discard (<span class="count"></span>)</div>
+                        </div>
                         <img src="/images/cards/back/card-back.jpg" class="img-responsive"/>
                     </div>
                 </div>

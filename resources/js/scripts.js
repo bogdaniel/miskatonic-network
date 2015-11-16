@@ -4,10 +4,10 @@ $(function () {
     $(document).on('mouseenter', '.card-active .card-frame, .card-exhausted .card-frame, .card-insane .card-frame, .card-story .card-frame, .card-resources .card-frame, .card-attachments .card-frame', function () {
         var img = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + $(this).data('image'));
         $('.highlight').html(img);
-    }).on('mouseleave', '.card-active .card-frame, .card-exhausted .card-frame, .card-insane .card-frame, .card-story .card-frame, .card-resources .card-frame, .card-attachments .card-frame', function () {
+    }).on('mouseleave', '.card-active, .card-exhausted, .card-insane, .card-story, .card-resources, .card-attachments', function () {
         $('.highlight').empty();
     }).on('dblclick', '.card-active, .card-exhausted, .card-story, .card-resources', function (e) {
-        fancybox($(e.target));
+        fancybox($(e.target).closest('.card-frame').find('img'));
     });
 });
 

@@ -207,16 +207,23 @@ body {
     margin: -10px 0 -15px 0;
 }
 
-.card-frame .header {
+.card-frame .header, .card-frame .footer {
     position: absolute;
-    top: 0;
     right: 0;
     left: 0;
     z-index: 10;
     background: rgba(0, 0, 0, 0.6);
     font-size: 10px;
-    padding: 2px;
+    padding: 0 2px;
     color: #ffffff;
+}
+
+.card-frame .header {
+    top: 0;
+}
+
+.card-frame .footer {
+    bottom: 0;
 }
 
 .card-insane, .card-domain > .card-frame, .card-story > .card-frame {
