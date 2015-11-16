@@ -5,6 +5,12 @@ var Promise = require('bluebird');
 
 Promise.promisifyAll(redis);
 
+/**
+ * Get all played story cards
+ *
+ * @param gameId
+ * @returns {*}
+ */
 exports.all = function (gameId) {
     return redis.zrangeAsync('storyCards:' + gameId, 0, -1).then(function (cards) {
         cards.forEach(function (card, index) {
@@ -15,6 +21,13 @@ exports.all = function (gameId) {
     });
 };
 
+/**
+ * Get a single story card
+ *
+ * @param gameId
+ * @param cardId
+ * @returns {*}
+ */
 exports.get = function (gameId, cardId) {
     return redis.zrangebyscoreAsync('storyCards:' + gameId, cardId, cardId).then(function (card) {
         if (card.length != 1) {
@@ -25,6 +38,40 @@ exports.get = function (gameId, cardId) {
     });
 };
 
+/**
+ * Add a story card
+ *
+ * @param gameId
+ * @param card
+ * @returns {*}
+ */
 exports.add = function (gameId, card) {
     return redis.zadd('storyCards:' + gameId, card.id, JSON.stringify(card));
+};
+
+/**
+ * Update a story card
+ *
+ * @param gameId
+ * @param card
+ * @returns {*}
+ */
+exports.update = function (gameId, card) {
+    var self = this;
+
+    return Promise.all([
+        self.remove(gameId, card),
+        self.add(gameId, card)
+    ]);
+};
+
+/**
+ * Remove a story card
+ *
+ * @param gameId
+ * @param card
+ * @returns {*}
+ */
+exports.remove = function (gameId, card) {
+    return redis.zremrangebyscore('storyCards:' + gameId, card.id, card.id);
 };

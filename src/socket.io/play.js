@@ -536,12 +536,12 @@ exports.resolveIconStruggle = function (socket, data) {
                 }
             } else if (struggle == 'Investigation') {
                 if (struggleResult == 'player') {
-                    //TODO
-                    //add success tokens
+                    result.storyCard.successTokens['player' + player.id] += 1;
                 } else if (struggleResult == 'opponent') {
-                    //TODO
-                    //add success tokens
+                    result.storyCard.successTokens['player' + opponent.id] += 1;
                 }
+
+                storyCard.update(game.id, result.storyCard);
 
                 nextStep = 'determineSuccess';
                 player.actions = ['determineSuccess'];
