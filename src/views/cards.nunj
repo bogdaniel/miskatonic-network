@@ -76,7 +76,8 @@
 
                     $.each(cards, function (key, card) {
                         var image = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + card.image);
-                        var card_container = $('<a>').attr('href', image.attr('src')).addClass('col-xs-2').addClass('fancybox').attr('rel', 'group').append(image);
+                        var card_container = $('<a>').attr('href', image.attr('src')).addClass('col-xs-2').addClass('fancybox')
+                                .attr('rel', 'group').attr('title', card.id).append(image);
                         container.append(card_container);
 
                         if ((key + 1) % 6 == 0) {
@@ -103,7 +104,8 @@
                 }).done(function (cards) {
                     $.each(cards, function (key, _card) {
                         var image = $('<img>').addClass('img-responsive').attr('src', '/images/cards/' + _card.image);
-                        var card_container = $('<a>').attr('href', image.attr('src')).addClass('col-xs-2').addClass('fancybox').attr('rel', 'group').append(image);
+                        var card_container = $('<a>').attr('href', image.attr('src')).addClass('col-xs-2').addClass('fancybox')
+                                .attr('rel', 'group').attr('title', _card.id).append(image);
                         var container = $('.card-container');
                         container.append(card_container);
 
@@ -254,7 +256,7 @@
             </div>
             <div class="col-xs-10 card-container">
                 {% for card in cards %}
-                    <a href="/images/cards/{{ card.image }}" class="fancybox col-xs-2" rel="group">
+                    <a href="/images/cards/{{ card.image }}" class="fancybox col-xs-2" rel="group" title="{{ card.id }}">
                         <img src="/images/cards/{{ card.image }}" class="img-responsive"/>
                     </a>
                     {% if loop.index % 6 == 0 %}
