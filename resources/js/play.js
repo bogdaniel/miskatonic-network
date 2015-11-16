@@ -10,7 +10,7 @@ $(function () {
     $(document).on('click', '.card-active .discard-pile', function () {
         var images = [];
 
-        $.each($(this).data('images'), function (index, image) {
+        $.each($(this).data('images').reverse(), function (index, image) {
             images.push({href: '/images/cards/' + image});
         });
 
@@ -161,6 +161,12 @@ $(function () {
 
     $(document).on('click', '.player.row-committed .card-exhausted', function () {
         if (!$.isAllowed('goInsane') && $.isAllowed('takeWound') && $.isAllowed('goReady')) {
+            return false;
+        }
+
+        var storyCardId = $('.row-story .card-story .target').data('id');
+
+        if ($(this).closest('.committed-story-' + storyCardId).length == 0) {
             return false;
         }
 

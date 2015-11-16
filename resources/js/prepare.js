@@ -166,7 +166,7 @@ $(function () {
 
         if (data.length) {
             count = data.length;
-            image = data[0].image;
+            image = data[data.length - 1].image;
             _class = 'card-active';
         }
 

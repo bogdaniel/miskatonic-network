@@ -222,15 +222,13 @@ exports.refreshAll = function (socket) {
         return Promise.try(function () {
             return played.all(game.id, player.id);
         }).then(function (cards) {
-            if (cards.length) {
-                cards.forEach(function (card) {
-                    if (game.temp.insaneRestored != card.id) {
-                        card.status = 'active';
+            cards.forEach(function (card) {
+                if (card.status == 'exhausted' && game.temp.insaneRestored != card.id) {
+                    card.status = 'active';
 
-                        played.update(game.id, player.id, card);
-                    }
-                });
-            }
+                    played.update(game.id, player.id, card);
+                }
+            });
 
             game.temp.insaneRestored = 0;
             Game.update(game);
@@ -306,7 +304,7 @@ exports.attachCard = function (socket, data) {
     var section = data.section;
     var sectionId = data.sectionId;
 
-    if (!attachableId || !attachmentId || !domainId || !section) {
+    if (!attachableId || !attachmentId || domainId == null || !section) {
         return false;
     }
 
@@ -354,13 +352,16 @@ exports.attachCard = function (socket, data) {
             var domain = gameHelper.domain(game, player.id, domainId);
             var resourceMatch = gameHelper.resourceMatch(resources, attachmentCard);
 
-            if (domain.status != 'active' || attachmentCard.cost > resources.length || !resourceMatch) {
-                return false;
+            if (attachmentCard.cost > 0) {
+                if (domain.status != 'active' || attachmentCard.cost > resources.length || !resourceMatch) {
+                    return false;
+                }
+
+                domain.status = 'drained';
+                game = gameHelper.updateDomain(game, domain, player.id);
             }
 
             attachmentCard.attachableId = attachableId;
-            domain.status = 'drained';
-            game = gameHelper.updateDomain(game, domain, player.id);
             Game.update(game);
 
             hand.remove(game.id, player.id, result.attachmentCard);
@@ -662,29 +663,32 @@ exports.determineSuccess = function (socket) {
         }).then(function (result) {
             var successResult = resolveStoryHelper.determineSuccess(result.playerCommittedCards, result.opponentCommittedCards);
 
-            for (var storyId in game.temp.storyCommits) {
-                if (game.temp.storyCommits.hasOwnProperty(storyId)) {
-                    committed.uncommitAll(game.id, player.id, storyId);
-                    committed.uncommitAll(game.id, opponent.id, storyId);
-                }
+            if (successResult.success) {
+                result.storyCard.successTokens['player' + player.id] += 1;
             }
 
-            console.log(successResult);
-            console.log(game.temp.storyCommits);
-            console.log(game.temp.storyStruggle);
+            if (successResult.unchallenged) {
+                result.storyCard.successTokens['player' + player.id] += 1;
+            }
+
+            storyCard.update(game.id, result.storyCard);
+
+            committed.uncommitAll(game.id, player.id, result.storyCard.id);
+            committed.uncommitAll(game.id, opponent.id, result.storyCard.id);
+
             delete game.temp.storyCommits[game.temp.storyStruggle];
 
             if (Object.keys(game.temp.storyCommits).length) {
-                //TODO
-                //fall back to resolveStory if there is any left
+                player.actions = ['resolveStory'];
+                game.step = 'resolveStories';
             } else {
                 player.actions = ['endTurn'];
-                game = gameHelper.updatePlayer(game, player);
                 game.phase = 'endTurn';
                 game.step = null;
-                game.temp.storyStruggle = 0;
             }
 
+            game.temp.storyStruggle = 0;
+            game = gameHelper.updatePlayer(game, player);
             Game.update(game);
 
             Game.getState(player.id).then(function (data) {

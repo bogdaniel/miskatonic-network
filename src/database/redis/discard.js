@@ -13,7 +13,7 @@ Promise.promisifyAll(redis);
  * @returns {*}
  */
 exports.all = function (gameId, playerId) {
-    return redis.smembersAsync('discard:' + gameId + ':' + playerId).then(function (cards) {
+    return redis.lrangeAsync('discard:' + gameId + ':' + playerId, 0, -1).then(function (cards) {
         cards.forEach(function (card, index) {
             cards[index] = JSON.parse(card);
         });
@@ -30,11 +30,11 @@ exports.all = function (gameId, playerId) {
  * @returns {*}
  */
 exports.count = function (gameId, playerId) {
-    return redis.scardAsync('discard:' + gameId + ':' + playerId);
+    return redis.llenAsync('discard:' + gameId + ':' + playerId);
 };
 
 /**
- * Add a card to a players discard pile
+ * Put a card to the top of a players discard pile
  *
  * @param gameId
  * @param playerId
@@ -44,5 +44,5 @@ exports.count = function (gameId, playerId) {
 exports.add = function (gameId, playerId, card) {
     card.status = 'active';
 
-    return redis.sadd('discard:' + gameId + ':' + playerId, JSON.stringify(card));
+    return redis.rpushAsync('discard:' + gameId + ':' + playerId, JSON.stringify(card));
 };
