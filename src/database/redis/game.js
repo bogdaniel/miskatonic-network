@@ -17,10 +17,6 @@ Promise.promisifyAll(redis);
 
 exports.all = function () {
     return redis.zrevrangeAsync('games', 0, -1).then(function (games) {
-        if (!games.length) {
-            return false;
-        }
-
         games.forEach(function (game, index) {
             games[index] = JSON.parse(game);
         });
@@ -31,8 +27,8 @@ exports.all = function () {
 
 exports.get = function (gameId) {
     return redis.zrangebyscoreAsync('games', gameId, gameId).then(function (game) {
-        if (!game.length) {
-            return false;
+        if (game.length != 1) {
+            throw new Error('No result');
         }
 
         return JSON.parse(game);

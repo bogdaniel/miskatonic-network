@@ -15,7 +15,7 @@ Promise.promisifyAll(redis);
  * @returns {*}
  */
 exports.all = function (gameId, playerId) {
-    return redis.zrangeAsync('hand:' + gameId + ':' + playerId, 0, -1).then(function (cards) {
+    return redis.lrangeAsync('hand:' + gameId + ':' + playerId, 0, -1).then(function (cards) {
         cards.forEach(function (card, index) {
             cards[index] = JSON.parse(card);
         });
@@ -33,12 +33,20 @@ exports.all = function (gameId, playerId) {
  * @returns {*}
  */
 exports.get = function (gameId, playerId, cardId) {
-    return redis.zrangebyscoreAsync('hand:' + gameId + ':' + playerId, cardId, cardId).then(function (card) {
-        if (card.length != 1) {
+    return this.all(gameId, playerId).then(function (cards) {
+        var card = null;
+
+        cards.forEach(function (_card) {
+            if (_card.id == cardId) {
+                card = _card;
+            }
+        });
+
+        if (card === null) {
             throw new Error('No result');
         }
 
-        return JSON.parse(card[0]);
+        return card;
     });
 };
 
@@ -50,7 +58,7 @@ exports.get = function (gameId, playerId, cardId) {
  * @returns {*}
  */
 exports.count = function (gameId, playerId) {
-    return redis.zcountAsync('hand:' + gameId + ':' + playerId, '-inf', '+inf');
+    return redis.llenAsync('hand:' + gameId + ':' + playerId);
 };
 
 /**
@@ -62,7 +70,7 @@ exports.count = function (gameId, playerId) {
  * @returns {*}
  */
 exports.add = function (gameId, playerId, card) {
-    return redis.zadd('hand:' + gameId + ':' + playerId, card.id, JSON.stringify(card));
+    return redis.rpushAsync('hand:' + gameId + ':' + playerId, JSON.stringify(card));
 };
 
 /**
@@ -74,7 +82,13 @@ exports.add = function (gameId, playerId, card) {
  * @returns {*}
  */
 exports.remove = function (gameId, playerId, card) {
-    return redis.zremrangebyscore('hand:' + gameId + ':' + playerId, card.id, card.id);
+    return this.all(gameId, playerId).then(function (cards) {
+        return Promise.map(cards, function (_card) {
+            if (_card.id == card.id) {
+                return redis.lremAsync('hand:' + gameId + ':' + playerId, 0, JSON.stringify(_card));
+            }
+        });
+    });
 };
 
 /**
