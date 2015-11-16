@@ -14,7 +14,7 @@ Promise.promisifyAll(redis);
 exports.storyCards = function (gameId, cards) {
     var i;
     var _storyCards = [];
-    var _storyDeck = cards;
+    var _storyDeck = _.shuffle(cards);
 
     for (i = 0; i < _storyDeck.length; i++) {
         _storyDeck[i].id = randomHelper.cardId();
@@ -41,7 +41,7 @@ exports.storyCards = function (gameId, cards) {
 
 exports.playerDeck = function (gameId, playerId, cards) {
     var i;
-    var playerDeck = cards;
+    var playerDeck = _.shuffle(cards);
 
     for (i = 0; i < playerDeck.length; i++) {
         playerDeck[i].id = randomHelper.cardId();

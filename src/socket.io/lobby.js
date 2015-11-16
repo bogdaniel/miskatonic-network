@@ -123,19 +123,13 @@ exports.start = function (socket) {
         }
 
         return Promise.props({
-            storyCards: Card.where('type', '=', 'Story').where('set_id', '=', 1).query(function (qb) {
-                qb.orderByRaw('RAND()');
-            }).fetchAll().then(cards => cards.toJSON()),
+            storyCards: Card.where('type', '=', 'Story').where('set_id', '=', 1).fetchAll().then(cards => cards.toJSON()),
             playerDeck: Card.where('set_id', '=', 1).where(function () {
                 this.where('faction', '=', 'Shub-Niggurath').orWhere('faction', '=', 'Yog-Sothoth')
-            }).query('orWhere', 'id', '>=', 141).where('id', '<=', 147).query(function (qb) {
-                qb.orderByRaw('RAND()');
-            }).fetchAll().then(cards => cards.toJSON()),
+            }).query('orWhere', 'id', '>=', 141).where('id', '<=', 147).fetchAll().then(cards => cards.toJSON()),
             opponentDeck: Card.where('set_id', '=', 1).where(function () {
                 this.where('faction', '=', 'The Agency').orWhere('faction', '=', 'Miskatonic University')
-            }).query('orWhere', 'id', '>=', 148).where('id', '<=', 153).query('orWhere', 'id', '=', 158).query(function (qb) {
-                qb.orderByRaw('RAND()');
-            }).fetchAll().then(cards => cards.toJSON())
+            }).query('orWhere', 'id', '>=', 148).where('id', '<=', 153).query('orWhere', 'id', '=', 158).fetchAll().then(cards => cards.toJSON())
         }).then(function (result) {
             game.storyCards = prepare.storyCards(game.id, result.storyCards);
             prepare.playerDeck(game.id, game.players[0].id, result.playerDeck);
