@@ -40,10 +40,9 @@ exports.storyCards = function (gameId, cards) {
 };
 
 exports.playerDeck = function (gameId, playerId, cards) {
-    var i;
     var playerDeck = _.shuffle(cards);
 
-    for (i = 0; i < playerDeck.length; i++) {
+    playerDeck.forEach(function (card, i) {
         playerDeck[i].id = randomHelper.cardId();
         playerDeck[i].ownerId = playerId;
         playerDeck[i].status = 'active';
@@ -60,7 +59,7 @@ exports.playerDeck = function (gameId, playerId, cards) {
         }
 
         delete playerDeck[i].data;
-    }
+    });
 
     playerDeck.forEach(function (card) {
         deck.add(gameId, playerId, card);

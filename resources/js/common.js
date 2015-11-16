@@ -191,7 +191,7 @@ $(function () {
             attachableId: attachable.data('id'),
             attachmentId: attachment.data('id'),
             domainId: domainId
-        })
+        });
     };
 
     $.commitCard = function (event, ui) {

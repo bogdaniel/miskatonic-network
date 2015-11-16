@@ -12,6 +12,8 @@ $(function () {
 });
 
 function fancybox(element, items, options) {
+    "use strict";
+
     items = items || [];
 
     if (!items.length) {

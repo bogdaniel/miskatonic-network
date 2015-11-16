@@ -110,7 +110,7 @@ exports.update = function (gameId, card) {
  * @returns {*}
  */
 exports.remove = function (gameId, card) {
-    return redis.zremrangebyscore('attachedCards:' + gameId, card.id, card.id)
+    return redis.zremrangebyscore('attachedCards:' + gameId, card.id, card.id);
 };
 
 /**
