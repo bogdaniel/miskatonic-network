@@ -157,7 +157,42 @@ exports.resourceCard = function (socket, data) {
 };
 
 exports.restoreInsane = function (socket, data) {
-    //
+    var cardId = data.cardId;
+
+    if (!cardId) {
+        return false;
+    }
+
+    return Promise.try(function () {
+        return Game.current(socket.userId);
+    }).then(function (result) {
+        var game = result;
+        var player = gameHelper.player(game, socket.userId);
+        var opponent = gameHelper.opponent(game, socket.userId);
+
+        if (!gameHelper.isAllowed(player, 'restoreInsane')) {
+            return false;
+        }
+
+        return played.get(game.id, player.id, cardId).then(function (card) {
+            player.actions = ['refreshAll'];
+            game = gameHelper.updatePlayer(game, player);
+            game.step = 'refreshAll';
+            game.temp.insaneRestored = card.id;
+            Game.update(game);
+
+            card.status = 'exhausted';
+
+            return played.update(game.id, player.id, card);
+        }).then(function () {
+            Game.getState(player.id).then(function (data) {
+                socket.emit('gameState', data);
+            });
+            Game.getState(opponent.id).then(function (data) {
+                socket.broadcast.emit('gameState', data);
+            });
+        });
+    });
 };
 
 exports.refreshAll = function (socket) {
@@ -184,18 +219,21 @@ exports.refreshAll = function (socket) {
         game = gameHelper.updatePlayer(game, player);
         game.step = 'takeAction';
 
-        Game.update(game);
-
         return Promise.try(function () {
             return played.all(game.id, player.id);
         }).then(function (cards) {
             if (cards.length) {
                 cards.forEach(function (card) {
-                    card.status = 'active';
+                    if (game.temp.insaneRestored != card.id) {
+                        card.status = 'active';
 
-                    played.update(game.id, player.id, card);
+                        played.update(game.id, player.id, card);
+                    }
                 });
             }
+
+            game.temp.insaneRestored = 0;
+            Game.update(game);
 
             Game.getState(player.id).then(function (data) {
                 socket.emit('gameState', data);
@@ -675,7 +713,8 @@ exports.endTurn = function (socket) {
             return false;
         }
 
-        game = endTurn(player.id, game);
+        return endTurn(player.id, game);
+    }).then(function (game) {
         Game.update(game);
 
         Game.getState(player.id).then(function (data) {
@@ -698,37 +737,33 @@ function endTurn(playerId, game) {
     game.phase = 'refresh';
     game.step = 'refreshAll';
 
-    game.players.forEach(function (player) {
-        played.all(game.id, opponent.id).then(function (cards) {
-            if (cards) {
-                cards.forEach(function (card) {
-                    if (card.status == 'insane') {
-                        game.step = 'restoreInsane';
-                    }
-                });
+    return played.all(game.id, opponent.id).then(function (cards) {
+        cards.forEach(function (card) {
+            if (card.status == 'insane') {
+                game.step = 'restoreInsane';
             }
         });
+
+        if (game.turnPlayer == player.id) {
+            player.actions = [];
+            opponent.actions = [game.step];
+
+            game.turnPlayer = opponent.id;
+        } else {
+            player.actions = [game.step];
+            opponent.actions = [];
+
+            game.turnPlayer = player.id;
+        }
+
+        game.temp.storyCommits = {};
+        game.activePlayer = game.turnPlayer;
+
+        game = gameHelper.updatePlayer(game, player);
+        game = gameHelper.updatePlayer(game, opponent);
+
+        return game;
     });
-
-    if (game.turnPlayer == player.id) {
-        player.actions = [];
-        opponent.actions = [game.step];
-
-        game.turnPlayer = opponent.id;
-    } else {
-        player.actions = [game.step];
-        opponent.actions = [];
-
-        game.turnPlayer = player.id;
-    }
-
-    game.temp.storyCommits = {};
-    game.activePlayer = game.turnPlayer;
-
-    game = gameHelper.updatePlayer(game, player);
-    game = gameHelper.updatePlayer(game, opponent);
-
-    return game;
 }
 
 exports.noAction = function (socket) {
@@ -747,6 +782,7 @@ exports.noAction = function (socket) {
             return false;
         }
 
+        var isEndTurn = false;
         player.actions = [];
         opponent.actions = ['takeAction', 'noAction'];
 
@@ -763,7 +799,7 @@ exports.noAction = function (socket) {
                     player.actions = ['takeAction', 'noAction'];
                     opponent.actions = [];
                 } else {
-                    game = endTurn(player.id, game);
+                    isEndTurn = true;
                 }
             } else {
                 game.activePlayer = opponent.id;
@@ -789,7 +825,7 @@ exports.noAction = function (socket) {
             } else if (game.phase == 'operations') {
                 if (game.turn == 1 && game.turnPlayer == game.firstPlayer) {
                     switchPlayer = false;
-                    game = endTurn(player.id, game);
+                    isEndTurn = true;
                 } else {
                     game.phase = 'story';
                     game.step = 'beforePlayerCommitAction';
@@ -821,15 +857,25 @@ exports.noAction = function (socket) {
             }
         }
 
-        game = gameHelper.updatePlayer(game, player);
-        game = gameHelper.updatePlayer(game, opponent);
-        Game.update(game);
+        return Promise.try(function () {
+            if (isEndTurn) {
+                return endTurn(player.id, game);
+            }
+        }).then(function (_game) {
+            if (_game) {
+                game = _game;
+            }
 
-        Game.getState(player.id).then(function (data) {
-            socket.emit('gameState', data);
-        });
-        Game.getState(opponent.id).then(function (data) {
-            socket.broadcast.emit('gameState', data);
+            game = gameHelper.updatePlayer(game, player);
+            game = gameHelper.updatePlayer(game, opponent);
+            Game.update(game);
+
+            Game.getState(player.id).then(function (data) {
+                socket.emit('gameState', data);
+            });
+            Game.getState(opponent.id).then(function (data) {
+                socket.broadcast.emit('gameState', data);
+            });
         });
     });
 };

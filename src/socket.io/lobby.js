@@ -40,7 +40,8 @@ exports.create = function (socket, data) {
         temp: {
             drawnCards: 0,
             storyCommits: [],
-            storyStruggle: 0
+            storyStruggle: 0,
+            insaneRestored: 0
         },
         allow_spectators: false,
         created_at: moment().format('YYYY-MM-DD HH:mm:ss')

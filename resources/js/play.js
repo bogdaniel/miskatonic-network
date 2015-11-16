@@ -46,15 +46,39 @@ $(function () {
         }
     });
 
-    //refreshPhase
+    //restoreInsane
+
+    $(document).on('click', '.player.row-played .card-insane', function () {
+        if (!$.isAllowed('restoreInsane')) {
+            return false;
+        }
+
+        var card = $(this).children('.card-frame');
+
+        if (card.hasClass('target')) {
+            card.removeClass('target');
+            card.find('.icon-target').remove();
+        } else {
+            var cards = $('.player.row-played .card-insane .card-frame');
+            var iconTarget = $('<div>').addClass('icon icon-target').append($('<img>').attr('src', '/images/target.jpg'));
+
+            cards.removeClass('target');
+            cards.find('.icon-target').remove();
+            card.addClass('target');
+            card.append(iconTarget);
+        }
+    });
 
     $(document).on('click', '#restore-insane', function () {
-        //TODO
-        //allow player to choose an insane card
+        var card = $('.player.row-played .card-insane .card-frame.target');
 
-        if ($.isAllowed('restoreInsane')) {
-            socket.emit('restoreInsane');
+        if (!$.isAllowed('restoreInsane') || !card.length) {
+            return false;
         }
+
+        socket.emit('restoreInsane', {
+            cardId: card.data('id')
+        });
     });
 
     $(document).on('click', '#refresh-all', function () {
@@ -89,7 +113,6 @@ $(function () {
         }
 
         var storyCard = $(this).children('.card-frame');
-
         var storyId = storyCard.data('id');
         var playerCommits = $('.player.row-committed .col-committed.committed-story-' + storyId).children().length;
         var opponentCommits = $('.opponent.row-committed .col-committed.committed-story-' + storyId).children().length;
