@@ -47,7 +47,6 @@
   musician: 'Musician',
   undead: 'Undead',
   'high-priest': 'High Priest',
-  'conspirator-scientist': 'Conspirator, Scientist',
   lodge: 'Lodge',
   chthonian: 'Chthonian',
   event: 'Event',

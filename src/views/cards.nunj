@@ -187,7 +187,6 @@
                             <option value="Chthonian">Chthonian</option>
                             <option value="Condition">Condition</option>
                             <option value="Conspirator">Conspirator</option>
-                            <option value="Conspirator,+Scientist">Conspirator, Scientist</option>
                             <option value="Construct">Construct</option>
                             <option value="Creature">Creature</option>
                             <option value="Criminal">Criminal</option>
