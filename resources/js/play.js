@@ -166,7 +166,7 @@ $(function () {
 
         var storyCardId = $('.row-story .card-story .target').data('id');
 
-        if ($(this).closest('.committed-story-' + storyCardId).length == 0) {
+        if ($(this).closest('.committed-story-' + storyCardId).length === 0) {
             return false;
         }
 

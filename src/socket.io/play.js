@@ -23,16 +23,12 @@ exports.displayTable = function (socket) {
 };
 
 exports.drawCard = function (socket) {
-    var game;
-    var player;
-    var opponent;
-
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
-        game = result;
-        player = gameHelper.player(game, socket.userId);
-        opponent = gameHelper.opponent(game, socket.userId);
+        var game = result;
+        var player = gameHelper.player(game, socket.userId);
+        var opponent = gameHelper.opponent(game, socket.userId);
 
         if (!gameHelper.isAllowed(player, 'drawCard')) {
             return false;
@@ -75,16 +71,12 @@ exports.drawCard = function (socket) {
 };
 
 exports.resourceCard = function (socket, data) {
-    var game;
-    var player;
-    var opponent;
-
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
-        game = result;
-        player = gameHelper.player(game, socket.userId);
-        opponent = gameHelper.opponent(game, socket.userId);
+        var game = result;
+        var player = gameHelper.player(game, socket.userId);
+        var opponent = gameHelper.opponent(game, socket.userId);
 
         if (!gameHelper.isAllowed(player, 'resourceCard')) {
             return false;
@@ -196,16 +188,12 @@ exports.restoreInsane = function (socket, data) {
 };
 
 exports.refreshAll = function (socket) {
-    var game;
-    var player;
-    var opponent;
-
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
-        game = result;
-        player = gameHelper.player(game, socket.userId);
-        opponent = gameHelper.opponent(game, socket.userId);
+        var game = result;
+        var player = gameHelper.player(game, socket.userId);
+        var opponent = gameHelper.opponent(game, socket.userId);
 
         if (!gameHelper.isAllowed(player, 'refreshAll')) {
             return false;
@@ -251,16 +239,12 @@ exports.playCard = function (socket, data) {
         return false;
     }
 
-    var game;
-    var player;
-    var opponent;
-
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
-        game = result;
-        player = gameHelper.player(game, socket.userId);
-        opponent = gameHelper.opponent(game, socket.userId);
+        var game = result;
+        var player = gameHelper.player(game, socket.userId);
+        var opponent = gameHelper.opponent(game, socket.userId);
 
         if (!gameHelper.isAllowed(player, 'playCard')) {
             return false;
@@ -304,7 +288,7 @@ exports.attachCard = function (socket, data) {
     var section = data.section;
     var sectionId = data.sectionId;
 
-    if (!attachableId || !attachmentId || domainId == null || !section) {
+    if (!attachableId || !attachmentId || domainId === null || !section) {
         return false;
     }
 
@@ -312,16 +296,12 @@ exports.attachCard = function (socket, data) {
         return false;
     }
 
-    var game;
-    var player;
-    var opponent;
-
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
-        game = result;
-        player = gameHelper.player(game, socket.userId);
-        opponent = gameHelper.opponent(game, socket.userId);
+        var game = result;
+        var player = gameHelper.player(game, socket.userId);
+        var opponent = gameHelper.opponent(game, socket.userId);
 
         if (!gameHelper.isAllowed(player, 'playCard')) {
             return false;
@@ -378,16 +358,12 @@ exports.attachCard = function (socket, data) {
 };
 
 exports.commitCard = function (socket, data) {
-    var game;
-    var player;
-    var opponent;
-
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
-        game = result;
-        player = gameHelper.player(game, socket.userId);
-        opponent = gameHelper.opponent(game, socket.userId);
+        var game = result;
+        var player = gameHelper.player(game, socket.userId);
+        var opponent = gameHelper.opponent(game, socket.userId);
 
         if (!gameHelper.isAllowed(player, 'commitCard')) {
             return false;
@@ -425,16 +401,12 @@ exports.resolveStory = function (socket, data) {
         return false;
     }
 
-    var game;
-    var player;
-    var opponent;
-
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
-        game = result;
-        player = gameHelper.player(game, socket.userId);
-        opponent = gameHelper.opponent(game, socket.userId);
+        var game = result;
+        var player = gameHelper.player(game, socket.userId);
+        var opponent = gameHelper.opponent(game, socket.userId);
 
         if (!gameHelper.isAllowed(player, 'resolveStory')) {
             return false;
@@ -473,16 +445,12 @@ exports.resolveIconStruggle = function (socket, data) {
         return false;
     }
 
-    var game;
-    var player;
-    var opponent;
-
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
-        game = result;
-        player = gameHelper.player(game, socket.userId);
-        opponent = gameHelper.opponent(game, socket.userId);
+        var game = result;
+        var player = gameHelper.player(game, socket.userId);
+        var opponent = gameHelper.opponent(game, socket.userId);
 
         if (!gameHelper.isAllowed(player, 'resolve' + struggle + 'Struggle')) {
             return false;
@@ -572,16 +540,12 @@ exports.responseStruggle = function (socket, data) {
         return false;
     }
 
-    var game;
-    var player;
-    var opponent;
-
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
-        game = result;
-        player = gameHelper.player(game, socket.userId);
-        opponent = gameHelper.opponent(game, socket.userId);
+        var game = result;
+        var player = gameHelper.player(game, socket.userId);
+        var opponent = gameHelper.opponent(game, socket.userId);
 
         if (!gameHelper.isAllowed(player, resolveType)) {
             return false;
@@ -641,16 +605,12 @@ exports.responseStruggle = function (socket, data) {
 };
 
 exports.determineSuccess = function (socket) {
-    var game;
-    var player;
-    var opponent;
-
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
-        game = result;
-        player = gameHelper.player(game, socket.userId);
-        opponent = gameHelper.opponent(game, socket.userId);
+        var game = result;
+        var player = gameHelper.player(game, socket.userId);
+        var opponent = gameHelper.opponent(game, socket.userId);
 
         if (!gameHelper.isAllowed(player, 'determineSuccess')) {
             return false;
@@ -702,30 +662,28 @@ exports.determineSuccess = function (socket) {
 };
 
 exports.endTurn = function (socket) {
-    var game;
-    var player;
-    var opponent;
-
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
-        game = result;
-        player = gameHelper.player(game, socket.userId);
-        opponent = gameHelper.opponent(game, socket.userId);
+        var game = result;
+        var player = gameHelper.player(game, socket.userId);
+        var opponent = gameHelper.opponent(game, socket.userId);
 
         if (!gameHelper.isAllowed(player, 'endTurn')) {
             return false;
         }
 
-        return endTurn(player.id, game);
-    }).then(function (game) {
-        Game.update(game);
+        return Promise.try(function () {
+            return endTurn(player.id, game);
+        }).then(function (game) {
+            Game.update(game);
 
-        Game.getState(player.id).then(function (data) {
-            socket.emit('gameState', data);
-        });
-        Game.getState(opponent.id).then(function (data) {
-            socket.broadcast.emit('gameState', data);
+            Game.getState(player.id).then(function (data) {
+                socket.emit('gameState', data);
+            });
+            Game.getState(opponent.id).then(function (data) {
+                socket.broadcast.emit('gameState', data);
+            });
         });
     });
 };
@@ -771,16 +729,12 @@ function endTurn(playerId, game) {
 }
 
 exports.noAction = function (socket) {
-    var game;
-    var player;
-    var opponent;
-
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
-        game = result;
-        player = gameHelper.player(game, socket.userId);
-        opponent = gameHelper.opponent(game, socket.userId);
+        var game = result;
+        var player = gameHelper.player(game, socket.userId);
+        var opponent = gameHelper.opponent(game, socket.userId);
 
         if (!gameHelper.isAllowed(player, 'noAction')) {
             return false;
