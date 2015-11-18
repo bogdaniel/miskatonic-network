@@ -114,9 +114,7 @@ exports.start = function (socket) {
         return false;
     }
 
-    return Promise.try(function () {
-        return Game.current(socket.userId);
-    }).then(function (result) {
+    return Game.current(socket.userId).then(function (result) {
         var game = result;
 
         if (game.players.length !== 2) {
