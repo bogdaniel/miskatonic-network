@@ -23,9 +23,7 @@ exports.displayTable = function (socket) {
 };
 
 exports.drawCard = function (socket) {
-    return Promise.try(function () {
-        return Game.current(socket.userId);
-    }).then(function (result) {
+    return Game.current(socket.userId).then(function (result) {
         var game = result;
         var player = gameHelper.player(game, socket.userId);
         var opponent = gameHelper.opponent(game, socket.userId);
@@ -58,22 +56,25 @@ exports.drawCard = function (socket) {
                 }
             }
 
-            Game.update(game);
-
-            Game.getState(player.id).then(function (data) {
-                socket.emit('gameState', data);
-            });
-            Game.getState(opponent.id).then(function (data) {
-                socket.broadcast.emit('gameState', data);
-            });
+            return updateAndBroadcastGameState(socket, game, player, opponent);
         });
     });
 };
 
+function updateAndBroadcastGameState(socket, game, player, opponent) {
+    return Game.update(game).then(function () {
+        return Promise.props({
+            playerData: Game.getState(player.id),
+            opponentData: Game.getState(opponent.id)
+        }).then(function (data) {
+            socket.emit('gameState', data.playerData);
+            socket.broadcast.emit('gameState', data.opponentData);
+        });
+    });
+}
+
 exports.resourceCard = function (socket, data) {
-    return Promise.try(function () {
-        return Game.current(socket.userId);
-    }).then(function (result) {
+    return Game.current(socket.userId).then(function (result) {
         var game = result;
         var player = gameHelper.player(game, socket.userId);
         var opponent = gameHelper.opponent(game, socket.userId);
@@ -116,16 +117,9 @@ exports.resourceCard = function (socket, data) {
                                         game.players[i].actions = [];
                                     }
                                 });
-
-                                Game.update(game);
                             }
 
-                            Game.getState(player.id).then(function (data) {
-                                socket.emit('gameState', data);
-                            });
-                            Game.getState(opponent.id).then(function (data) {
-                                socket.broadcast.emit('gameState', data);
-                            });
+                            return updateAndBroadcastGameState(socket, game, player, opponent);
                         });
                     } else if (game.phase == 'resource') {
                         player.actions = ['takeAction', 'noAction'];
@@ -133,14 +127,7 @@ exports.resourceCard = function (socket, data) {
                         game = gameHelper.updatePlayer(game, player);
                         game.step = 'takeAction';
 
-                        Game.update(game);
-
-                        Game.getState(player.id).then(function (data) {
-                            socket.emit('gameState', data);
-                        });
-                        Game.getState(opponent.id).then(function (data) {
-                            socket.broadcast.emit('gameState', data);
-                        });
+                        return updateAndBroadcastGameState(socket, game, player, opponent);
                     }
                 });
             }
@@ -155,9 +142,7 @@ exports.restoreInsane = function (socket, data) {
         return false;
     }
 
-    return Promise.try(function () {
-        return Game.current(socket.userId);
-    }).then(function (result) {
+    return Game.current(socket.userId).then(function (result) {
         var game = result;
         var player = gameHelper.player(game, socket.userId);
         var opponent = gameHelper.opponent(game, socket.userId);
@@ -171,26 +156,17 @@ exports.restoreInsane = function (socket, data) {
             game = gameHelper.updatePlayer(game, player);
             game.step = 'refreshAll';
             game.temp.insaneRestored = card.id;
-            Game.update(game);
-
             card.status = 'exhausted';
 
-            return played.update(game.id, player.id, card);
-        }).then(function () {
-            Game.getState(player.id).then(function (data) {
-                socket.emit('gameState', data);
-            });
-            Game.getState(opponent.id).then(function (data) {
-                socket.broadcast.emit('gameState', data);
+            return played.update(game.id, player.id, card).then(function () {
+                return updateAndBroadcastGameState(socket, game, player, opponent);
             });
         });
     });
 };
 
 exports.refreshAll = function (socket) {
-    return Promise.try(function () {
-        return Game.current(socket.userId);
-    }).then(function (result) {
+    return Game.current(socket.userId).then(function (result) {
         var game = result;
         var player = gameHelper.player(game, socket.userId);
         var opponent = gameHelper.opponent(game, socket.userId);
@@ -207,25 +183,17 @@ exports.refreshAll = function (socket) {
         game = gameHelper.updatePlayer(game, player);
         game.step = 'takeAction';
 
-        return Promise.try(function () {
-            return played.all(game.id, player.id);
-        }).then(function (cards) {
-            cards.forEach(function (card) {
+        return played.all(game.id, player.id).then(function (cards) {
+            return Promise.map(cards, function (card) {
                 if (card.status == 'exhausted' && game.temp.insaneRestored != card.id) {
                     card.status = 'active';
 
-                    played.update(game.id, player.id, card);
+                    return played.update(game.id, player.id, card);
                 }
-            });
+            }).then(function () {
+                game.temp.insaneRestored = 0;
 
-            game.temp.insaneRestored = 0;
-            Game.update(game);
-
-            Game.getState(player.id).then(function (data) {
-                socket.emit('gameState', data);
-            });
-            Game.getState(opponent.id).then(function (data) {
-                socket.broadcast.emit('gameState', data);
+                return updateAndBroadcastGameState(socket, game, player, opponent);
             });
         });
     });
@@ -235,13 +203,11 @@ exports.playCard = function (socket, data) {
     var cardId = data.cardId;
     var domainId = data.domainId;
 
-    if (!cardId || !domainId) {
+    if (!cardId) {
         return false;
     }
 
-    return Promise.try(function () {
-        return Game.current(socket.userId);
-    }).then(function (result) {
+    return Game.current(socket.userId).then(function (result) {
         var game = result;
         var player = gameHelper.player(game, socket.userId);
         var opponent = gameHelper.opponent(game, socket.userId);
@@ -259,23 +225,17 @@ exports.playCard = function (socket, data) {
             var domain = gameHelper.domain(game, player.id, domainId);
             var resourceMatch = gameHelper.resourceMatch(resources, card);
 
-            if (domain.status != 'active' || card.cost > resources.length || !resourceMatch) {
-                return false;
+            if (card.cost > 0) {
+                if (domain.status != 'active' || card.cost > resources.length || !resourceMatch) {
+                    return false;
+                }
+
+                domain.status = 'drained';
+                game = gameHelper.updateDomain(game, domain, player.id);
             }
 
-            domain.status = 'drained';
-            game = gameHelper.updateDomain(game, domain, player.id);
-            Game.update(game);
-
-            return Promise.try(function () {
-                return hand.play(game.id, player.id, cardId);
-            }).then(function () {
-                Game.getState(player.id).then(function (data) {
-                    socket.emit('gameState', data);
-                });
-                Game.getState(opponent.id).then(function (data) {
-                    socket.broadcast.emit('gameState', data);
-                });
+            return hand.play(game.id, player.id, cardId).then(function () {
+                return updateAndBroadcastGameState(socket, game, player, opponent);
             });
         });
     });
@@ -296,9 +256,7 @@ exports.attachCard = function (socket, data) {
         return false;
     }
 
-    return Promise.try(function () {
-        return Game.current(socket.userId);
-    }).then(function (result) {
+    return Game.current(socket.userId).then(function (result) {
         var game = result;
         var player = gameHelper.player(game, socket.userId);
         var opponent = gameHelper.opponent(game, socket.userId);
@@ -342,25 +300,19 @@ exports.attachCard = function (socket, data) {
             }
 
             attachmentCard.attachableId = attachableId;
-            Game.update(game);
 
-            hand.remove(game.id, player.id, result.attachmentCard);
-            attached.add(game.id, result.attachmentCard);
-        }).then(function () {
-            Game.getState(player.id).then(function (data) {
-                socket.emit('gameState', data);
-            });
-            Game.getState(opponent.id).then(function (data) {
-                socket.broadcast.emit('gameState', data);
+            return Promise.all([
+                hand.remove(game.id, player.id, result.attachmentCard),
+                attached.add(game.id, result.attachmentCard)
+            ]).then(function () {
+                return updateAndBroadcastGameState(socket, game, player, opponent);
             });
         });
     });
 };
 
 exports.commitCard = function (socket, data) {
-    return Promise.try(function () {
-        return Game.current(socket.userId);
-    }).then(function (result) {
+    return Game.current(socket.userId).then(function (result) {
         var game = result;
         var player = gameHelper.player(game, socket.userId);
         var opponent = gameHelper.opponent(game, socket.userId);
@@ -369,26 +321,15 @@ exports.commitCard = function (socket, data) {
             return false;
         }
 
-        return Promise.try(function () {
-            return played.get(game.id, player.id, data.cardId);
-        }).then(function (card) {
+        return played.get(game.id, player.id, data.cardId).then(function (card) {
             if (card.status != 'active') {
                 return false;
             }
 
-            return Promise.try(function () {
-                return played.commit(game.id, player.id, data.storyId, data.cardId);
-            }).then(function (card) {
+            return played.commit(game.id, player.id, data.storyId, data.cardId).then(function () {
                 game.temp.storyCommits[data.storyId] = true;
 
-                Game.update(game);
-
-                Game.getState(player.id).then(function (data) {
-                    socket.emit('gameState', data);
-                });
-                Game.getState(opponent.id).then(function (data) {
-                    socket.broadcast.emit('gameState', data);
-                });
+                return updateAndBroadcastGameState(socket, game, player, opponent);
             });
         });
     });
@@ -401,9 +342,7 @@ exports.resolveStory = function (socket, data) {
         return false;
     }
 
-    return Promise.try(function () {
-        return Game.current(socket.userId);
-    }).then(function (result) {
+    return Game.current(socket.userId).then(function (result) {
         var game = result;
         var player = gameHelper.player(game, socket.userId);
         var opponent = gameHelper.opponent(game, socket.userId);
@@ -426,14 +365,7 @@ exports.resolveStory = function (socket, data) {
             game.step = 'resolveTerrorStruggle';
             game.temp.storyStruggle = storyId;
 
-            Game.update(game);
-
-            Game.getState(player.id).then(function (data) {
-                socket.emit('gameState', data);
-            });
-            Game.getState(opponent.id).then(function (data) {
-                socket.broadcast.emit('gameState', data);
-            });
+            return updateAndBroadcastGameState(socket, game, player, opponent);
         });
     });
 };
@@ -445,9 +377,7 @@ exports.resolveIconStruggle = function (socket, data) {
         return false;
     }
 
-    return Promise.try(function () {
-        return Game.current(socket.userId);
-    }).then(function (result) {
+    return Game.current(socket.userId).then(function (result) {
         var game = result;
         var player = gameHelper.player(game, socket.userId);
         var opponent = gameHelper.opponent(game, socket.userId);
@@ -520,14 +450,7 @@ exports.resolveIconStruggle = function (socket, data) {
             game = gameHelper.updatePlayer(game, opponent);
             game.step = nextStep;
 
-            Game.update(game);
-
-            Game.getState(player.id).then(function (data) {
-                socket.emit('gameState', data);
-            });
-            Game.getState(opponent.id).then(function (data) {
-                socket.broadcast.emit('gameState', data);
-            });
+            return updateAndBroadcastGameState(socket, game, player, opponent);
         });
     });
 };
@@ -540,9 +463,7 @@ exports.responseStruggle = function (socket, data) {
         return false;
     }
 
-    return Promise.try(function () {
-        return Game.current(socket.userId);
-    }).then(function (result) {
+    return Game.current(socket.userId).then(function (result) {
         var game = result;
         var player = gameHelper.player(game, socket.userId);
         var opponent = gameHelper.opponent(game, socket.userId);
@@ -590,24 +511,15 @@ exports.responseStruggle = function (socket, data) {
             game.activePlayer = game.turnPlayer;
             game.step = nextStep;
 
-            Game.update(game);
-
-            return promise;
-        }).then(function () {
-            Game.getState(player.id).then(function (data) {
-                socket.emit('gameState', data);
-            });
-            Game.getState(opponent.id).then(function (data) {
-                socket.broadcast.emit('gameState', data);
+            return promise.then(function () {
+                return updateAndBroadcastGameState(socket, game, player, opponent);
             });
         });
     });
 };
 
 exports.determineSuccess = function (socket) {
-    return Promise.try(function () {
-        return Game.current(socket.userId);
-    }).then(function (result) {
+    return Game.current(socket.userId).then(function (result) {
         var game = result;
         var player = gameHelper.player(game, socket.userId);
         var opponent = gameHelper.opponent(game, socket.userId);
@@ -649,22 +561,14 @@ exports.determineSuccess = function (socket) {
 
             game.temp.storyStruggle = 0;
             game = gameHelper.updatePlayer(game, player);
-            Game.update(game);
 
-            Game.getState(player.id).then(function (data) {
-                socket.emit('gameState', data);
-            });
-            Game.getState(opponent.id).then(function (data) {
-                socket.broadcast.emit('gameState', data);
-            });
+            return updateAndBroadcastGameState(socket, game, player, opponent);
         });
     });
 };
 
 exports.endTurn = function (socket) {
-    return Promise.try(function () {
-        return Game.current(socket.userId);
-    }).then(function (result) {
+    return Game.current(socket.userId).then(function (result) {
         var game = result;
         var player = gameHelper.player(game, socket.userId);
         var opponent = gameHelper.opponent(game, socket.userId);
@@ -676,14 +580,7 @@ exports.endTurn = function (socket) {
         return Promise.try(function () {
             return endTurn(player.id, game);
         }).then(function (game) {
-            Game.update(game);
-
-            Game.getState(player.id).then(function (data) {
-                socket.emit('gameState', data);
-            });
-            Game.getState(opponent.id).then(function (data) {
-                socket.broadcast.emit('gameState', data);
-            });
+            return updateAndBroadcastGameState(socket, game, player, opponent);
         });
     });
 };
@@ -729,9 +626,7 @@ function endTurn(playerId, game) {
 }
 
 exports.noAction = function (socket) {
-    return Promise.try(function () {
-        return Game.current(socket.userId);
-    }).then(function (result) {
+    return Game.current(socket.userId).then(function (result) {
         var game = result;
         var player = gameHelper.player(game, socket.userId);
         var opponent = gameHelper.opponent(game, socket.userId);
@@ -826,14 +721,8 @@ exports.noAction = function (socket) {
 
             game = gameHelper.updatePlayer(game, player);
             game = gameHelper.updatePlayer(game, opponent);
-            Game.update(game);
 
-            Game.getState(player.id).then(function (data) {
-                socket.emit('gameState', data);
-            });
-            Game.getState(opponent.id).then(function (data) {
-                socket.broadcast.emit('gameState', data);
-            });
+            return updateAndBroadcastGameState(socket, game, player, opponent);
         });
     });
 };

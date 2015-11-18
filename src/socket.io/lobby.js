@@ -48,10 +48,11 @@ exports.create = function (socket, data) {
     };
 
     socket.gameId = newGame.id;
-    Game.create(newGame, socket.userId);
 
-    socket.server.of('/lobby').emit('created', {
-        game: newGame
+    return Game.create(newGame, socket.userId).then(function () {
+        socket.server.of('/lobby').emit('created', {
+            game: newGame
+        });
     });
 };
 
@@ -61,23 +62,23 @@ exports.leave = function (socket) {
     }
 
     return Game.get(socket.gameId).then(function (game) {
+        delete socket.gameId;
+
         game.players = _.without(game.players, _.findWhere(game.players, {id: socket.userId}));
         game.status = 'finished';
 
-        Game.leave(game.id, socket.userId);
+        return Game.leave(game.id, socket.userId).then(function () {
+            if (game.players.length === 0) {
+                return Game.delete(game);
+            } else {
+                game.host = game.players[0].id;
 
-        if (game.players.length === 0) {
-            Game.delete(game);
-        } else {
-            game.host = game.players[0].id;
-
-            Game.update(game);
-        }
-
-        delete socket.gameId;
-
-        socket.server.of('/lobby').emit('left', {
-            game: game
+                return Game.update(game);
+            }
+        }).then(function () {
+            socket.server.of('/lobby').emit('left', {
+                game: game
+            });
         });
     });
 };
@@ -99,10 +100,11 @@ exports.join = function (socket, data) {
         game.firstPlayer = game.players[0].id;
 
         socket.gameId = game.id;
-        Game.update(game);
 
-        socket.server.of('/lobby').emit('joined', {
-            game: game
+        return Game.update(game).then(function () {
+            socket.server.of('/lobby').emit('joined', {
+                game: game
+            });
         });
     });
 };
@@ -112,12 +114,10 @@ exports.start = function (socket) {
         return false;
     }
 
-    var game;
-
     return Promise.try(function () {
         return Game.current(socket.userId);
     }).then(function (result) {
-        game = result;
+        var game = result;
 
         if (game.players.length !== 2) {
             return false;
@@ -143,10 +143,10 @@ exports.start = function (socket) {
             game.phase = 'setup';
             game.step = null;
 
-            Game.update(game);
-
-            socket.server.of('/lobby').emit('started', {
-                game: game
+            return Game.update(game).then(function () {
+                socket.server.of('/lobby').emit('started', {
+                    game: game
+                });
             });
         });
     });

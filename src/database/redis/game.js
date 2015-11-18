@@ -46,44 +46,52 @@ exports.current = function (playerId) {
 };
 
 exports.create = function (game, playerId) {
-    redis.set('current:' + playerId, JSON.stringify(game));
-    redis.zadd('games', game.id, JSON.stringify(game));
+    return Promise.all([
+        redis.setAsync('current:' + playerId, JSON.stringify(game)),
+        redis.zaddAsync('games', game.id, JSON.stringify(game))
+    ]);
 };
 
 exports.update = function (game) {
-    redis.zremrangebyscore('games', game.id, game.id);
-    redis.zadd('games', game.id, JSON.stringify(game));
-
-    game.players.forEach(function (player) {
-        redis.del('current:' + player.id);
-        redis.set('current:' + player.id, JSON.stringify(game));
+    return Promise.all([
+        redis.zremrangebyscoreAsync('games', game.id, game.id),
+        redis.zaddAsync('games', game.id, JSON.stringify(game))
+    ]).then(function () {
+        return Promise.map(game.players, function (player) {
+            return Promise.all([
+                redis.delAsync('current:' + player.id),
+                redis.setAsync('current:' + player.id, JSON.stringify(game))
+            ]);
+        });
     });
 };
 
 exports.delete = function (game) {
-    redis.del('attachedCards:' + game.id);
-    redis.del('storyDeck:' + game.id);
-    redis.del('storyCards:' + game.id);
-    redis.zremrangebyscore('games', game.id, game.id);
+    return Promise.all([
+        redis.delAsync('attachedCards:' + game.id),
+        redis.delAsync('storyDeck:' + game.id),
+        redis.delAsync('storyCards:' + game.id),
+        redis.zremrangebyscoreAsync('games', game.id, game.id)
+    ]);
 };
 
 exports.leave = function (gameId, playerId) {
-    this.get(gameId).then(function (game) {
-        redis.del('current:' + playerId);
-        redis.del('deck:' + gameId + ':' + playerId);
-        redis.del('hand:' + gameId + ':' + playerId);
-        redis.del('discardPile:' + gameId + ':' + playerId);
-        redis.del('playedCards:' + gameId + ':' + playerId);
-
-        if (game.storyCards) {
-            game.storyCards.forEach(function (storyCard) {
-                redis.del('committedCards:' + gameId + ':' + playerId + ':' + storyCard.id);
+    return this.get(gameId).then(function (game) {
+        return Promise.all([
+            redis.delAsync('current:' + playerId),
+            redis.delAsync('deck:' + gameId + ':' + playerId),
+            redis.delAsync('hand:' + gameId + ':' + playerId),
+            redis.delAsync('discardPile:' + gameId + ':' + playerId),
+            redis.delAsync('playedCards:' + gameId + ':' + playerId)
+        ]).then(function () {
+            return Promise.map(game.storyCards, function (storyCard) {
+                return redis.delAsync('committedCards:' + gameId + ':' + playerId + ':' + storyCard.id);
             });
-        }
-
-        game.players.forEach(function (player) {
-            player.domains.forEach(function (domainId) {
-                redis.del('resourcedCards:' + gameId + ':' + playerId + ':' + domainId);
+        }).then(function () {
+            return Promise.map(game.players, function (player) {
+                return Promise.map(player.domains, function (domainId) {
+                    return redis.delAsync('resourcedCards:' + gameId + ':' + playerId + ':' + domainId);
+                });
             });
         });
     });
