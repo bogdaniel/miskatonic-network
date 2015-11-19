@@ -81,7 +81,7 @@ exports.leave = function (gameId, playerId) {
             redis.delAsync('current:' + playerId),
             redis.delAsync('deck:' + gameId + ':' + playerId),
             redis.delAsync('hand:' + gameId + ':' + playerId),
-            redis.delAsync('discardPile:' + gameId + ':' + playerId),
+            redis.delAsync('discard:' + gameId + ':' + playerId),
             redis.delAsync('playedCards:' + gameId + ':' + playerId)
         ]).then(function () {
             return Promise.map(game.storyCards, function (storyCard) {
