@@ -6,8 +6,8 @@ $(function () {
         $('.highlight').html(img);
     }).on('mouseleave', '.card-active, .card-exhausted, .card-insane, .card-story, .card-resources, .card-attachments', function () {
         $('.highlight').empty();
-    }).on('dblclick', '.card-active, .card-exhausted, .card-story, .card-resources', function (e) {
-        fancybox($(e.target).closest('.card-frame').find('img'));
+    }).on('dblclick', '.card-active, .card-exhausted, .card-insane, .card-story, .card-resources', function (e) {
+        fancybox($(e.target).closest('.card-frame'));
     });
 });
 
@@ -18,7 +18,7 @@ function fancybox(element, items, options) {
 
     if (!items.length) {
         items.push({
-            href: element.attr('src')
+            href: '/images/cards/' + element.data('image')
         });
     }
 
