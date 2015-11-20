@@ -5,6 +5,7 @@ var gameHelper = require('../helpers/gameHelper');
 var resolveStoryHelper = require('../helpers/resolveStoryHelper');
 var Promise = require('bluebird');
 var Game = require('../database/redis/game');
+var Card = require('../database/redis/card');
 var storyCard = require('../database/redis/storyCard');
 var storyDeck = require('../database/redis/storyDeck');
 var deck = require('../database/redis/deck');
@@ -70,6 +71,7 @@ function updateAndBroadcastGameState(socket, game, player, opponent) {
         var storyCard5Id = game.storyCards[4] ? game.storyCards[4].id : 0;
 
         return Promise.props({
+            attachmentCards: attached.all(game.id),
             playerPlayed: played.all(game.id, player.id),
             opponentPlayed: played.all(game.id, opponent.id),
             playerCommitted1: committed.all(game.id, player.id, storyCard1Id),
@@ -84,6 +86,7 @@ function updateAndBroadcastGameState(socket, game, player, opponent) {
             opponentCommitted5: committed.all(game.id, opponent.id, storyCard5Id)
         }).then(function (result) {
             var promises = [];
+            var attachmentCards = result.attachmentCards;
             var playerPlayed = result.playerPlayed;
             var opponentPlayed = result.opponentPlayed;
             var playerCommitted1 = result.playerCommitted1;
@@ -106,15 +109,65 @@ function updateAndBroadcastGameState(socket, game, player, opponent) {
                 var numberOfCharacterCards = 0;
 
                 allCards.forEach(function (card) {
+                    card.cost = card.printedCost;
+                    card.skill = card.printedSkill;
+                    card.terror = card.printedTerror;
+                    card.combat = card.printedCombat;
+                    card.arcane = card.printedArcane;
+                    card.investigation = card.printedInvestigation;
+                    card.toughness = card.printedToughness;
+                    card.keyword = card.printedKeyword;
+
                     if (card.type == 'character') {
                         numberOfCharacterCards++;
                     }
                 });
 
+                if (card.uid == 2) {
+                    if (card.position == 'committed') {
+                        allCards.forEach(function (card) {
+                            if (card.keyword.indexOf('Heroic') > -1) {
+                                card.combat++;
+
+                                promises.push(Card.update(game.id, card));
+                            }
+
+                            if (card.keyword.indexOf('Villianous') > -1) {
+                                if (card.terror > 0) {
+                                    card.terror--;
+
+                                    promises.push(Card.update(game.id, card));
+                                }
+                            }
+                        });
+                    }
+                }
+
                 if (card.uid == 5) {
                     if (numberOfCharacterCards > 5 && card.status != 'insane') {
-                        card.status = 'insane';
-                        promises.push(played.update(game.id, card.ownerId, card));
+                        if (card.position == 'played') {
+                            card.status = 'insane';
+                            promises.push(Card.update(game.id, card));
+                        } else if (card.position == 'committed') {
+                            promises.push(committed.goInsane(game.id, card.ownerId, card.committedStory, card.id));
+                        }
+                    }
+                }
+
+                if (card.uid == 11) {
+                    if (attachmentCards.length > 0) {
+                        card.keyword.push('Willpower');
+                        promises.push(Card.update(game.id, card));
+                    }
+                }
+
+                if (card.uid == 23) {
+                    if (card.position == 'committed') {
+                        allCards.forEach(function (card) {
+                            card.toughness = 0;
+
+                            promises.push(Card.update(game.id, card));
+                        });
                     }
                 }
             });

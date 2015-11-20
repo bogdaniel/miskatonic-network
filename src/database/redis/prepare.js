@@ -53,7 +53,15 @@ exports.playerDeck = function (gameId, playerId, cards) {
         playerDeck[i].ownerId = playerId;
         playerDeck[i].status = 'active';
         playerDeck[i].type = stringHelper.slugify(playerDeck[i].type);
+        playerDeck[i].printedCost = playerDeck[i].cost;
+        playerDeck[i].printedSkill = playerDeck[i].skill;
+        playerDeck[i].printedTerror = playerDeck[i].terror;
+        playerDeck[i].printedCombat = playerDeck[i].combat;
+        playerDeck[i].printedArcane = playerDeck[i].arcane;
+        playerDeck[i].printedInvestigation = playerDeck[i].investigation;
         playerDeck[i].faction = stringHelper.slugify(playerDeck[i].faction);
+        playerDeck[i].printedToughness = playerDeck[i].toughness;
+        playerDeck[i].printedKeyword = playerDeck[i].keyword;
 
         if (playerDeck[i].subtype) {
             playerDeck[i].subtype = playerDeck[i].subtype.trim().split('. ');
@@ -61,6 +69,13 @@ exports.playerDeck = function (gameId, playerId, cards) {
                 subtype = stringHelper.removeDots(subtype);
                 subtype = stringHelper.slugify(subtype);
                 playerDeck[i].subtype[j] = subtype;
+            });
+        }
+
+        if (playerDeck[i].keyword) {
+            playerDeck[i].keyword = playerDeck[i].keyword.trim().split(',');
+            playerDeck[i].keyword.forEach(function (keyword, j) {
+                playerDeck[i].keyword[j] = keyword.trim();
             });
         }
 

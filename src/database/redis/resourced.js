@@ -58,5 +58,7 @@ exports.countAll = function (gameId, playerId) {
 };
 
 exports.add = function (gameId, playerId, domainId, card) {
+    card.position = 'resourced';
+
     return redis.zadd('resourcedCards:' + gameId + ':' + playerId + ':' + domainId, (new Date()).getTime(), JSON.stringify(card));
 };

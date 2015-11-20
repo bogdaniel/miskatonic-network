@@ -14,6 +14,8 @@ exports.up = function (knex, Promise) {
         table.integer('arcane').notNullable();
         table.integer('investigation').notNullable();
         table.string('faction').notNullable();
+        table.integer('toughness').notNullable();
+        table.string('keyword');
         table.string('text');
         table.string('flavor');
         table.integer('set_id').unsigned().notNullable().references('sets.id');

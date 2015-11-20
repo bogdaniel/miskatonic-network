@@ -83,6 +83,8 @@ exports.add = function (gameId, card) {
         throw new Error('Missing attachment card property: attachableId');
     }
 
+    card.position = 'attached';
+
     return redis.zadd('attachedCards:' + gameId, card.id, JSON.stringify(card));
 };
 

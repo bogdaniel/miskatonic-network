@@ -67,6 +67,9 @@ exports.count = function (gameId, playerId, storyId) {
  * @returns {*}
  */
 exports.add = function (gameId, playerId, storyId, card) {
+    card.position = 'committed';
+    card.committedStory = storyId;
+
     return redis.zadd('committedCards:' + gameId + ':' + playerId + ':' + storyId, card.id, JSON.stringify(card));
 };
 
@@ -134,6 +137,8 @@ exports.uncommitAll = function (gameId, playerId, storyId) {
  * @returns {*}
  */
 exports.remove = function (gameId, playerId, storyId, card) {
+    card.committedStory = null;
+
     return redis.zremrangebyscore('committedCards:' + gameId + ':' + playerId + ':' + storyId, card.id, card.id);
 };
 

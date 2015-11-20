@@ -42,6 +42,7 @@ exports.count = function (gameId, playerId) {
  * @returns {*}
  */
 exports.add = function (gameId, playerId, card) {
+    card.position = 'discard';
     card.status = 'active';
 
     return redis.rpushAsync('discard:' + gameId + ':' + playerId, JSON.stringify(card));

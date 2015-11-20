@@ -70,6 +70,8 @@ exports.count = function (gameId, playerId) {
  * @returns {*}
  */
 exports.add = function (gameId, playerId, card) {
+    card.position = 'hand';
+
     return redis.rpushAsync('hand:' + gameId + ':' + playerId, JSON.stringify(card));
 };
 
