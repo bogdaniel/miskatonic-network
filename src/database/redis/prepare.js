@@ -20,6 +20,7 @@ exports.storyCards = function (game, cards) {
     successTokens['player' + game.players[1].id] = 0;
 
     _storyDeck.forEach(function (card, i) {
+        _storyDeck[i].uid = _storyDeck[i].id;
         _storyDeck[i].id = randomHelper.cardId();
         _storyDeck[i].status = 'story';
         _storyDeck[i].successTokens = successTokens;
@@ -47,6 +48,7 @@ exports.playerDeck = function (gameId, playerId, cards) {
     var playerDeck = _.shuffle(cards);
 
     playerDeck.forEach(function (card, i) {
+        playerDeck[i].uid = playerDeck[i].id;
         playerDeck[i].id = randomHelper.cardId();
         playerDeck[i].ownerId = playerId;
         playerDeck[i].status = 'active';

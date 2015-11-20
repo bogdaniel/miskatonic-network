@@ -63,12 +63,71 @@ exports.drawCard = function (socket) {
 
 function updateAndBroadcastGameState(socket, game, player, opponent) {
     return Game.update(game).then(function () {
+        var storyCard1Id = game.storyCards[0].id;
+        var storyCard2Id = game.storyCards[1].id;
+        var storyCard3Id = game.storyCards[2].id;
+        var storyCard4Id = game.storyCards[3] ? game.storyCards[3].id : 0;
+        var storyCard5Id = game.storyCards[4] ? game.storyCards[4].id : 0;
+
         return Promise.props({
-            playerData: Game.getState(player.id),
-            opponentData: Game.getState(opponent.id)
-        }).then(function (data) {
-            socket.emit('gameState', data.playerData);
-            socket.broadcast.emit('gameState', data.opponentData);
+            playerPlayed: played.all(game.id, player.id),
+            opponentPlayed: played.all(game.id, opponent.id),
+            playerCommitted1: committed.all(game.id, player.id, storyCard1Id),
+            opponentCommitted1: committed.all(game.id, opponent.id, storyCard1Id),
+            playerCommitted2: committed.all(game.id, player.id, storyCard2Id),
+            opponentCommitted2: committed.all(game.id, opponent.id, storyCard2Id),
+            playerCommitted3: committed.all(game.id, player.id, storyCard3Id),
+            opponentCommitted3: committed.all(game.id, opponent.id, storyCard3Id),
+            playerCommitted4: committed.all(game.id, player.id, storyCard4Id),
+            opponentCommitted4: committed.all(game.id, opponent.id, storyCard4Id),
+            playerCommitted5: committed.all(game.id, player.id, storyCard5Id),
+            opponentCommitted5: committed.all(game.id, opponent.id, storyCard5Id)
+        }).then(function (result) {
+            var promises = [];
+            var playerPlayed = result.playerPlayed;
+            var opponentPlayed = result.opponentPlayed;
+            var playerCommitted1 = result.playerCommitted1;
+            var opponentCommitted1 = result.opponentCommitted1;
+            var playerCommitted2 = result.playerCommitted2;
+            var opponentCommitted2 = result.opponentCommitted2;
+            var playerCommitted3 = result.playerCommitted3;
+            var opponentCommitted3 = result.opponentCommitted3;
+            var playerCommitted4 = result.playerCommitted4;
+            var opponentCommitted4 = result.opponentCommitted4;
+            var playerCommitted5 = result.playerCommitted5;
+            var opponentCommitted5 = result.opponentCommitted5;
+            var allCards = playerPlayed.concat(
+                opponentPlayed, playerCommitted1, opponentCommitted1, playerCommitted2, opponentCommitted2,
+                playerCommitted3, opponentCommitted3, playerCommitted4, opponentCommitted4, playerCommitted5,
+                opponentCommitted5
+            );
+
+            allCards.forEach(function (card) {
+                var numberOfCharacterCards = 0;
+
+                allCards.forEach(function (card) {
+                    if (card.type == 'character') {
+                        numberOfCharacterCards++;
+                    }
+                });
+
+                if (card.uid == 5) {
+                    if (numberOfCharacterCards > 5 && card.status != 'insane') {
+                        card.status = 'insane';
+                        promises.push(played.update(game.id, card.ownerId, card));
+                    }
+                }
+            });
+
+            return Promise.all(promises);
+        }).then(function () {
+            return Promise.props({
+                playerData: Game.getState(player.id),
+                opponentData: Game.getState(opponent.id)
+            }).then(function (data) {
+                socket.emit('gameState', data.playerData);
+                socket.broadcast.emit('gameState', data.opponentData);
+            });
         });
     });
 }
@@ -221,11 +280,12 @@ exports.playCard = function (socket, data) {
             resources: resourced.all(game.id, player.id, domainId)
         }).then(function (result) {
             var card = result.card;
-            var resources = result.resources;
-            var domain = gameHelper.domain(game, player.id, domainId);
-            var resourceMatch = gameHelper.resourceMatch(resources, card);
 
             if (card.cost > 0) {
+                var resources = result.resources;
+                var domain = gameHelper.domain(game, player.id, domainId);
+                var resourceMatch = gameHelper.resourceMatch(resources, card);
+
                 if (domain.status != 'active' || card.cost > resources.length || !resourceMatch) {
                     return false;
                 }
@@ -234,7 +294,7 @@ exports.playCard = function (socket, data) {
                 game = gameHelper.updateDomain(game, domain, player.id);
             }
 
-            return hand.play(game.id, player.id, cardId).then(function () {
+            return hand.play(game.id, player.id, card.id).then(function () {
                 return updateAndBroadcastGameState(socket, game, player, opponent);
             });
         });
