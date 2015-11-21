@@ -19,6 +19,7 @@ exports.execute = function (game, data) {
     var opponentCommitted4 = data.opponentCommitted4;
     var playerCommitted5 = data.playerCommitted5;
     var opponentCommitted5 = data.opponentCommitted5;
+    var playerHand = data.playerHand;
     var allCards = playerPlayed.concat(
         opponentPlayed, playerCommitted1, opponentCommitted1, playerCommitted2, opponentCommitted2,
         playerCommitted3, opponentCommitted3, playerCommitted4, opponentCommitted4, playerCommitted5,
@@ -42,6 +43,17 @@ exports.execute = function (game, data) {
         }
     });
 
+    playerHand.forEach(function (card) {
+        card.cost = card.printedCost;
+        card.skill = card.printedSkill;
+        card.terror = card.printedTerror;
+        card.combat = card.printedCombat;
+        card.arcane = card.printedArcane;
+        card.investigation = card.printedInvestigation;
+        card.toughness = card.printedToughness;
+        card.keyword = card.printedKeyword;
+    });
+
     allCards.forEach(function (card) {
         if (card.uid == 2) { //Kirby O'Donnell
             if (card.position == 'committed') {
@@ -50,10 +62,8 @@ exports.execute = function (game, data) {
                         card.combat++;
                     }
 
-                    if (card.keyword.indexOf('Villianous') > -1) {
-                        if (card.terror > 0) {
-                            card.terror--;
-                        }
+                    if (card.keyword.indexOf('Villianous') > -1 && card.terror > 0) {
+                        card.terror--;
                     }
                 });
             }
@@ -83,6 +93,85 @@ exports.execute = function (game, data) {
             }
         }
 
+        if (card.uid == 25) { //Anthropology Advisor
+            playerHand.forEach(function (card) {
+                if (card.subtype.indexOf('Investigator') > -1 && card.cost > 0) {
+                    card.cost--;
+                }
+            });
+
+            allCards.forEach(function (card) {
+                if (card.subtype.indexOf('Investigator') > -1) {
+                    card.investigation++;
+                }
+            });
+        }
+
+        if (card.uid == 35) { //Atwood Science Hall
+            let ownerId = card.ownerId;
+            allCards.forEach(function (card) {
+                if (card.ownerId == ownerId) {
+                    card.skill += card.investigation;
+                }
+            });
+        }
+
+        if (card.uid == 46) { //Shadow-spawned Hunting Horror
+            if (card.position == 'committed') {
+                allCards.forEach(function (card) {
+                    if (card.position == 'committed' && card.investigation > 0) {
+                        card.investigation--;
+                    }
+                });
+            }
+        }
+
+        if (card.uid == 49) { //Ocean Crawlers
+            card.skill += attachmentCards.length;
+        }
+
+        if (card.uid == 50) { //Lord of the Silver Twilight
+            playerHand.forEach(function (card) {
+                if (card.faction == 'Cthulhu' && card.cost > 2) {
+                    card.cost--;
+                }
+            });
+        }
+
+        if (card.uid == 55) { //Shadowed Reef
+            allCards.forEach(function (card) {
+                if (card.subtype.indexOf('Deep One') > -1) {
+                    card.terror++;
+                }
+            });
+        }
+
+        if (card.uid == 73) { //Dutch Courage
+            let ownerId = card.ownerId;
+            allCards.forEach(function (card) {
+                if (card.ownerId == ownerId && card.subtype == 'Character') {
+                    card.toughness++;
+                }
+            });
+        }
+
+        if (card.uid == 83) { //Yellow Muse
+            if (card.position == 'committed') {
+                let cardId = card.id;
+                let storyId = card.committedStory;
+                allCards.forEach(function (card) {
+                    if (card.position == 'committed' && card.committedStory == storyId && card.keyword.indexOf('Fast') > -1 && card.id !== cardId) {
+                        let index = card.keyword.indexOf('Fast');
+                        card.keyword.splice(index, 1);
+                    }
+                });
+            }
+        }
+
+        promises.push(Card.update(game.id, card));
+    });
+
+    playerHand.forEach(function (card) {
         promises.push(Card.update(game.id, card));
     });
 

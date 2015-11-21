@@ -83,7 +83,8 @@ function updateAndBroadcastGameState(socket, game, player, opponent) {
             playerCommitted4: committed.all(game.id, player.id, storyCard4Id),
             opponentCommitted4: committed.all(game.id, opponent.id, storyCard4Id),
             playerCommitted5: committed.all(game.id, player.id, storyCard5Id),
-            opponentCommitted5: committed.all(game.id, opponent.id, storyCard5Id)
+            opponentCommitted5: committed.all(game.id, opponent.id, storyCard5Id),
+            playerHand: hand.all(game.id, player.id)
         }).then(function (result) {
             return CardPassive.execute(game, result);
         }).then(function () {
