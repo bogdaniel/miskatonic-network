@@ -5,7 +5,7 @@ var gameHelper = require('../helpers/gameHelper');
 var resolveStoryHelper = require('../helpers/resolveStoryHelper');
 var Promise = require('bluebird');
 var Game = require('../database/redis/game');
-var Card = require('../database/redis/card');
+var CardPassive = require('../cards/passive');
 var storyCard = require('../database/redis/storyCard');
 var storyDeck = require('../database/redis/storyDeck');
 var deck = require('../database/redis/deck');
@@ -85,94 +85,7 @@ function updateAndBroadcastGameState(socket, game, player, opponent) {
             playerCommitted5: committed.all(game.id, player.id, storyCard5Id),
             opponentCommitted5: committed.all(game.id, opponent.id, storyCard5Id)
         }).then(function (result) {
-            var promises = [];
-            var attachmentCards = result.attachmentCards;
-            var playerPlayed = result.playerPlayed;
-            var opponentPlayed = result.opponentPlayed;
-            var playerCommitted1 = result.playerCommitted1;
-            var opponentCommitted1 = result.opponentCommitted1;
-            var playerCommitted2 = result.playerCommitted2;
-            var opponentCommitted2 = result.opponentCommitted2;
-            var playerCommitted3 = result.playerCommitted3;
-            var opponentCommitted3 = result.opponentCommitted3;
-            var playerCommitted4 = result.playerCommitted4;
-            var opponentCommitted4 = result.opponentCommitted4;
-            var playerCommitted5 = result.playerCommitted5;
-            var opponentCommitted5 = result.opponentCommitted5;
-            var allCards = playerPlayed.concat(
-                opponentPlayed, playerCommitted1, opponentCommitted1, playerCommitted2, opponentCommitted2,
-                playerCommitted3, opponentCommitted3, playerCommitted4, opponentCommitted4, playerCommitted5,
-                opponentCommitted5
-            );
-
-            allCards.forEach(function (card) {
-                var numberOfCharacterCards = 0;
-
-                allCards.forEach(function (card) {
-                    card.cost = card.printedCost;
-                    card.skill = card.printedSkill;
-                    card.terror = card.printedTerror;
-                    card.combat = card.printedCombat;
-                    card.arcane = card.printedArcane;
-                    card.investigation = card.printedInvestigation;
-                    card.toughness = card.printedToughness;
-                    card.keyword = card.printedKeyword;
-
-                    if (card.type == 'character') {
-                        numberOfCharacterCards++;
-                    }
-                });
-
-                if (card.uid == 2) {
-                    if (card.position == 'committed') {
-                        allCards.forEach(function (card) {
-                            if (card.keyword.indexOf('Heroic') > -1) {
-                                card.combat++;
-
-                                promises.push(Card.update(game.id, card));
-                            }
-
-                            if (card.keyword.indexOf('Villianous') > -1) {
-                                if (card.terror > 0) {
-                                    card.terror--;
-
-                                    promises.push(Card.update(game.id, card));
-                                }
-                            }
-                        });
-                    }
-                }
-
-                if (card.uid == 5) {
-                    if (numberOfCharacterCards > 5 && card.status != 'insane') {
-                        if (card.position == 'played') {
-                            card.status = 'insane';
-                            promises.push(Card.update(game.id, card));
-                        } else if (card.position == 'committed') {
-                            promises.push(committed.goInsane(game.id, card.ownerId, card.committedStory, card.id));
-                        }
-                    }
-                }
-
-                if (card.uid == 11) {
-                    if (attachmentCards.length > 0) {
-                        card.keyword.push('Willpower');
-                        promises.push(Card.update(game.id, card));
-                    }
-                }
-
-                if (card.uid == 23) {
-                    if (card.position == 'committed') {
-                        allCards.forEach(function (card) {
-                            card.toughness = 0;
-
-                            promises.push(Card.update(game.id, card));
-                        });
-                    }
-                }
-            });
-
-            return Promise.all(promises);
+            return CardPassive.execute(game, result);
         }).then(function () {
             return Promise.props({
                 playerData: Game.getState(player.id),
