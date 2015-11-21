@@ -43,50 +43,47 @@ exports.execute = function (game, data) {
     });
 
     allCards.forEach(function (card) {
-        if (card.uid == 2) {
+        if (card.uid == 2) { //Kirby O'Donnell
             if (card.position == 'committed') {
                 allCards.forEach(function (card) {
                     if (card.keyword.indexOf('Heroic') > -1) {
                         card.combat++;
-                        promises.push(Card.update(game.id, card));
                     }
 
                     if (card.keyword.indexOf('Villianous') > -1) {
                         if (card.terror > 0) {
                             card.terror--;
-                            promises.push(Card.update(game.id, card));
                         }
                     }
                 });
             }
         }
 
-        if (card.uid == 5) {
+        if (card.uid == 5) { //Professor Hermann Mulder
             if (numberOfCharacterCards > 5 && card.status != 'insane') {
                 if (card.position == 'played') {
                     card.status = 'insane';
-                    promises.push(Card.update(game.id, card));
                 } else if (card.position == 'committed') {
                     promises.push(committed.goInsane(game.id, card.ownerId, card.committedStory, card.id));
                 }
             }
         }
 
-        if (card.uid == 11) {
+        if (card.uid == 11) { //Peeler
             if (attachmentCards.length > 0) {
                 card.keyword.push('Willpower');
-                promises.push(Card.update(game.id, card));
             }
         }
 
-        if (card.uid == 23) {
+        if (card.uid == 23) { //Steve Clarney
             if (card.position == 'committed') {
                 allCards.forEach(function (card) {
                     card.toughness = 0;
-                    promises.push(Card.update(game.id, card));
                 });
             }
         }
+
+        promises.push(Card.update(game.id, card));
     });
 
     return Promise.all(promises);
