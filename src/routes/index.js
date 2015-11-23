@@ -178,6 +178,10 @@ router.get('/database', function (req, res) {
             card.keyword.push('transient');
         }
 
+        if (card.attribute == 'Zoog Resource' && card.keyword.indexOf('zoog') == -1) {
+            card.keyword.push('zoog');
+        }
+
         card.faction = stringHelper.slugify(card.faction);
 
         if (card.steadfastfaction) {
