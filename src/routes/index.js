@@ -6,7 +6,7 @@ var firewall = require('../../security/firewall');
 var scrypt = require('scrypt-for-humans');
 var redis = require('redis').createClient();
 var redisHelper = require('../../libs/helpers/redis');
-var _ = require('underscore');
+var _ = require('../../libs/underscore');
 var Promise = require('bluebird');
 var User = require('../database/mysql/models/user');
 var Set = require('../database/mysql/models/set');
@@ -64,6 +64,8 @@ router.get('/cards', function (req, res) {
 
         res.render('cards.nunj', {
             sets: sets,
+            subtypes: _.sortKeysBy(require('../../documents/subtypes')),
+            keywords: _.sortKeysBy(require('../../documents/keywords')),
             cards: result.cards.toJSON()
         });
     });

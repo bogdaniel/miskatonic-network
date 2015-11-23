@@ -133,7 +133,7 @@
                     </div>
                     <div class="form-group">
                         <label for="set">Set</label>
-                        <select class="form-control" name="set" id="set">
+                        <select class="form-control" id="set">
                             <option value="">All</option>
                             {% for name, set in sets %}
                                 {% if set|length %}
@@ -150,105 +150,46 @@
                     </div>
                     <div class="form-group">
                         <label for="faction">Faction</label>
-                        <select class="form-control" name="faction" id="faction">
+                        <select class="form-control" id="faction">
                             <option value="">All</option>
-                            <option value="Cthulhu"{% if 'faction=Cthulhu' in app.url %} selected="selected"{% endif %}>Cthulhu</option>
-                            <option value="Miskatonic+University"{% if 'faction=Miskatonic+University' in app.url %} selected="selected"{% endif %}>Miskatonic University</option>
-                            <option value="Silver+Twilight"{% if 'faction=Silver+Twilight' in app.url %} selected="selected"{% endif %}>Silver Twilight</option>
-                            <option value="The+Agency"{% if 'faction=The+Agency' in app.url %} selected="selected"{% endif %}>The Agency</option>
-                            <option value="Hastur"{% if 'faction=Hastur' in app.url %} selected="selected"{% endif %}>Hastur</option>
-                            <option value="Shub-Niggurath"{% if 'faction=Shub-Niggurath' in app.url %} selected="selected"{% endif %}>Shub-Niggurath</option>
-                            <option value="Syndicate"{% if 'faction=Syndicate' in app.url %} selected="selected"{% endif %}>Syndicate</option>
-                            <option value="Yog-Sothoth"{% if 'faction=Yog-Sothoth' in app.url %} selected="selected"{% endif %}>Yog-Sothoth</option>
-                            <option value="Neutral"{% if 'faction=Neutral' in app.url %} selected="selected"{% endif %}>Neutral</option>
+                            <option value="cthulhu"{% if 'faction=cthulhu' in app.url %} selected="selected"{% endif %}>Cthulhu</option>
+                            <option value="miskatonic-university"{% if 'faction=miskatonic-university' in app.url %} selected="selected"{% endif %}>Miskatonic University</option>
+                            <option value="silver-twilight"{% if 'faction=silver-twilight' in app.url %} selected="selected"{% endif %}>Silver Twilight</option>
+                            <option value="the-agency"{% if 'faction=the-agency' in app.url %} selected="selected"{% endif %}>The Agency</option>
+                            <option value="hastur"{% if 'faction=hastur' in app.url %} selected="selected"{% endif %}>Hastur</option>
+                            <option value="shub-niggurath"{% if 'faction=shub-niggurath' in app.url %} selected="selected"{% endif %}>Shub-Niggurath</option>
+                            <option value="syndicate"{% if 'faction=syndicate' in app.url %} selected="selected"{% endif %}>Syndicate</option>
+                            <option value="yog-sothoth"{% if 'faction=yog-sothoth' in app.url %} selected="selected"{% endif %}>Yog-Sothoth</option>
+                            <option value="neutral"{% if 'faction=neutral' in app.url %} selected="selected"{% endif %}>Neutral</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="type">Type</label>
-                        <select class="form-control" name="type" id="type">
+                        <select class="form-control" id="type">
                             <option value="">All</option>
-                            <option value="Character"{% if 'type=Character' in app.url %} selected="selected"{% endif %}>Character</option>
-                            <option value="Conspiracy"{% if 'type=Conspiracy' in app.url %} selected="selected"{% endif %}>Conspiracy</option>
-                            <option value="Event"{% if 'type=Event' in app.url %} selected="selected"{% endif %}>Event</option>
-                            <option value="Story"{% if 'type=Story' in app.url %} selected="selected"{% endif %}>Story</option>
-                            <option value="Support"{% if 'type=Support' in app.url %} selected="selected"{% endif %}>Support</option>
+                            <option value="character"{% if 'type=character' in app.url %} selected="selected"{% endif %}>Character</option>
+                            <option value="conspiracy"{% if 'type=conspiracy' in app.url %} selected="selected"{% endif %}>Conspiracy</option>
+                            <option value="event"{% if 'type=event' in app.url %} selected="selected"{% endif %}>Event</option>
+                            <option value="story"{% if 'type=story' in app.url %} selected="selected"{% endif %}>Story</option>
+                            <option value="support"{% if 'type=support' in app.url %} selected="selected"{% endif %}>Support</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="subtype">Subtype</label>
-                        <select class="form-control" name="type" id="subtype">
+                        <select class="form-control" id="subtype">
                             <option value="">All</option>
-                            <option value="Ancient+One">Ancient One</option>
-                            <option value="Artifact">Artifact</option>
-                            <option value="Artist">Artist</option>
-                            <option value="Attachment">Attachment</option>
-                            <option value="Avatar">Avatar</option>
-                            <option value="Blessing">Blessing</option>
-                            <option value="Chthonian">Chthonian</option>
-                            <option value="Condition">Condition</option>
-                            <option value="Conspirator">Conspirator</option>
-                            <option value="Construct">Construct</option>
-                            <option value="Creature">Creature</option>
-                            <option value="Criminal">Criminal</option>
-                            <option value="Cthonian">Cthonian</option>
-                            <option value="Cultist">Cultist</option>
-                            <option value="Curse">Curse</option>
-                            <option value="Dark+Young">Dark Young</option>
-                            <option value="Deep+One">Deep One</option>
-                            <option value="Disaster">Disaster</option>
-                            <option value="Dreamer">Dreamer</option>
-                            <option value="Dreamlands">Dreamlands</option>
-                            <option value="Elixir">Elixir</option>
-                            <option value="Encounter">Encounter</option>
-                            <option value="Environment">Environment</option>
-                            <option value="Event">Event</option>
-                            <option value="Explorer">Explorer</option>
-                            <option value="Faculty">Faculty</option>
-                            <option value="Ghoul">Ghoul</option>
-                            <option value="Government">Government</option>
-                            <option value="Gug">Gug</option>
-                            <option value="High+Priest">High Priest</option>
-                            <option value="Hunter">Hunter</option>
-                            <option value="Independent">Independent</option>
-                            <option value="Initiate">Initiate</option>
-                            <option value="Investigator">Investigator</option>
-                            <option value="Item">Item</option>
-                            <option value="Library">Library</option>
-                            <option value="Location">Location</option>
-                            <option value="Lodge">Lodge</option>
-                            <option value="Lost+Civilization">Lost Civilization</option>
-                            <option value="Lunatic">Lunatic</option>
-                            <option value="Lunitic">Lunitic</option>
-                            <option value="Madness">Madness</option>
-                            <option value="Mask">Mask</option>
-                            <option value="Messenger">Messenger</option>
-                            <option value="Mi-Go">Mi-Go</option>
-                            <option value="Monster">Monster</option>
-                            <option value="Musician">Musician</option>
-                            <option value="Mutable">Mutable</option>
-                            <option value="Phantom">Phantom</option>
-                            <option value="Polar">Polar</option>
-                            <option value="Prophecy">Prophecy</option>
-                            <option value="Relic">Relic</option>
-                            <option value="Relic+Hunter">Relic Hunter</option>
-                            <option value="Research">Research</option>
-                            <option value="Ritual">Ritual</option>
-                            <option value="Scientist">Scientist</option>
-                            <option value="Serpent">Serpent</option>
-                            <option value="Servitor">Servitor</option>
-                            <option value="Society">Society</option>
-                            <option value="Sorcerer">Sorcerer</option>
-                            <option value="Sorceror">Sorceror</option>
-                            <option value="Spell">Spell</option>
-                            <option value="Student">Student</option>
-                            <option value="Tactic">Tactic</option>
-                            <option value="Tome">Tome</option>
-                            <option value="Undead">Undead</option>
-                            <option value="Vehicle">Vehicle</option>
-                            <option value="Weapon">Weapon</option>
-                            <option value="Yeti">Yeti</option>
-                            <option value="Yithian">Yithian</option>
-                            <option value="Zoog">Zoog</option>
+                            {% for key, value in subtypes %}
+                                <option value="{{ key }}">{{ value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="keyword">Keyword</label>
+                        <select class="form-control" id="keyword">
+                            <option value="">All</option>
+                            {% for key, value in keywords %}
+                                <option value="{{ key }}">{{ value }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>
