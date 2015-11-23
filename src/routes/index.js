@@ -134,4 +134,94 @@ router.get('/settings', firewall.restrict, function (req, res) {
     res.render('settings.nunj');
 });
 
+router.get('/database', function (req, res) {
+    var stringHelper = require('../helpers/stringHelper');
+    var subtypes = require('../../documents/subtypes');
+    var keywords = require('../../documents/keywords');
+    var id = 1;
+
+    if (req.query.id) {
+        id = req.query.id;
+    }
+
+    return new Card({id: id}).fetch().then(function (card) {
+        card = card.toJSON();
+
+        if (card.subtype) {
+            if (card.subtype.indexOf('.') > -1) {
+                card.subtype = card.subtype.trim().split('. ');
+            } else {
+                card.subtype = card.subtype.trim().split(',');
+            }
+            card.subtype.forEach(function (subtype, j) {
+                subtype = stringHelper.removeDots(subtype);
+                subtype = stringHelper.slugify(subtype.trim());
+                card.subtype[j] = subtype;
+            });
+        } else {
+            card.subtype = [];
+        }
+
+        if (card.keyword) {
+            card.keyword = card.keyword.trim().split(',');
+            card.keyword.forEach(function (keyword, j) {
+                keyword = stringHelper.slugify(keyword.trim());
+                card.keyword[j] = keyword;
+            });
+        } else {
+            card.keyword = [];
+        }
+
+        if (card.attribute == 'Transient' && card.keyword.indexOf('transient') == -1) {
+            card.keyword.push('transient');
+        }
+
+        card.faction = stringHelper.slugify(card.faction);
+
+        if (card.steadfastfaction) {
+            card.steadfastfaction = stringHelper.slugify(card.steadfastfaction);
+        }
+
+        res.render('database.nunj', {
+            card: card,
+            subtypes: subtypes,
+            keywords: keywords
+        });
+    });
+});
+
+router.post('/ajax/database', function (req, res) {
+    Card.forge({id: req.body.id}).fetch({require: true}).then(function (card) {
+        card.save({
+            title: req.body.title,
+            descriptor: req.body.descriptor || null,
+            is_unique: req.body.is_unique,
+            type: req.body.type,
+            subtype: req.body.subtype || null,
+            faction: req.body.faction,
+            terror: req.body.terror,
+            combat: req.body.combat,
+            arcane: req.body.arcane,
+            investigation: req.body.investigation,
+            cost: req.body.cost,
+            skill: req.body.skill,
+            toughness: req.body.toughness,
+            fated: req.body.fated,
+            keyword: req.body.keyword || null,
+            steadfastcount: req.body.steadfastcount || null,
+            steadfastfaction: req.body.steadfastfaction || null,
+            terror_booster: req.body.terror_booster,
+            combat_booster: req.body.combat_booster,
+            arcane_booster: req.body.arcane_booster,
+            investigation_booster: req.body.investigation_booster
+        }).then(function () {
+            res.json({error: false, data: {message: 'Card details updated'}});
+        }).catch(function (err) {
+            res.status(500).json({error: true, data: {message: err.message}});
+        });
+    }).catch(function (err) {
+        res.status(500).json({error: true, data: {message: err.message}});
+    });
+});
+
 module.exports = router;

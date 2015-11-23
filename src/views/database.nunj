@@ -1,0 +1,316 @@
+{% extends "base.nunj" %}
+
+{% block css %}
+    <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.1-rc.1/css/select2.min.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block js %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.1-rc.1/js/select2.min.js"></script>
+
+    <script type="text/javascript">
+        $('select').select2();
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('button#save').on('click', function () {
+                var data = {};
+
+                data.id = $('#id').val();
+
+                data.title = $('#title').val();
+                if (data.title == '') {
+                    alert('title');
+                    return false;
+                }
+
+                data.descriptor = $('#descriptor').val();
+                if (data.descriptor == '') {
+                    data.descriptor = null;
+                }
+
+                if ($('#is_unique').is(':checked')) {
+                    data.is_unique = 1;
+                } else {
+                    data.is_unique = 0;
+                }
+
+                data.type = $('#type').val();
+
+                if ($('#subtype').val()) {
+                    data.subtype = $('#subtype').val().join(', ');
+                } else {
+                    data.subtype = null;
+                }
+
+                data.faction = $('#faction').val();
+
+                data.terror = $('#terror').val();
+                if (!$.isNumeric(data.terror)) {
+                    alert('terror');
+                    return false;
+                }
+
+                data.combat = $('#combat').val();
+                if (!$.isNumeric(data.combat)) {
+                    alert('combat');
+                    return false;
+                }
+
+                data.arcane = $('#arcane').val();
+                if (!$.isNumeric(data.arcane)) {
+                    alert('arcane');
+                    return false;
+                }
+
+                data.investigation = $('#investigation').val();
+                if (!$.isNumeric(data.investigation)) {
+                    alert('investigation');
+                    return false;
+                }
+
+                data.cost = $('#cost').val();
+                if (!$.isNumeric(data.cost)) {
+                    alert('cost');
+                    return false;
+                }
+
+                data.skill = $('#skill').val();
+                if (!$.isNumeric(data.skill)) {
+                    alert('skill');
+                    return false;
+                }
+
+                data.toughness = $('#toughness').val();
+                if (!$.isNumeric(data.toughness)) {
+                    alert('toughness');
+                    return false;
+                }
+
+                data.fated = $('#fated').val();
+                if (!$.isNumeric(data.fated)) {
+                    alert('fated');
+                    return false;
+                }
+
+                if ($('#keyword').val()) {
+                    data.keyword = $('#keyword').val().join(', ');
+                } else {
+                    data.keyword = null;
+                }
+
+                if ($('#steadfastcount').val()) {
+                    data.steadfastcount = $('#steadfastcount').val();
+
+                    if (!$.isNumeric(data.steadfastcount)) {
+                        alert('steadfastcount');
+                        return false;
+                    }
+
+                    if (data.steadfastcount == 0) {
+                        data.steadfastcount = null;
+                    }
+                } else {
+                    data.steadfastcount = null;
+                }
+
+                if ($('#steadfastfaction').val()) {
+                    data.steadfastfaction = $('#steadfastfaction').val();
+                } else {
+                    data.steadfastfaction = null;
+                }
+
+                data.terror_booster = $('#terror_booster').val();
+                if (!$.isNumeric(data.terror_booster)) {
+                    alert('terror_booster');
+                    return false;
+                }
+
+                data.combat_booster = $('#combat_booster').val();
+                if (!$.isNumeric(data.combat_booster)) {
+                    alert('combat_booster');
+                    return false;
+                }
+
+                data.arcane_booster = $('#arcane_booster').val();
+                if (!$.isNumeric(data.arcane_booster)) {
+                    alert('arcane_booster');
+                    return false;
+                }
+
+                data.investigation_booster = $('#investigation_booster').val();
+                if (!$.isNumeric(data.investigation_booster)) {
+                    alert('investigation_booster');
+                    return false;
+                }
+
+                $.ajax({
+                    url: '/ajax/database',
+                    method: 'post',
+                    data: data,
+                    dataType: 'json'
+                }).done(function (data) {
+                    if (data.error === false) {
+                        var id = parseInt($('#id').val());
+                        id++;
+                        window.location = '/database?id=' + id;
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-6 panel panel-default">
+                <div class="form-group">
+                    <div class="col-xs-9">
+                        <label for="title">Title</label>
+                        <input class="form-control" id="title" type="text" value="{{ card.title }}"/>
+                        <input type="hidden" id="id" value="{{ card.id }}"/>
+                    </div>
+                    <div class="col-xs-3">
+                        <label for="is_unique">Unique</label>
+                        <input class="form-control" id="is_unique" type="checkbox" value="1"{% if card.is_unique %} checked="checked"{% endif %}/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="descriptor">Descriptor</label>
+                    <input class="form-control" id="descriptor" type="text" value="{{ card.descriptor }}"/>
+                </div>
+                <div class="form-group">
+                    <label for="type">Type</label>
+                    <select class="form-control" name="type" id="type">
+                        <option value="character"{% if card.type == 'character' %} selected="selected"{% endif %}>Character</option>
+                        <option value="conspiracy"{% if card.type == 'conspiracy' %} selected="selected"{% endif %}>Conspiracy</option>
+                        <option value="event"{% if card.type == 'event' %} selected="selected"{% endif %}>Event</option>
+                        <option value="story"{% if card.type == 'story' %} selected="selected"{% endif %}>Story</option>
+                        <option value="support"{% if card.type == 'support' %} selected="selected"{% endif %}>Support</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="subtype">Subtype</label>
+                    <select class="form-control" name="type" id="subtype" multiple="multiple">
+                        {% for key, value in subtypes %}
+                            <option value="{{ key }}"{% if key in card.subtype %} selected="selected"{% endif %}>{{ value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="faction">Faction</label>
+                    <select class="form-control" name="faction" id="faction">
+                        <option value="cthulhu"{% if card.faction == 'cthulhu' %} selected="selected"{% endif %}>Cthulhu</option>
+                        <option value="miskatonic-university"{% if card.faction == 'miskatonic-university' %} selected="selected"{% endif %}>Miskatonic University</option>
+                        <option value="silver-twilight"{% if card.faction == 'silver-twilight' %} selected="selected"{% endif %}>Silver Twilight</option>
+                        <option value="the-agency"{% if card.faction == 'the-agency' %} selected="selected"{% endif %}>The Agency</option>
+                        <option value="hastur"{% if card.faction == 'hastur' %} selected="selected"{% endif %}>Hastur</option>
+                        <option value="shub-niggurath"{% if card.faction == 'shub-niggurath' %} selected="selected"{% endif %}>Shub-Niggurath</option>
+                        <option value="syndicate"{% if card.faction == 'syndicate' %} selected="selected"{% endif %}>Syndicate</option>
+                        <option value="yog-sothoth"{% if card.faction == 'yog-sothoth' %} selected="selected"{% endif %}>Yog-Sothoth</option>
+                        <option value="neutral"{% if card.faction == 'neutral' %} selected="selected"{% endif %}>Neutral</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-xs-3">
+                        <label for="terror">Terror</label>
+                        <input class="form-control" id="terror" type="text" value="{{ card.terror }}"/>
+                    </div>
+                    <div class="col-xs-3">
+                        <label for="combat">Combat</label>
+                        <input class="form-control" id="combat" type="text" value="{{ card.combat }}"/>
+                    </div>
+                    <div class="col-xs-3">
+                        <label for="arcane">Arcane</label>
+                        <input class="form-control" id="arcane" type="text" value="{{ card.arcane }}"/>
+                    </div>
+                    <div class="col-xs-3">
+                        <label for="investigation">Investigation</label>
+                        <input class="form-control" id="investigation" type="text" value="{{ card.investigation }}"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-xs-3">
+                        <label for="cost">Cost</label>
+                        <input class="form-control" id="cost" type="text" value="{{ card.cost }}"/>
+                    </div>
+                    <div class="col-xs-3">
+                        <label for="skill">Skill</label>
+                        <input class="form-control" id="skill" type="text" value="{{ card.skill }}"/>
+                    </div>
+                    <div class="col-xs-3">
+                        <label for="toughness">Toughness</label>
+                        <input class="form-control" id="toughness" type="text" value="{{ card.toughness }}"/>
+                    </div>
+                    <div class="col-xs-3">
+                        <label for="fated">Fated</label>
+                        <input class="form-control" id="fated" type="text" value="{{ card.fated }}"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="keyword">Keyword</label>
+                    <select class="form-control" id="keyword" multiple="multiple">
+                        {% for key, value in keywords %}
+                            <option value="{{ key }}"{% if key in card.keyword %} selected="selected"{% endif %}>{{ value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-xs-6">
+                        <label for="steadfastcount">Steadfastcount</label>
+                        <input class="form-control" id="steadfastcount" type="text" value="{{ card.steadfastcount }}"/>
+                    </div>
+                    <div class="col-xs-6">
+                        <label for="steadfastfaction">Steadfastfaction</label>
+                        <select class="form-control" name="steadfastfaction" id="steadfastfaction">
+                            <option value=""{% if card.steadfastfaction == '' %} selected="selected"{% endif %}>-</option>
+                            <option value="cthulhu"{% if card.steadfastfaction == 'cthulhu' %} selected="selected"{% endif %}>Cthulhu</option>
+                            <option value="miskatonic-university"{% if card.steadfastfaction == 'miskatonic-university' %} selected="selected"{% endif %}>Miskatonic University</option>
+                            <option value="silver-twilight"{% if card.steadfastfaction == 'silver-twilight' %} selected="selected"{% endif %}>Silver Twilight</option>
+                            <option value="the-agency"{% if card.steadfastfaction == 'the-agency' %} selected="selected"{% endif %}>The Agency</option>
+                            <option value="hastur"{% if card.steadfastfaction == 'hastur' %} selected="selected"{% endif %}>Hastur</option>
+                            <option value="shub-niggurath"{% if card.steadfastfaction == 'shub-niggurath' %} selected="selected"{% endif %}>Shub-Niggurath</option>
+                            <option value="syndicate"{% if card.steadfastfaction == 'syndicate' %} selected="selected"{% endif %}>Syndicate</option>
+                            <option value="yog-sothoth"{% if card.steadfastfaction == 'yog-sothoth' %} selected="selected"{% endif %}>Yog-Sothoth</option>
+                            <option value="neutral"{% if card.steadfastfaction == 'neutral' %} selected="selected"{% endif %}>Neutral</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <div class="form-group">
+                    <div class="col-xs-3">
+                        <label for="terror_booster">Terror booster</label>
+                        <input class="form-control" id="terror_booster" type="text" value="{{ card.terror_booster }}"/>
+                    </div>
+                    <div class="col-xs-3">
+                        <label for="combat_booster">Combat booster</label>
+                        <input class="form-control" id="combat_booster" type="text" value="{{ card.combat_booster }}"/>
+                    </div>
+                    <div class="col-xs-3">
+                        <label for="arcane_booster">Arcane booster</label>
+                        <input class="form-control" id="arcane_booster" type="text" value="{{ card.arcane_booster }}"/>
+                    </div>
+                    <div class="col-xs-3">
+                        <label for="investigation_booster">Investigation booster</label>
+                        <input class="form-control" id="investigation_booster" type="text" value="{{ card.investigation_booster }}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <img src="/images/cards/{{ card.image }}" class="img-responsive" style="width: auto;"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <button type="button" id="save" style="width: 400px;">Save</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

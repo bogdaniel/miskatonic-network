@@ -15,9 +15,14 @@ exports.up = function (knex, Promise) {
         table.integer('investigation').notNullable();
         table.string('faction').notNullable();
         table.integer('toughness').notNullable();
+        table.integer('fated').notNullable();
         table.string('keyword');
         table.string('text');
         table.string('flavor');
+        table.integer('terror_booster').notNullable();
+        table.integer('combat_booster').notNullable();
+        table.integer('arcane_booster').notNullable();
+        table.integer('investigation_booster').notNullable();
         table.integer('set_id').unsigned().notNullable().references('sets.id');
         table.string('attribute');
         table.integer('steadfastcount');
