@@ -28,6 +28,7 @@ exports.up = function (knex, Promise) {
         table.integer('steadfastcount');
         table.string('steadfastfaction');
         table.bool('is_unique').notNullable();
+        table.bool('is_restricted').notNullable();
         table.bool('is_banned').notNullable();
         table.string('image').notNullable();
         table.string('image_url').notNullable();
