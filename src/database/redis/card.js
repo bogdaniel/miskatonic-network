@@ -2,6 +2,7 @@
 
 var redis = require('../redis');
 var Promise = require('bluebird');
+var hand = require('./hand');
 var played = require('./played');
 var committed = require('./committed');
 
@@ -15,7 +16,9 @@ Promise.promisifyAll(redis);
  * @returns {*}
  */
 exports.update = function (gameId, card) {
-    if (card.position == 'played') {
+    if (card.position == 'hand') {
+        return hand.update(gameId, card.ownerId, card);
+    } else if (card.position == 'played') {
         return played.update(gameId, card.ownerId, card);
     } else if (card.position == 'committed') {
         return committed.update(gameId, card.ownerId, card.committedStory, card);

@@ -1,12 +1,12 @@
 "use strict";
 
 var Promise = require('bluebird');
+var Const = require('../constant');
 var Card = require('../database/redis/card');
 var committed = require('../database/redis/committed');
 
 exports.execute = function (game, data) {
     var promises = [];
-    var attachmentCards = data.attachmentCards;
     var playerPlayed = data.playerPlayed;
     var opponentPlayed = data.opponentPlayed;
     var playerCommitted1 = data.playerCommitted1;
@@ -19,7 +19,9 @@ exports.execute = function (game, data) {
     var opponentCommitted4 = data.opponentCommitted4;
     var playerCommitted5 = data.playerCommitted5;
     var opponentCommitted5 = data.opponentCommitted5;
+    var attachmentCards = data.attachmentCards;
     var playerHand = data.playerHand;
+
     var allCards = playerPlayed.concat(
         opponentPlayed, playerCommitted1, opponentCommitted1, playerCommitted2, opponentCommitted2,
         playerCommitted3, opponentCommitted3, playerCommitted4, opponentCommitted4, playerCommitted5,
@@ -58,11 +60,11 @@ exports.execute = function (game, data) {
         if (card.uid == 2) { //Kirby O'Donnell
             if (card.position == 'committed') {
                 allCards.forEach(function (card) {
-                    if (card.keyword.indexOf('Heroic') > -1) {
+                    if (card.keyword.indexOf('heroic') > -1) {
                         card.combat++;
                     }
 
-                    if (card.keyword.indexOf('Villianous') > -1 && card.terror > 0) {
+                    if (card.keyword.indexOf('villianous') > -1 && card.terror > 0) {
                         card.terror--;
                     }
                 });
@@ -81,7 +83,7 @@ exports.execute = function (game, data) {
 
         if (card.uid == 11) { //Peeler
             if (attachmentCards.length > 0) {
-                card.keyword.push('Willpower');
+                card.keyword.push('willpower');
             }
         }
 
@@ -95,13 +97,13 @@ exports.execute = function (game, data) {
 
         if (card.uid == 25) { //Anthropology Advisor
             playerHand.forEach(function (card) {
-                if (card.subtype.indexOf('Investigator') > -1 && card.cost > 0) {
+                if (card.subtype.indexOf('investigator') > -1 && card.cost > 0) {
                     card.cost--;
                 }
             });
 
             allCards.forEach(function (card) {
-                if (card.subtype.indexOf('Investigator') > -1) {
+                if (card.subtype.indexOf('investigator') > -1) {
                     card.investigation++;
                 }
             });
@@ -132,7 +134,7 @@ exports.execute = function (game, data) {
 
         if (card.uid == 50) { //Lord of the Silver Twilight
             playerHand.forEach(function (card) {
-                if (card.faction == 'Cthulhu' && card.cost > 2) {
+                if (card.faction == Const.cthulhu && card.cost > 2) {
                     card.cost--;
                 }
             });
@@ -140,7 +142,7 @@ exports.execute = function (game, data) {
 
         if (card.uid == 55) { //Shadowed Reef
             allCards.forEach(function (card) {
-                if (card.subtype.indexOf('Deep One') > -1) {
+                if (card.subtype.indexOf('deep-one') > -1) {
                     card.terror++;
                 }
             });
@@ -149,7 +151,7 @@ exports.execute = function (game, data) {
         if (card.uid == 73) { //Dutch Courage
             let ownerId = card.ownerId;
             allCards.forEach(function (card) {
-                if (card.ownerId == ownerId && card.subtype == 'Character') {
+                if (card.ownerId == ownerId && card.subtype == 'character') {
                     card.toughness++;
                 }
             });
@@ -160,8 +162,8 @@ exports.execute = function (game, data) {
                 let cardId = card.id;
                 let storyId = card.committedStory;
                 allCards.forEach(function (card) {
-                    if (card.position == 'committed' && card.committedStory == storyId && card.keyword.indexOf('Fast') > -1 && card.id !== cardId) {
-                        let index = card.keyword.indexOf('Fast');
+                    if (card.position == 'committed' && card.committedStory == storyId && card.keyword.indexOf('fast') > -1 && card.id !== cardId) {
+                        let index = card.keyword.indexOf('fast');
                         card.keyword.splice(index, 1);
                     }
                 });

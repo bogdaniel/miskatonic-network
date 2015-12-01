@@ -85,10 +85,9 @@ exports.add = function (gameId, playerId, storyId, card) {
 exports.update = function (gameId, playerId, storyId, card) {
     var self = this;
 
-    return Promise.all([
-        self.remove(gameId, playerId, storyId, card),
-        self.add(gameId, playerId, storyId, card)
-    ]);
+    return self.remove(gameId, playerId, storyId, card).then(function () {
+        return self.add(gameId, playerId, storyId, card);
+    });
 };
 
 /**

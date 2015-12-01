@@ -56,9 +56,7 @@ exports.add = function (gameId, playerId, card) {
  * @returns {*}
  */
 exports.drawToHand = function (gameId, playerId) {
-    return Promise.try(function () {
-        return redis.rpopAsync('deck:' + gameId + ':' + playerId);
-    }).then(function (card) {
+    return redis.rpopAsync('deck:' + gameId + ':' + playerId).then(function (card) {
         return hand.add(gameId, playerId, JSON.parse(card));
     });
 };

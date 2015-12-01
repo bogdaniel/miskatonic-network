@@ -3,6 +3,7 @@
 var _ = require('underscore');
 var moment = require('moment');
 var Promise = require('bluebird');
+var Const = require('../constant');
 var Game = require('../database/redis/game');
 var prepare = require('../database/redis/prepare');
 var Card = require('../database/mysql/models/card');
@@ -124,10 +125,10 @@ exports.start = function (socket) {
         return Promise.props({
             storyCards: Card.where('type', '=', 'Story').where('set_id', '=', 1).fetchAll().then(cards => cards.toJSON()),
             playerDeck: Card.where('set_id', '=', 1).where(function () {
-                this.where('faction', '=', 'Shub-Niggurath').orWhere('faction', '=', 'Yog-Sothoth');
+                this.where('faction', '=', Const.shub_niggurath).orWhere('faction', '=', Const.yog_sothoth);
             }).query('orWhere', 'id', '>=', 141).where('id', '<=', 147).fetchAll().then(cards => cards.toJSON()),
             opponentDeck: Card.where('set_id', '=', 1).where(function () {
-                this.where('faction', '=', 'The Agency').orWhere('faction', '=', 'Miskatonic University');
+                this.where('faction', '=', Const.the_agency).orWhere('faction', '=', Const.miskatonic_university);
             }).query('orWhere', 'id', '>=', 148).where('id', '<=', 153).query('orWhere', 'id', '=', 158).fetchAll().then(cards => cards.toJSON())
         }).then(function (result) {
             game.storyCards = prepare.storyCards(game, result.storyCards);

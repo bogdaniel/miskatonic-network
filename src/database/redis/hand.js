@@ -76,6 +76,22 @@ exports.add = function (gameId, playerId, card) {
 };
 
 /**
+ * Update a card in a players hand
+ *
+ * @param gameId
+ * @param playerId
+ * @param card
+ * @returns {*}
+ */
+exports.update = function (gameId, playerId, card) {
+    var self = this;
+
+    return self.remove(gameId, playerId, card).then(function () {
+        return self.add(gameId, playerId, card)
+    });
+};
+
+/**
  * Remove a card from a players hand
  *
  * @param gameId

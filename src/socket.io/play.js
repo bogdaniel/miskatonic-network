@@ -33,15 +33,13 @@ exports.drawCard = function (socket) {
             return false;
         }
 
-        return Promise.try(function () {
-            return deck.drawToHand(game.id, socket.userId);
-        }).then(function (result) {
+        return deck.drawToHand(game.id, player.id).then(function (result) {
             if (!result) {
                 //TODO
                 //player lost the game
             }
         }).then(function () {
-            return hand.count(game.id, socket.userId);
+            return hand.count(game.id, player.id);
         }).then(function (count) {
             if (game.phase == 'setup' && count === 8) {
                 player.actions = ['resourceCard'];
@@ -71,7 +69,6 @@ function updateAndBroadcastGameState(socket, game, player, opponent) {
         var storyCard5Id = game.storyCards[4] ? game.storyCards[4].id : 0;
 
         return Promise.props({
-            attachmentCards: attached.all(game.id),
             playerPlayed: played.all(game.id, player.id),
             opponentPlayed: played.all(game.id, opponent.id),
             playerCommitted1: committed.all(game.id, player.id, storyCard1Id),
@@ -84,6 +81,7 @@ function updateAndBroadcastGameState(socket, game, player, opponent) {
             opponentCommitted4: committed.all(game.id, opponent.id, storyCard4Id),
             playerCommitted5: committed.all(game.id, player.id, storyCard5Id),
             opponentCommitted5: committed.all(game.id, opponent.id, storyCard5Id),
+            attachmentCards: attached.all(game.id),
             playerHand: hand.all(game.id, player.id)
         }).then(function (result) {
             return CardPassive.execute(game, result);

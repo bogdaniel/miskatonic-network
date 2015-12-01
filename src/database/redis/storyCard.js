@@ -59,10 +59,9 @@ exports.add = function (gameId, card) {
 exports.update = function (gameId, card) {
     var self = this;
 
-    return Promise.all([
-        self.remove(gameId, card),
-        self.add(gameId, card)
-    ]);
+    return self.remove(gameId, card).then(function () {
+        return self.add(gameId, card);
+    });
 };
 
 /**
