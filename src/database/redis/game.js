@@ -84,9 +84,11 @@ exports.leave = function (gameId, playerId) {
             redis.delAsync('discard:' + gameId + ':' + playerId),
             redis.delAsync('playedCards:' + gameId + ':' + playerId)
         ]).then(function () {
-            return Promise.map(game.storyCards, function (storyCard) {
-                return redis.delAsync('committedCards:' + gameId + ':' + playerId + ':' + storyCard.id);
-            });
+            if (game.storyCards) {
+                return Promise.map(game.storyCards, function (storyCard) {
+                    return redis.delAsync('committedCards:' + gameId + ':' + playerId + ':' + storyCard.id);
+                });
+            }
         }).then(function () {
             return Promise.map(game.players, function (player) {
                 return Promise.map(player.domains, function (domainId) {
