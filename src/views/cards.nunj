@@ -64,6 +64,13 @@
                 loadCards();
             });
 
+            $('#keyword').on('change', function () {
+                var value = $(this).val();
+                var url = replaceGet(window.location.href, 'keyword', value);
+                window.history.replaceState(null, null, url);
+                loadCards();
+            });
+
             function loadCards() {
                 var parsed = parseUri(window.location.href);
 

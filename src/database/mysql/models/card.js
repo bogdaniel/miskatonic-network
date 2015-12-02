@@ -10,6 +10,7 @@ module.exports = mysql.Model.extend({
         var filter = [];
         var title = '';
         var subtype = '';
+        var keyword = '';
         var page = 1;
 
         if (query.title) {
@@ -32,6 +33,10 @@ module.exports = mysql.Model.extend({
             subtype = query.subtype;
         }
 
+        if (query.keyword) {
+            keyword = query.keyword;
+        }
+
         if (query.page) {
             page = query.page;
         }
@@ -46,6 +51,10 @@ module.exports = mysql.Model.extend({
 
         if (subtype) {
             cards.where('subtype', 'LIKE', '%' + subtype + '%');
+        }
+
+        if (keyword) {
+            cards.where('keyword', 'LIKE', '%' + keyword + '%');
         }
 
         return cards.fetchAll();
