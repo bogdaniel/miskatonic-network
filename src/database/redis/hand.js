@@ -87,7 +87,7 @@ exports.update = function (gameId, playerId, card) {
     var self = this;
 
     return self.remove(gameId, playerId, card).then(function () {
-        return self.add(gameId, playerId, card)
+        return self.add(gameId, playerId, card);
     });
 };
 
