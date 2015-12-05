@@ -14,6 +14,7 @@ var played = require('../database/redis/played');
 var committed = require('../database/redis/committed');
 var attached = require('../database/redis/attached');
 var resourced = require('../database/redis/resourced');
+var discard = require('../database/redis/discard');
 
 exports.displayTable = function (socket) {
     return Promise.try(function () {
@@ -71,6 +72,8 @@ function updateAndBroadcastGameState(socket, game, player, opponent) {
         return Promise.props({
             playerPlayed: played.all(game.id, player.id),
             opponentPlayed: played.all(game.id, opponent.id),
+            playerDiscard: discard.all(game.id, player.id),
+            opponentDiscard: discard.all(game.id, opponent.id),
             playerCommitted1: committed.all(game.id, player.id, storyCard1Id),
             opponentCommitted1: committed.all(game.id, opponent.id, storyCard1Id),
             playerCommitted2: committed.all(game.id, player.id, storyCard2Id),
