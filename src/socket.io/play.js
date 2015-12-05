@@ -347,7 +347,7 @@ exports.commitCard = function (socket, data) {
         }
 
         return played.get(game.id, player.id, data.cardId).then(function (card) {
-            if (card.status != 'active') {
+            if (card.status != 'active' || card.type != 'character') {
                 return false;
             }
 

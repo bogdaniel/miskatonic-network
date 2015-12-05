@@ -250,7 +250,7 @@ $(function () {
 
         target.find('.card-highlight').remove();
 
-        if (!$.isAllowed('commitCard') || !cardWrapper.hasClass('card-active')) {
+        if (!$.isAllowed('commitCard') || !cardWrapper.hasClass('card-active') || card.data('type') != 'character') {
             return false;
         }
 
