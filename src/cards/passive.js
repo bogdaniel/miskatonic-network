@@ -151,7 +151,7 @@ exports.execute = function (game, data) {
         if (card.uid == 73) { //Dutch Courage
             let ownerId = card.ownerId;
             allCards.forEach(function (card) {
-                if (card.ownerId == ownerId && card.subtype == 'character') {
+                if (card.ownerId == ownerId && card.type == 'character') {
                     card.toughness++;
                 }
             });
@@ -168,6 +168,16 @@ exports.execute = function (game, data) {
                     }
                 });
             }
+        }
+
+        if (card.uid == 135) { //Altar of the Blessed
+            let ownerId = card.ownerId;
+            allCards.forEach(function (card) {
+                if (card.ownerId == ownerId && card.type == 'character') {
+                    console.log(card.title);
+                    card.skill++;
+                }
+            });
         }
 
         promises.push(Card.update(game.id, card));
