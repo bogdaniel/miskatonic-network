@@ -45,6 +45,17 @@ $(function () {
             cardFrame.data('attachable', ['character']);
         }
 
+        var title = 'cost: ' + card.cost + ', ';
+        title += 'terror: ' + card.terror + ', ';
+        title += 'combat: ' + card.combat + ', ';
+        title += 'arcane: ' + card.arcane + ', ';
+        title += 'investigation: ' + card.investigation + ', ';
+        title += 'skill: ' + card.skill + ', ';
+        title += 'toughness: ' + card.toughness + ', ';
+        title += 'keyword: ' + card.keyword;
+
+        cardFrame.attr('title', title);
+
         cardFrame.append(cardImage);
         cardWrapper.append(cardFrame);
 

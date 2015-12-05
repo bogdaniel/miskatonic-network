@@ -2,7 +2,6 @@
 
 var _ = require('underscore');
 var randomHelper = require('../../helpers/randomHelper');
-var stringHelper = require('../../helpers/stringHelper');
 var redis = require('../redis');
 var Promise = require('bluebird');
 var storyDeck = require('./storyDeck');
@@ -52,32 +51,25 @@ exports.playerDeck = function (gameId, playerId, cards) {
         playerDeck[i].id = randomHelper.cardId();
         playerDeck[i].ownerId = playerId;
         playerDeck[i].status = 'active';
-        playerDeck[i].type = stringHelper.slugify(playerDeck[i].type);
+
+        if (playerDeck[i].subtype) {
+            playerDeck[i].subtype = playerDeck[i].subtype.split(', ');
+        }
+        playerDeck[i].printedSubtype = playerDeck[i].subtype;
+
         playerDeck[i].printedCost = playerDeck[i].cost;
         playerDeck[i].printedSkill = playerDeck[i].skill;
         playerDeck[i].printedTerror = playerDeck[i].terror;
         playerDeck[i].printedCombat = playerDeck[i].combat;
         playerDeck[i].printedArcane = playerDeck[i].arcane;
         playerDeck[i].printedInvestigation = playerDeck[i].investigation;
-        playerDeck[i].faction = stringHelper.slugify(playerDeck[i].faction);
         playerDeck[i].printedToughness = playerDeck[i].toughness;
-        playerDeck[i].printedKeyword = playerDeck[i].keyword;
-
-        if (playerDeck[i].subtype) {
-            playerDeck[i].subtype = playerDeck[i].subtype.trim().split('. ');
-            playerDeck[i].subtype.forEach(function (subtype, j) {
-                subtype = stringHelper.removeDots(subtype);
-                subtype = stringHelper.slugify(subtype);
-                playerDeck[i].subtype[j] = subtype;
-            });
-        }
+        playerDeck[i].printedFated = playerDeck[i].fated;
 
         if (playerDeck[i].keyword) {
-            playerDeck[i].keyword = playerDeck[i].keyword.trim().split(',');
-            playerDeck[i].keyword.forEach(function (keyword, j) {
-                playerDeck[i].keyword[j] = keyword.trim();
-            });
+            playerDeck[i].keyword = playerDeck[i].keyword.split(', ');
         }
+        playerDeck[i].printedKeyword = playerDeck[i].keyword;
 
         delete playerDeck[i].data;
     });

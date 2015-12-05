@@ -41,6 +41,7 @@ function fancybox(element, items, options) {
         prevEasing: 'none',
         openOpacity: false,
         closeOpacity: false,
+        title: element.attr('title'),
         helpers: {
             overlay: {
                 locked: false

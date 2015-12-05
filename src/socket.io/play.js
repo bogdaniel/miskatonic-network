@@ -249,6 +249,10 @@ exports.playCard = function (socket, data) {
         }).then(function (result) {
             var card = result.card;
 
+            if (card.subtype && card.subtype.indexOf('attachment') > -1) {
+                return false;
+            }
+
             if (card.cost > 0) {
                 var resources = result.resources;
                 var domain = gameHelper.domain(game, player.id, domainId);

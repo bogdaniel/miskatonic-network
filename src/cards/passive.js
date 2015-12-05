@@ -100,13 +100,13 @@ exports.execute = function (game, data) {
 
             if (card.uid == 25) { //Anthropology Advisor
                 playerHand.forEach(function (_card) {
-                    if (_card.subtype.indexOf('investigator') > -1 && _card.cost > 0) {
+                    if (_card.subtype && _card.subtype.indexOf('investigator') > -1 && _card.cost > 0) {
                         _card.cost--;
                     }
                 });
 
                 allCards.forEach(function (_card) {
-                    if (_card.subtype.indexOf('investigator') > -1) {
+                    if (_card.subtype && _card.subtype.indexOf('investigator') > -1) {
                         _card.investigation++;
                     }
                 });
@@ -144,7 +144,7 @@ exports.execute = function (game, data) {
 
             if (card.uid == 55) { //Shadowed Reef
                 allCards.forEach(function (_card) {
-                    if (_card.subtype.indexOf('deep-one') > -1) {
+                    if (_card.subtype && _card.subtype.indexOf('deep-one') > -1) {
                         _card.terror++;
                     }
                 });
@@ -171,7 +171,7 @@ exports.execute = function (game, data) {
 
             if (card.uid == 103) { //Son of Yeb
                 allCards.forEach(function (_card) {
-                    if (_card.ownerId == card.ownerId && _card.subtype.indexOf('cultist') > -1) {
+                    if (_card.ownerId == card.ownerId && _card.subtype && _card.subtype.indexOf('cultist') > -1) {
                         card.combat++;
                     }
                 });
@@ -203,7 +203,7 @@ exports.execute = function (game, data) {
 
             if (card.uid == 129) { //Mi-Go Scout
                 allCards.forEach(function (_card) {
-                    if (_card.subtype.indexOf('mi-go') > -1 && _card.type == 'character') {
+                    if (_card.subtype && _card.subtype.indexOf('mi-go') > -1 && _card.type == 'character') {
                         _card.investigation++;
                     }
                 });
@@ -236,7 +236,7 @@ exports.execute = function (game, data) {
     playerHand.forEach(function (card) {
         if (card.uid == 101) { //Yog-Sothoth
             playerDiscard.forEach(function (_card) {
-                if (_card.subtype.indexOf('spell') > -1 && card.cost > 1) {
+                if (_card.subtype && _card.subtype.indexOf('spell') > -1 && card.cost > 1) {
                     card.cost--;
                 }
             });
