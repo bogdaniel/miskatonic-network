@@ -85,7 +85,7 @@ exports.add = function (gameId, card) {
 
     card.position = 'attached';
 
-    return redis.zadd('attachedCards:' + gameId, card.id, JSON.stringify(card));
+    return redis.zaddAsync('attachedCards:' + gameId, card.id, JSON.stringify(card));
 };
 
 /**
@@ -111,7 +111,7 @@ exports.update = function (gameId, card) {
  * @returns {*}
  */
 exports.remove = function (gameId, card) {
-    return redis.zremrangebyscore('attachedCards:' + gameId, card.id, card.id);
+    return redis.zremrangebyscoreAsync('attachedCards:' + gameId, card.id, card.id);
 };
 
 /**

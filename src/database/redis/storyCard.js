@@ -46,7 +46,7 @@ exports.get = function (gameId, cardId) {
  * @returns {*}
  */
 exports.add = function (gameId, card) {
-    return redis.zadd('storyCards:' + gameId, card.id, JSON.stringify(card));
+    return redis.zaddAsync('storyCards:' + gameId, card.id, JSON.stringify(card));
 };
 
 /**
@@ -72,5 +72,5 @@ exports.update = function (gameId, card) {
  * @returns {*}
  */
 exports.remove = function (gameId, card) {
-    return redis.zremrangebyscore('storyCards:' + gameId, card.id, card.id);
+    return redis.zremrangebyscoreAsync('storyCards:' + gameId, card.id, card.id);
 };

@@ -70,7 +70,7 @@ exports.add = function (gameId, playerId, storyId, card) {
     card.position = 'committed';
     card.committedStory = storyId;
 
-    return redis.zadd('committedCards:' + gameId + ':' + playerId + ':' + storyId, card.id, JSON.stringify(card));
+    return redis.zaddAsync('committedCards:' + gameId + ':' + playerId + ':' + storyId, card.id, JSON.stringify(card));
 };
 
 /**
@@ -138,7 +138,7 @@ exports.uncommitAll = function (gameId, playerId, storyId) {
 exports.remove = function (gameId, playerId, storyId, card) {
     card.committedStory = null;
 
-    return redis.zremrangebyscore('committedCards:' + gameId + ':' + playerId + ':' + storyId, card.id, card.id);
+    return redis.zremrangebyscoreAsync('committedCards:' + gameId + ':' + playerId + ':' + storyId, card.id, card.id);
 };
 
 /**

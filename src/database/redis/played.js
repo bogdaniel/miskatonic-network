@@ -63,7 +63,7 @@ exports.count = function (gameId, playerId) {
 exports.add = function (gameId, playerId, card) {
     card.position = 'played';
 
-    return redis.zadd('playedCards:' + gameId + ':' + playerId, card.id, JSON.stringify(card));
+    return redis.zaddAsync('playedCards:' + gameId + ':' + playerId, card.id, JSON.stringify(card));
 };
 
 /**
@@ -91,7 +91,7 @@ exports.update = function (gameId, playerId, card) {
  * @returns {*}
  */
 exports.remove = function (gameId, playerId, card) {
-    return redis.zremrangebyscore('playedCards:' + gameId + ':' + playerId, card.id, card.id);
+    return redis.zremrangebyscoreAsync('playedCards:' + gameId + ':' + playerId, card.id, card.id);
 };
 
 /**

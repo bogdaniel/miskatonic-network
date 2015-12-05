@@ -20,10 +20,11 @@ exports.all = function (room) {
 };
 
 exports.save = function (room, message) {
-    redis.rpush('chat_' + room, JSON.stringify(message));
-    redis.llen('chat_' + room, function (error, reply) {
-        if (reply > 50) {
-            redis.lpop('chat_' + room);
+    return redis.rpushAsync('chat_' + room, JSON.stringify(message)).then(function () {
+        return redis.llenAsync('chat_' + room);
+    }).then(function (count) {
+        if (count > 50) {
+            return redis.lpopAsync('chat_' + room);
         }
     });
 };
