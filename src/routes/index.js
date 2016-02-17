@@ -4,8 +4,6 @@ var expressPromiseRouter = require('express-promise-router');
 var router = expressPromiseRouter();
 var firewall = require('../../security/firewall');
 var scrypt = require('scrypt-for-humans');
-var redis = require('../database/redis');
-var redisHelper = require('../../libs/helpers/redis');
 var _ = require('../../libs/underscore');
 var Promise = require('bluebird');
 var User = require('../database/mysql/models/user');
@@ -14,8 +12,6 @@ var Card = require('../database/mysql/models/card');
 
 var lobbyController = require('../controllers/lobby');
 var playController = require('../controllers/play');
-
-Promise.promisifyAll(redis);
 
 router.post('/login', function (req, res) {
     return User.login(req.body.email, req.body.password).then(function (user) {
